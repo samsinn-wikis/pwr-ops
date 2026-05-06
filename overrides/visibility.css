@@ -18,6 +18,11 @@ html.show-edge-labels      .procmd-edge-label    { display: inline; }
 html.hide-rationale        .procmd-rationale     { display: none; }
 html.hide-step-id-suffix   .procmd-step-id-suffix { display: none; }
 
+/* When rationale is hidden, also hide the trailing <br/> that markdown's
+ * hard-break emits after the line — otherwise the line break remains and
+ * leaves an empty line where the rationale was. */
+html.hide-rationale .procmd-rationale + br { display: none; }
+
 /* ---- Eye icon button --------------------------------------------------- */
 
 .procmd-vis-button {
