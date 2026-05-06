@@ -57,7 +57,7 @@ html.hide-rationale .procmd-rationale + br { display: none; }
 /* ---- Popover ----------------------------------------------------------- */
 
 .procmd-vis-popover {
-  position: absolute;
+  position: fixed;
   background: var(--md-default-bg-color, #fff);
   color: var(--md-default-fg-color, #111);
   border: 1px solid rgba(0,0,0,0.15);

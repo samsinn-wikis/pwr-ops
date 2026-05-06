@@ -171,7 +171,8 @@
       if (pop) { closePop(); return; }
       pop = buildPopover(prefs);
       var rect = btn.getBoundingClientRect();
-      pop.style.top = (rect.bottom + window.scrollY + 4) + 'px';
+      // Fixed positioning — viewport-anchored so it stays put on scroll.
+      pop.style.top = (rect.bottom + 4) + 'px';
       pop.style.right = Math.max(8, window.innerWidth - rect.right) + 'px';
       document.body.appendChild(pop);
       document.addEventListener('click', onDocClick, true);
