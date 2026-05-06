@@ -191,7 +191,13 @@ async function processFile(srcPath: string): Promise<{ outPath: string; changed:
   let outContent: string;
   // Only procedure pages get the transform; profiles and prose copy verbatim
   if (type === "procedure") {
-    outContent = fm + "\n" + transformBody(body);
+    // Bake the raw source into the page as an inert <script> block. The
+    // visibility.js bundle reads this and offers a "view raw source"
+    // modal. Escape any literal </script> to keep the script inert.
+    const rawEscaped = content.replace(/<\/script>/gi, "<\\/script>");
+    const sourceBlock =
+      `\n\n<script type="text/plain" class="procmd-source-raw">\n${rawEscaped}\n</script>\n`;
+    outContent = fm + "\n" + transformBody(body) + sourceBlock;
   } else {
     outContent = content;
   }

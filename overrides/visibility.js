@@ -194,4 +194,109 @@
   } else {
     init();
   }
+
+  // ---- Source modal --------------------------------------------------------
+  // On procedure pages (those with a baked raw-source block), inject a
+  // hover-revealed icon top-right of the article body that opens a modal
+  // showing the raw markdown.
+
+  var CODE_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>';
+
+  function getSourceText() {
+    var s = document.querySelector('.procmd-source-raw');
+    if (!s) return null;
+    // textContent decodes any HTML entities the markdown parser may have applied
+    return s.textContent;
+  }
+
+  function buildSourceModal(text, title) {
+    var overlay = document.createElement('div');
+    overlay.className = 'procmd-source-modal-overlay';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-label', 'Raw markdown source');
+
+    var modal = document.createElement('div');
+    modal.className = 'procmd-source-modal';
+
+    var head = document.createElement('div');
+    head.className = 'procmd-source-modal-head';
+    var titleEl = document.createElement('span');
+    titleEl.className = 'procmd-source-modal-title';
+    titleEl.textContent = title || 'Raw source';
+    var actions = document.createElement('span');
+    actions.className = 'procmd-source-modal-actions';
+    var copyBtn = document.createElement('button');
+    copyBtn.type = 'button';
+    copyBtn.textContent = 'Copy';
+    copyBtn.addEventListener('click', function () {
+      navigator.clipboard.writeText(text).then(function () {
+        copyBtn.textContent = 'Copied';
+        setTimeout(function () { copyBtn.textContent = 'Copy'; }, 1200);
+      }).catch(function () {
+        copyBtn.textContent = 'Copy failed';
+      });
+    });
+    var closeBtn = document.createElement('button');
+    closeBtn.type = 'button';
+    closeBtn.textContent = 'Close';
+    actions.appendChild(copyBtn);
+    actions.appendChild(closeBtn);
+    head.appendChild(titleEl);
+    head.appendChild(actions);
+
+    var pre = document.createElement('pre');
+    var code = document.createElement('code');
+    code.textContent = text;
+    pre.appendChild(code);
+
+    modal.appendChild(head);
+    modal.appendChild(pre);
+    overlay.appendChild(modal);
+
+    function close() {
+      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+      document.removeEventListener('keydown', onKey);
+    }
+    function onKey(e) { if (e.key === 'Escape') close(); }
+    closeBtn.addEventListener('click', close);
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) close();
+    });
+    document.addEventListener('keydown', onKey);
+
+    return overlay;
+  }
+
+  function mountSourceIcon() {
+    var sourceEl = document.querySelector('.procmd-source-raw');
+    if (!sourceEl) return; // not a procedure page
+    var article = document.querySelector('.md-content__inner') || document.querySelector('article');
+    if (!article) return;
+    if (getComputedStyle(article).position === 'static') article.style.position = 'relative';
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'procmd-source-icon';
+    btn.setAttribute('aria-label', 'View raw markdown source');
+    btn.title = 'View raw markdown source';
+    btn.innerHTML = CODE_SVG;
+
+    btn.addEventListener('click', function () {
+      var text = getSourceText();
+      if (!text) return;
+      var titleEl = article.querySelector('h1');
+      var title = titleEl ? 'Raw source — ' + titleEl.textContent.replace(/¶$/, '').trim() : 'Raw source';
+      var modal = buildSourceModal(text, title);
+      document.body.appendChild(modal);
+    });
+
+    article.insertBefore(btn, article.firstChild);
+  }
+
+  function initSource() { mountSourceIcon(); }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSource);
+  } else {
+    initSource();
+  }
 })();

@@ -23,6 +23,94 @@ html.hide-step-id-suffix   .procmd-step-id-suffix { display: none; }
  * leaves an empty line where the rationale was. */
 html.hide-rationale .procmd-rationale + br { display: none; }
 
+/* Inert source block — hidden, used only by the source-modal JS */
+.procmd-source-raw { display: none; }
+
+/* ---- Source-view icon (hover-revealed, top-right of article) ---------- */
+
+.procmd-source-icon {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: transparent;
+  border: 0;
+  padding: 0.3rem;
+  cursor: pointer;
+  color: var(--md-default-fg-color, #444);
+  opacity: 0.25;
+  transition: opacity 0.15s;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 0.2rem;
+}
+.procmd-source-icon:hover,
+.procmd-source-icon:focus { opacity: 1; }
+.md-content__inner:hover .procmd-source-icon { opacity: 0.7; }
+.procmd-source-icon svg { width: 1.1rem; height: 1.1rem; }
+
+/* ---- Source modal ----------------------------------------------------- */
+
+.procmd-source-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.procmd-source-modal {
+  background: var(--md-default-bg-color, #fff);
+  color: var(--md-default-fg-color, #111);
+  border-radius: 0.4rem;
+  width: min(900px, 90vw);
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+  overflow: hidden;
+}
+.procmd-source-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  font-size: 0.85rem;
+}
+.procmd-source-modal-head .procmd-source-modal-title {
+  font-weight: 600;
+}
+.procmd-source-modal-head .procmd-source-modal-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+.procmd-source-modal-head button {
+  background: transparent;
+  border: 1px solid rgba(0,0,0,0.2);
+  padding: 0.2rem 0.6rem;
+  border-radius: 0.2rem;
+  cursor: pointer;
+  font-size: 0.78rem;
+  color: inherit;
+}
+.procmd-source-modal-head button:hover { background: rgba(0,0,0,0.05); }
+.procmd-source-modal pre {
+  margin: 0;
+  padding: 0.8rem 1rem;
+  overflow: auto;
+  flex: 1 1 auto;
+  background: var(--md-code-bg-color, #f5f5f5);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+.procmd-source-modal code {
+  background: transparent;
+  white-space: pre;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
 /* ---- Eye icon button --------------------------------------------------- */
 
 .procmd-vis-button {
