@@ -1,6 +1,6 @@
 ---
 type: procedure
-procedure-md: 0.4
+procedure-md: 0.5
 procedure-id: ECA-3.2
 title: SGTR with Loss of Reactor Coolant — Saturated Recovery
 profile: nuclear-erg

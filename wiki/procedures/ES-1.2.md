@@ -1,6 +1,6 @@
 ---
 type: procedure
-procedure-md: 0.4
+procedure-md: 0.5
 procedure-id: ES-1.2
 title: Post-LOCA Cooldown and Depressurization
 profile: nuclear-erg

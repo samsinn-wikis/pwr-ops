@@ -1,6 +1,6 @@
 ---
 type: procedure
-procedure-md: 0.4
+procedure-md: 0.5
 procedure-id: FR-H.2
 title: Response to Steam Generator Overpressure
 profile: nuclear-erg

@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * pwr-eops procedure validator — single-file structural checker for procmd v0.2.
+ * pwr-eops procedure validator — single-file structural checker for procmd v0.5.
  *
  * Walks wiki/procedures/*.md and wiki/profiles/*.md, parses each, and reports:
  *   - frontmatter shape errors
@@ -11,8 +11,11 @@
  *   - edge label vocabulary (warns on unknown)
  *   - frontmatter taxonomy against profile vocabulary
  *   - lifecycle keyword + synonym recognition
+ *   - «TAG» references resolve to a `## Tags` appendix entry in the same file
+ *   - tag-id charset, required sub-keys, unreferenced entries (warning)
+ *   - cross-procedure tag consistency (sim-path/units/equipment must agree)
  *
- * Rejects v0.1 documents (procedure-md must equal SUPPORTED_SPEC_VERSION).
+ * Rejects older spec versions (procedure-md must equal SUPPORTED_SPEC_VERSION).
  * No backward compatibility; corpora migrate by frontmatter bump.
  *
  * Exits non-zero on errors. Warnings do not block.
@@ -21,7 +24,14 @@
  * Usage:  bun validate.ts [--verbose]
  */
 
-const SUPPORTED_SPEC_VERSION = "0.4";
+const SUPPORTED_SPEC_VERSION = "0.5";
+
+// v0.5: tag-id charset is uppercase + digits + hyphens, must start with a letter.
+const TAG_ID_RE = /^[A-Z][A-Z0-9-]*$/;
+// Inline tag reference syntax: «TAG-ID» (U+00AB, U+00BB)
+const TAG_REF_RE = /«([A-Z][A-Z0-9-]*)»/g;
+// Required sub-keys on every ## Tags appendix entry
+const TAG_REQUIRED_KEYS = ["id", "description", "sim-path", "units", "equipment"] as const;
 
 // ---------- v0.2 vocabularies --------------------------------------------
 
@@ -81,6 +91,18 @@ interface Step {
   primitive?: string;
   branches: Branch[];
   bodyLines: string[];
+  tagRefs: { tagId: string; line: number }[];
+}
+
+interface TagDefinition {
+  id: string;
+  description?: string;
+  simPath?: string;
+  units?: string;
+  equipment?: string;
+  range?: string;
+  extra: Record<string, string>;
+  line: number;
 }
 
 interface Procedure {
@@ -88,6 +110,7 @@ interface Procedure {
   procedureId: string;
   frontmatter: Record<string, string>;
   steps: Step[];
+  tags: TagDefinition[];
   errors: ValidationError[];
 }
 
@@ -295,6 +318,128 @@ function parseStepBody(
   return { branches, errors };
 }
 
+// ---------- Tag reference scanning + appendix parsing (v0.5) ------------
+
+/**
+ * Strip inline code spans (between backticks) from a line so «TAG» refs
+ * inside `code` don't count. Wikilinks `[[...]]` are also stripped — refs
+ * inside link targets / display text are inert per the v0.5 spec.
+ */
+function stripInert(line: string): string {
+  return line
+    .replace(/`[^`]*`/g, "")
+    .replace(/\[\[[^\]]*\]\]/g, "");
+}
+
+/**
+ * Scan `«TAG-ID»` references in a step's body lines. Skips fenced code
+ * blocks and inline code spans / wikilinks. Returns each ref with the
+ * absolute line number (1-based) it appeared on.
+ */
+function scanTagRefs(
+  bodyLines: string[],
+  startLine: number,
+): { tagId: string; line: number }[] {
+  const refs: { tagId: string; line: number }[] = [];
+  let inFence = false;
+  for (let i = 0; i < bodyLines.length; i++) {
+    const raw = bodyLines[i];
+    if (/^(```|~~~)/.test(raw)) {
+      inFence = !inFence;
+      continue;
+    }
+    if (inFence) continue;
+    const stripped = stripInert(raw);
+    let m: RegExpExecArray | null;
+    TAG_REF_RE.lastIndex = 0;
+    while ((m = TAG_REF_RE.exec(stripped))) {
+      refs.push({ tagId: m[1], line: startLine + i });
+    }
+  }
+  return refs;
+}
+
+/**
+ * Parse the `## Tags` appendix section if present. Returns an array of
+ * tag definitions plus any structural errors. Each entry begins with
+ * `- id: <tag-id>` and continues with indented `<key>: <value>` lines
+ * until the next list item, blank line, or end of section.
+ */
+function parseTagsAppendix(
+  bodyLines: string[],
+  bodyStartLine: number,
+): { tags: TagDefinition[]; errors: ValidationError[] } {
+  const errors: ValidationError[] = [];
+  const tags: TagDefinition[] = [];
+
+  // Find the `## Tags` heading
+  let appendixStart = -1;
+  for (let i = 0; i < bodyLines.length; i++) {
+    if (/^##\s+Tags\s*$/.test(bodyLines[i])) {
+      appendixStart = i + 1;
+      break;
+    }
+  }
+  if (appendixStart < 0) return { tags, errors };
+
+  // Collect lines until next ## heading or EOF
+  let appendixEnd = bodyLines.length;
+  for (let i = appendixStart; i < bodyLines.length; i++) {
+    if (/^##\s+/.test(bodyLines[i])) {
+      appendixEnd = i;
+      break;
+    }
+  }
+
+  // Walk entries: each starts with `- id: <tag>` (possibly indented)
+  let cur: TagDefinition | null = null;
+  const flush = () => {
+    if (cur) tags.push(cur);
+    cur = null;
+  };
+  for (let i = appendixStart; i < appendixEnd; i++) {
+    const raw = bodyLines[i];
+    const lineno = bodyStartLine + i;
+    if (raw.trim() === "") {
+      // blank line ends the current entry's collection but doesn't end the section
+      continue;
+    }
+    const itemHead = raw.match(/^\s*-\s+id:\s*(.+?)\s*$/);
+    if (itemHead) {
+      flush();
+      cur = {
+        id: itemHead[1].trim(),
+        extra: {},
+        line: lineno,
+      };
+      continue;
+    }
+    if (!cur) {
+      // Non-blank, non-itemhead line outside any entry — ignore (could be intro prose)
+      continue;
+    }
+    const sub = raw.match(/^\s+([a-z][a-z0-9-]*):\s*(.*?)\s*$/);
+    if (sub) {
+      const key = sub[1];
+      const value = sub[2];
+      if (key === "id") {
+        // mid-entry id is suspect — start a new entry
+        flush();
+        cur = { id: value, extra: {}, line: lineno };
+        continue;
+      }
+      if (key === "description") cur.description = value;
+      else if (key === "sim-path") cur.simPath = value;
+      else if (key === "units") cur.units = value;
+      else if (key === "equipment") cur.equipment = value;
+      else if (key === "range") cur.range = value;
+      else cur.extra[key] = value;
+    }
+  }
+  flush();
+  return { tags, errors };
+}
+
 function parseProcedure(path: string, content: string): Procedure {
   const errors: ValidationError[] = [];
   const fm = parseFrontmatter(content);
@@ -332,11 +477,32 @@ function parseProcedure(path: string, content: string): Procedure {
   const bodyLines = fm.body.split("\n");
   let curStep: Step | null = null;
   let curBodyStart = 0;
+  // v0.5: a `## Tags` heading marks the end of steps and the start of the
+  // appendix; record its position so we can both stop step-scanning and
+  // pass the slice to the appendix parser.
+  let tagsAppendixIdx = -1;
   for (let i = 0; i < bodyLines.length; i++) {
     const line = bodyLines[i];
     const lineno = fm.bodyStartLine + i;
     const m = line.match(STEP_HEADING_RE);
     if (m) {
+      // `## Tags` ends the step section in v0.5 — close current step and stop
+      if (/^Tags\s*$/.test(m[1])) {
+        if (curStep) {
+          const collected = bodyLines.slice(curBodyStart, i);
+          const parsed = parseStepBody(
+            collected,
+            fm.bodyStartLine + curBodyStart,
+          );
+          curStep.branches = parsed.branches;
+          curStep.bodyLines = collected;
+          for (const e of parsed.errors) errors.push({ ...e, file: path });
+          steps.push(curStep);
+          curStep = null;
+        }
+        tagsAppendixIdx = i;
+        break;
+      }
       // Close previous step
       if (curStep) {
         const collected = bodyLines.slice(curBodyStart, i);
@@ -367,6 +533,7 @@ function parseProcedure(path: string, content: string): Procedure {
         primitive: head.primitive,
         branches: [],
         bodyLines: [],
+        tagRefs: [],
       };
       curBodyStart = i + 1;
     }
@@ -381,6 +548,76 @@ function parseProcedure(path: string, content: string): Procedure {
     curStep.bodyLines = collected;
     for (const e of parsed.errors) errors.push({ ...e, file: path });
     steps.push(curStep);
+  }
+
+  // Scan «TAG» references in each step's body
+  for (const s of steps) {
+    s.tagRefs = scanTagRefs(s.bodyLines, s.line + 1);
+  }
+
+  // Parse `## Tags` appendix (if present)
+  const { tags, errors: tagAppendixErrors } = tagsAppendixIdx >= 0
+    ? parseTagsAppendix(bodyLines, fm.bodyStartLine)
+    : { tags: [], errors: [] as ValidationError[] };
+  for (const e of tagAppendixErrors) errors.push({ ...e, file: path });
+
+  // v0.5 per-procedure tag validation
+  const tagsById = new Map<string, TagDefinition>();
+  for (const t of tags) {
+    if (!TAG_ID_RE.test(t.id)) {
+      errors.push({
+        file: path,
+        line: t.line,
+        msg: `tag id '${t.id}' violates charset [A-Z][A-Z0-9-]* (uppercase, alphanumeric, hyphens; must start with a letter)`,
+      });
+    }
+    if (tagsById.has(t.id)) {
+      errors.push({
+        file: path,
+        line: t.line,
+        msg: `duplicate tag id '${t.id}' in ## Tags appendix`,
+      });
+    }
+    tagsById.set(t.id, t);
+    for (const k of TAG_REQUIRED_KEYS) {
+      if (k === "id") continue;
+      const has =
+        (k === "description" && t.description) ||
+        (k === "sim-path" && t.simPath) ||
+        (k === "units" && t.units) ||
+        (k === "equipment" && t.equipment);
+      if (!has) {
+        errors.push({
+          file: path,
+          line: t.line,
+          msg: `tag '${t.id}' missing required sub-key '${k}'`,
+        });
+      }
+    }
+  }
+  // Refs resolve; warn on unreferenced entries
+  const referencedIds = new Set<string>();
+  for (const s of steps) {
+    for (const ref of s.tagRefs) {
+      referencedIds.add(ref.tagId);
+      if (!tagsById.has(ref.tagId)) {
+        errors.push({
+          file: path,
+          line: ref.line,
+          msg: `«${ref.tagId}» reference has no entry in ## Tags appendix`,
+        });
+      }
+    }
+  }
+  for (const t of tags) {
+    if (!referencedIds.has(t.id)) {
+      errors.push({
+        file: path,
+        line: t.line,
+        severity: "warning",
+        msg: `tag '${t.id}' defined in appendix but never referenced in any step body`,
+      });
+    }
   }
 
   // Duplicate step IDs + charset enforcement (v0.2)
@@ -445,8 +682,53 @@ function parseProcedure(path: string, content: string): Procedure {
     procedureId: fm.fields["procedure-id"] ?? "",
     frontmatter: fm.fields,
     steps,
+    tags,
     errors,
   };
+}
+
+/**
+ * v0.5 cross-procedure validation: a tag id appearing in two procedures
+ * with conflicting `sim-path`/`units`/`equipment` is an error. Conflicting
+ * `description` is a warning.
+ */
+function validateTagConsistency(procedures: Procedure[]): ValidationError[] {
+  const errors: ValidationError[] = [];
+  // tagId → array of (path, def)
+  const occurrences = new Map<string, { path: string; def: TagDefinition }[]>();
+  for (const p of procedures) {
+    for (const t of p.tags) {
+      const list = occurrences.get(t.id) ?? [];
+      list.push({ path: p.path, def: t });
+      occurrences.set(t.id, list);
+    }
+  }
+  for (const [id, occs] of occurrences) {
+    if (occs.length < 2) continue;
+    const first = occs[0];
+    for (let i = 1; i < occs.length; i++) {
+      const cur = occs[i];
+      const fields: ("simPath" | "units" | "equipment")[] = ["simPath", "units", "equipment"];
+      for (const f of fields) {
+        if (cur.def[f] !== first.def[f]) {
+          errors.push({
+            file: cur.path,
+            line: cur.def.line,
+            msg: `tag '${id}' ${f === "simPath" ? "sim-path" : f} '${cur.def[f] ?? ""}' conflicts with definition in ${first.path.split("/").pop()} (line ${first.def.line}: '${first.def[f] ?? ""}')`,
+          });
+        }
+      }
+      if (cur.def.description !== first.def.description) {
+        errors.push({
+          file: cur.path,
+          line: cur.def.line,
+          severity: "warning",
+          msg: `tag '${id}' description differs from ${first.path.split("/").pop()} (line ${first.def.line}) — descriptions may legitimately vary; reconcile if intent diverged`,
+        });
+      }
+    }
+  }
+  return errors;
 }
 
 function parseProfile(path: string, content: string): Profile & { vocab: ProfileVocabulary } {
@@ -698,6 +980,9 @@ async function main() {
   allMessages.push(...validateCrossRefs(procedures));
   for (const p of procedures) allMessages.push(...checkReachability(p));
 
+  // v0.5 cross-procedure tag consistency
+  allMessages.push(...validateTagConsistency(procedures));
+
   // Split errors and warnings
   const errors = allMessages.filter((m) => (m.severity ?? "error") === "error");
   const warnings = allMessages.filter((m) => m.severity === "warning");
@@ -733,8 +1018,19 @@ async function main() {
           ),
         0,
       );
+      const totalTags = procedures.reduce((n, p) => n + p.tags.length, 0);
+      const totalTagRefs = procedures.reduce(
+        (n, p) => n + p.steps.reduce((m, s) => m + s.tagRefs.length, 0),
+        0,
+      );
+      const uniqueTagIds = new Set(
+        procedures.flatMap((p) => p.tags.map((t) => t.id)),
+      ).size;
       console.log(
         `   ${totalSteps} steps, ${totalBranches} branches (${labeled} labeled), ${[...new Set(procedures.map((p) => p.procedureId))].length} unique procedure IDs.`,
+      );
+      console.log(
+        `   ${totalTagRefs} tag references, ${totalTags} appendix entries, ${uniqueTagIds} unique tag IDs.`,
       );
     }
     process.exit(0);

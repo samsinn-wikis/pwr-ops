@@ -1,6 +1,6 @@
 ---
 type: procedure
-procedure-md: 0.4
+procedure-md: 0.5
 procedure-id: ECA-1.2
 title: LOCA Outside Containment
 profile: nuclear-erg

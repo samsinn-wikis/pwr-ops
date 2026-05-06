@@ -29,6 +29,10 @@ const PROC_URI = "https://samsinn-wikis.github.io/pwr-eops/procedures/";
 const CSF_URI = "https://samsinn-wikis.github.io/pwr-eops/csf/";
 const TRIG_URI = "https://samsinn-wikis.github.io/pwr-eops/trigger/";
 const CAT_URI = "https://samsinn-wikis.github.io/pwr-eops/category/";
+const TAG_URI = "https://samsinn-wikis.github.io/pwr-eops/tag/";
+const EQ_URI = "https://samsinn-wikis.github.io/pwr-eops/equipment/";
+
+const TAG_REF_RE = /«([A-Z][A-Z0-9-]*)»/g;
 
 const LABEL_TO_PREDICATE: Record<string, string> = {
   Continue: "continuesTo",
@@ -61,14 +65,24 @@ interface BranchEdge {
   condition: string;
 }
 
+interface TagDef {
+  id: string;
+  description?: string;
+  simPath?: string;
+  units?: string;
+  equipment?: string;
+  range?: string;
+}
+
 interface ParsedProcedure {
   id: string;
   title: string;
   category?: string;
   csfs: string[];
   triggers: string[];
-  steps: { id: string; line: number; branches: BranchEdge[] }[];
+  steps: { id: string; line: number; branches: BranchEdge[]; tagRefs: string[] }[];
   procedureCsfs: string[]; // from CSF: lines at procedure level
+  tags: TagDef[];
 }
 
 function parseFrontmatter(content: string): { fm: Record<string, string>; body: string } {
@@ -105,6 +119,7 @@ function parseProcedure(path: string, content: string): ParsedProcedure | null {
     triggers: parseListField(fm["entry-triggers"]),
     steps: [],
     procedureCsfs: [],
+    tags: [],
   };
 
   const lines = body.split("\n");
@@ -119,16 +134,39 @@ function parseProcedure(path: string, content: string): ParsedProcedure | null {
   }
 
   // Steps and branches
-  let cur: { id: string; line: number; branches: BranchEdge[] } | null = null;
+  let cur: { id: string; line: number; branches: BranchEdge[]; tagRefs: string[] } | null = null;
+  let tagsAppendixIdx = -1;
+  let inFence = false;
   for (let i = firstStep; i < lines.length; i++) {
     const line = lines[i];
+    if (/^(```|~~~)/.test(line)) inFence = !inFence;
+    // `## Tags` ends the step section in v0.5
+    if (/^##\s+Tags\s*$/.test(line)) {
+      if (cur) {
+        proc.steps.push(cur);
+        cur = null;
+      }
+      tagsAppendixIdx = i;
+      break;
+    }
     const sh = line.match(/^##\s+Step\s+.+?\[id:\s*([a-z0-9][a-z0-9-]*)[^\]]*\]\s*$/);
     if (sh) {
       if (cur) proc.steps.push(cur);
-      cur = { id: sh[1], line: i + 1, branches: [] };
+      cur = { id: sh[1], line: i + 1, branches: [], tagRefs: [] };
       continue;
     }
     if (!cur) continue;
+    // Scan «TAG» refs in step body (skip fenced code)
+    if (!inFence) {
+      const stripped = line
+        .replace(/`[^`]*`/g, "")
+        .replace(/\[\[[^\]]*\]\]/g, "");
+      let tm: RegExpExecArray | null;
+      TAG_REF_RE.lastIndex = 0;
+      while ((tm = TAG_REF_RE.exec(stripped))) {
+        if (!cur.tagRefs.includes(tm[1])) cur.tagRefs.push(tm[1]);
+      }
+    }
     // Branch: `- [Label] cond → target`  OR  `- cond → target`  OR bare `→ target`
     const arrowCount = (line.match(/→/g) || []).length;
     if (arrowCount !== 1) continue;
@@ -178,6 +216,36 @@ function parseProcedure(path: string, content: string): ParsedProcedure | null {
   }
   if (cur) proc.steps.push(cur);
 
+  // Parse `## Tags` appendix if found
+  if (tagsAppendixIdx >= 0) {
+    let curTag: TagDef | null = null;
+    const flush = () => {
+      if (curTag) proc.tags.push(curTag);
+      curTag = null;
+    };
+    for (let i = tagsAppendixIdx + 1; i < lines.length; i++) {
+      const raw = lines[i];
+      if (/^##\s+/.test(raw)) break;
+      if (raw.trim() === "") continue;
+      const itemHead = raw.match(/^\s*-\s+id:\s*(.+?)\s*$/);
+      if (itemHead) {
+        flush();
+        curTag = { id: itemHead[1].trim() };
+        continue;
+      }
+      if (!curTag) continue;
+      const sub = raw.match(/^\s+([a-z][a-z0-9-]*):\s*(.*?)\s*$/);
+      if (!sub) continue;
+      const [, key, value] = sub;
+      if (key === "description") curTag.description = value;
+      else if (key === "sim-path") curTag.simPath = value;
+      else if (key === "units") curTag.units = value;
+      else if (key === "equipment") curTag.equipment = value;
+      else if (key === "range") curTag.range = value;
+    }
+    flush();
+  }
+
   return proc;
 }
 
@@ -214,6 +282,42 @@ async function main() {
     graph.push(node);
   }
 
+  // Aggregate tag definitions across the corpus (use the first definition seen
+  // for each id; the validator ensures cross-procedure consistency)
+  const tagDefs = new Map<string, TagDef>();
+  const equipmentIds = new Set<string>();
+  for (const p of procs) {
+    for (const t of p.tags) {
+      if (!tagDefs.has(t.id)) tagDefs.set(t.id, t);
+      if (t.equipment) equipmentIds.add(t.equipment);
+    }
+  }
+
+  // Tag nodes + tagOnEquipment edges
+  for (const t of tagDefs.values()) {
+    const tagNode: any = {
+      "@id": TAG_URI + t.id,
+      "@type": "Tag",
+      "tagId": t.id,
+    };
+    if (t.description) tagNode["description"] = t.description;
+    if (t.simPath) tagNode["simPath"] = t.simPath;
+    if (t.units) tagNode["units"] = t.units;
+    if (t.equipment) {
+      tagNode["tagOnEquipment"] = { "@id": EQ_URI + t.equipment };
+    }
+    graph.push(tagNode);
+  }
+
+  // Equipment nodes (id only at v0.5)
+  for (const eq of equipmentIds) {
+    graph.push({
+      "@id": EQ_URI + eq,
+      "@type": "Equipment",
+      "equipmentId": eq,
+    });
+  }
+
   // Steps + branches as edges
   const procEdgeKeys: Record<string, Set<string>> = {};
   for (const p of procs) {
@@ -227,6 +331,11 @@ async function main() {
         "stepId": s.id,
         "partOfProcedure": { "@id": procSubj },
       };
+      if (s.tagRefs.length > 0) {
+        stepNode["referencesTag"] = s.tagRefs.map((id) => ({
+          "@id": TAG_URI + id,
+        }));
+      }
       const stepEdgeKeys = new Set<string>();
       for (const b of s.branches) {
         let toUri: string;
@@ -272,9 +381,16 @@ async function main() {
       "@vocab": ONTOLOGY,
       "Procedure": ONTOLOGY + "Procedure",
       "Step": ONTOLOGY + "Step",
+      "Tag": ONTOLOGY + "Tag",
+      "Equipment": ONTOLOGY + "Equipment",
       "label": "http://www.w3.org/2000/01/rdf-schema#label",
       "procedureId": ONTOLOGY + "procedureId",
       "stepId": ONTOLOGY + "stepId",
+      "tagId": ONTOLOGY + "tagId",
+      "equipmentId": ONTOLOGY + "equipmentId",
+      "description": ONTOLOGY + "description",
+      "simPath": ONTOLOGY + "simPath",
+      "units": ONTOLOGY + "units",
       "partOfProcedure": { "@id": ONTOLOGY + "partOfProcedure", "@type": "@id" },
       "hasStep": { "@id": ONTOLOGY + "hasStep", "@type": "@id" },
       "belongsToCategory": { "@id": ONTOLOGY + "belongsToCategory", "@type": "@id" },
@@ -288,6 +404,8 @@ async function main() {
       "fallbacksTo": { "@id": ONTOLOGY + "fallbacksTo", "@type": "@id" },
       "terminates": { "@id": ONTOLOGY + "terminates", "@type": "@id" },
       "branchesTo": { "@id": ONTOLOGY + "branchesTo", "@type": "@id" },
+      "referencesTag": { "@id": ONTOLOGY + "referencesTag", "@type": "@id" },
+      "tagOnEquipment": { "@id": ONTOLOGY + "tagOnEquipment", "@type": "@id" },
     },
     "@graph": graph,
   };
@@ -318,8 +436,13 @@ async function main() {
     (n, p) => n + p.steps.reduce((m, s) => m + s.branches.length, 0),
     0,
   );
+  const uniqueTags = new Set(procs.flatMap((p) => p.tags.map((t) => t.id))).size;
+  const tagRefCount = procs.reduce(
+    (n, p) => n + p.steps.reduce((m, s) => m + s.tagRefs.length, 0),
+    0,
+  );
   console.log(
-    `export-kg: ${procCount} procedures, ${stepCount} steps, ${edgeCount} edges → _build/kg.jsonld`,
+    `export-kg: ${procCount} procedures, ${stepCount} steps, ${edgeCount} branch edges, ${uniqueTags} tags (${tagRefCount} refs) → _build/kg.jsonld`,
   );
 }
 

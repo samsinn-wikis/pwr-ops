@@ -1,6 +1,6 @@
 ---
 type: procedure
-procedure-md: 0.4
+procedure-md: 0.5
 procedure-id: ES-3.1
 title: Post-SGTR Cooldown Using Backfill
 profile: nuclear-erg

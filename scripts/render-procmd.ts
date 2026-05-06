@@ -38,6 +38,11 @@ const SAME_PAGE_REF_RE = /(→\s*)#([A-Za-z0-9_-]+)\b/g;
 // Matches AFTER autoBoldKeyword has run.
 const RATIONALE_RE = /^(\s*)(\*\*(?:Because|Against):\*\*\s+.*)$/;
 
+// v0.5: «TAG-ID» inline tag references — wrap in a span so CSS can toggle
+// visibility. The pattern only matches inside guillemets, so prose using
+// single guillemets for other reasons is unaffected.
+const TAG_REF_RE = /«([A-Z][A-Z0-9-]*)»/g;
+
 // procmd body keywords — auto-bolded in render so structure scans visually
 const KEYWORDS = [
   "Check",
@@ -95,10 +100,18 @@ function autoBoldKeyword(line: string): string {
   return line.replace(KEYWORD_PREFIX_RE, (_m, lead, kw) => `${lead}**${kw}:**`);
 }
 
+function wrapTagRefs(line: string): string {
+  return line.replace(
+    TAG_REF_RE,
+    (_m, id) => `<span class="procmd-tag">«${id}»</span>`,
+  );
+}
+
 function transformBody(body: string): string {
   const lines = body.split("\n");
   const out: string[] = [];
   let inFence = false;
+  let inTagsAppendix = false;
 
   for (const raw of lines) {
     if (isFenceMarker(raw)) {
@@ -115,6 +128,24 @@ function transformBody(body: string): string {
 
     // Step headings: rewrite [id: x] → {#x}
     if (isHeading(line)) {
+      // Open / close `## Tags` appendix wrapper
+      if (/^##\s+Tags\s*$/.test(line)) {
+        // Close any earlier section first (defensive — single appendix expected)
+        if (inTagsAppendix) {
+          out.push(`</section>`);
+          inTagsAppendix = false;
+        }
+        out.push(`<section class="procmd-tag-appendix" markdown="1">`);
+        out.push(line);
+        inTagsAppendix = true;
+        continue;
+      }
+      // Any other ## (or higher) heading after the appendix has started would
+      // close the appendix, but the spec says ## Tags is at end of file.
+      if (inTagsAppendix && /^##\s+/.test(line)) {
+        out.push(`</section>`);
+        inTagsAppendix = false;
+      }
       line = transformStepHeading(line);
       out.push(line);
       continue;
@@ -133,6 +164,9 @@ function transformBody(body: string): string {
     // span captures the full bolded line.
     line = wrapRationale(line);
 
+    // Wrap «TAG» inline references so CSS can toggle them
+    line = wrapTagRefs(line);
+
     // Hard break: append two trailing spaces unless line is blank
     if (!isBlank(line)) {
       // Don't double-up if the line already ends with two spaces
@@ -141,6 +175,9 @@ function transformBody(body: string): string {
 
     out.push(line);
   }
+
+  // Close trailing appendix section
+  if (inTagsAppendix) out.push(`</section>`);
 
   return out.join("\n");
 }
