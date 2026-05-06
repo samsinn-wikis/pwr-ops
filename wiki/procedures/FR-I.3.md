@@ -1,6 +1,6 @@
 ---
 type: procedure
-procedure-md: 0.2
+procedure-md: 0.3
 procedure-id: FR-I.3
 title: Response to Voids in Reactor Vessel
 profile: nuclear-erg

@@ -21,7 +21,7 @@
  * Usage:  bun validate.ts [--verbose]
  */
 
-const SUPPORTED_SPEC_VERSION = "0.2";
+const SUPPORTED_SPEC_VERSION = "0.3";
 
 // ---------- v0.2 vocabularies --------------------------------------------
 
@@ -218,7 +218,22 @@ function parseStepBody(
     let m = line.match(/^\s*-\s+(.+?)→\s*(.+?)\s*$/);
     if (m) {
       const cond = m[1].trim().replace(/[\s ]+$/, "");
-      const targetRaw = m[2].trim();
+      let targetRaw = m[2].trim();
+      // v0.3: optional [Label] sits between → and target.
+      let labelStrAfter: string | undefined;
+      const afterArrowLabelM = targetRaw.match(/^\[([A-Za-z]+)\]\s+(.*)$/);
+      if (afterArrowLabelM) {
+        labelStrAfter = afterArrowLabelM[1];
+        targetRaw = afterArrowLabelM[2].trim();
+        if (!EDGE_LABELS.has(labelStrAfter)) {
+          errors.push({
+            file: "",
+            line: lineno,
+            severity: "warning",
+            msg: `unknown edge label '[${labelStrAfter}]' — not in canonical vocabulary (Continue, Escalate, Delegate, Recover, Fallback, Monitor, Terminate)`,
+          });
+        }
+      }
       const target = parseBranchTarget(targetRaw);
       if (!target) {
         errors.push({
@@ -238,23 +253,18 @@ function parseStepBody(
         });
         continue;
       }
-      // Extract optional edge label `[Label]` prefix from condition (v0.2)
-      let labelStr: string | undefined;
-      let condFinal = cond;
-      const labelM = cond.match(/^\[([A-Za-z]+)\]\s*(.*)$/);
-      if (labelM) {
-        labelStr = labelM[1];
-        condFinal = labelM[2].trim();
-        if (!EDGE_LABELS.has(labelStr)) {
-          errors.push({
-            file: "",
-            line: lineno,
-            severity: "warning",
-            msg: `unknown edge label '[${labelStr}]' — not in canonical vocabulary (Continue, Escalate, Delegate, Recover, Fallback, Monitor, Terminate)`,
-          });
-        }
+      // v0.3: edge label is parsed AFTER the arrow (above). Reject the
+      // legacy v0.2 position (label before condition) with a clear error.
+      const legacyLabelM = cond.match(/^\[([A-Za-z]+)\]\s+/);
+      if (legacyLabelM) {
+        errors.push({
+          file: "",
+          line: lineno,
+          msg: `edge label '[${legacyLabelM[1]}]' before condition is v0.2 syntax — v0.3 places it after the arrow: '- cond → [Label] target'`,
+        });
+        continue;
       }
-      branches.push({ line: lineno, condition: condFinal, target, raw: line, label: labelStr });
+      branches.push({ line: lineno, condition: cond, target, raw: line, label: labelStrAfter });
       continue;
     }
     // Bare branch: `→ <target>` outside a list

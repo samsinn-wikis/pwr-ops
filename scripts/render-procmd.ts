@@ -28,12 +28,14 @@ const SRC_DIR = join(REPO_ROOT, "wiki");
 const OUT_DIR = join(REPO_ROOT, "_build", "wiki");
 
 const STEP_HEADING_RE = /^(##\s+Step\s+.+?)\s*\[([^\]]+)\]\s*$/;
-const SAME_PAGE_REF_RE = /→\s*#([A-Za-z0-9_-]+)\b/g;
+// Same-page bare-fragment anchor: `→ #step-id` (with optional [Label]
+// between arrow and fragment, per v0.3 syntax).
+const SAME_PAGE_REF_RE = /(→\s*(?:\[[A-Za-z]+\]\s+)?)#([A-Za-z0-9_-]+)\b/g;
 
-// Edge-label prefix on a branch list item: `- [Label] cond → target`
-// Match a SINGLE-bracket capitalized word (avoids [[wikilink]] which uses
-// double brackets). Only after the `- ` of a list item.
-const EDGE_LABEL_RE = /^(\s*-\s+)\[([A-Z][a-zA-Z]*)\]\s+/;
+// Edge label after the arrow (v0.3): `- cond → [Label] target`
+// Match SINGLE-bracket capitalized word (avoids [[wikilink]] which uses
+// double brackets). The label sits between → and the target.
+const EDGE_LABEL_RE = /(→\s+)\[([A-Z][a-zA-Z]*)\](\s+)/;
 
 // Rationale lines: ^(indent)**Because:** ... or ^(indent)**Against:** ...
 // Matches AFTER autoBoldKeyword has run.
@@ -88,7 +90,8 @@ function transformStepHeading(line: string): string {
 function wrapEdgeLabel(line: string): string {
   return line.replace(
     EDGE_LABEL_RE,
-    (_m, lead, label) => `${lead}<span class="procmd-edge-label">[${label}]</span> `,
+    (_m, arrowLead, label, trailingSpace) =>
+      `${arrowLead}<span class="procmd-edge-label">[${label}]</span>${trailingSpace}`,
   );
 }
 
@@ -129,7 +132,11 @@ function transformBody(body: string): string {
     }
 
     // Same-page branch refs: → #foo  becomes  → [#foo](#foo)
-    line = line.replace(SAME_PAGE_REF_RE, (_m, id) => `→ [#${id}](#${id})`);
+    // (also handles `→ [Label] #foo` per v0.3)
+    line = line.replace(
+      SAME_PAGE_REF_RE,
+      (_m, prefix, id) => `${prefix}[#${id}](#${id})`,
+    );
 
     // Wrap edge-label prefix `[Continue]` etc. so CSS can toggle visibility
     line = wrapEdgeLabel(line);

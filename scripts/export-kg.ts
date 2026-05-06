@@ -141,9 +141,10 @@ function parseProcedure(path: string, content: string): ParsedProcedure | null {
       if (m) { cond = "(unconditional)"; targetRaw = m[1].trim(); }
       else continue;
     }
+    // v0.3: optional [Label] sits between → and target.
     let label: string | undefined;
-    const lm = cond.match(/^\[([A-Za-z]+)\]\s*(.*)$/);
-    if (lm) { label = lm[1]; cond = lm[2].trim(); }
+    const lm = targetRaw.match(/^\[([A-Za-z]+)\]\s+(.*)$/);
+    if (lm) { label = lm[1]; targetRaw = lm[2].trim(); }
     if (!label) label = inferLabel(targetRaw);
     const predicate = LABEL_TO_PREDICATE[label] ?? "branchesTo";
     let toKind: BranchEdge["toKind"];

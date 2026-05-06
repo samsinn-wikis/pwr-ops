@@ -1,6 +1,6 @@
 ---
 type: procedure
-procedure-md: 0.2
+procedure-md: 0.3
 procedure-id: FR-S.2
 title: Response to Loss of Core Shutdown
 profile: nuclear-erg
