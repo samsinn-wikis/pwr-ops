@@ -7,14 +7,11 @@
 
 /* ---- Defaults ---------------------------------------------------------- */
 
-.procmd-edge-label { display: none; }
-
 .procmd-rationale  { display: inline; }
 .procmd-step-id-suffix { display: inline; }
 
 /* ---- Override classes (set on <html>) ---------------------------------- */
 
-html.show-edge-labels      .procmd-edge-label    { display: inline; }
 html.hide-rationale        .procmd-rationale     { display: none; }
 html.hide-step-id-suffix   .procmd-step-id-suffix { display: none; }
 

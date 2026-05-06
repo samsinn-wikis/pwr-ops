@@ -28,14 +28,11 @@ const SRC_DIR = join(REPO_ROOT, "wiki");
 const OUT_DIR = join(REPO_ROOT, "_build", "wiki");
 
 const STEP_HEADING_RE = /^(##\s+Step\s+.+?)\s*\[([^\]]+)\]\s*$/;
-// Same-page bare-fragment anchor: `→ #step-id` (with optional [Label]
-// between arrow and fragment, per v0.3 syntax).
-const SAME_PAGE_REF_RE = /(→\s*(?:\[[A-Za-z]+\]\s+)?)#([A-Za-z0-9_-]+)\b/g;
+// Same-page bare-fragment anchor: `→ #step-id`.
+const SAME_PAGE_REF_RE = /(→\s*)#([A-Za-z0-9_-]+)\b/g;
 
-// Edge label after the arrow (v0.3): `- cond → [Label] target`
-// Match SINGLE-bracket capitalized word (avoids [[wikilink]] which uses
-// double brackets). The label sits between → and the target.
-const EDGE_LABEL_RE = /(→\s+)\[([A-Z][a-zA-Z]*)\](\s+)/;
+// v0.4: in-source edge labels dropped. KG export infers edge type from
+// target prefix at serialization time only.
 
 // Rationale lines: ^(indent)**Because:** ... or ^(indent)**Against:** ...
 // Matches AFTER autoBoldKeyword has run.
@@ -87,14 +84,6 @@ function transformStepHeading(line: string): string {
   return `${head} <span class="procmd-step-id-suffix">\`${id}\`</span> {#${id}}`;
 }
 
-function wrapEdgeLabel(line: string): string {
-  return line.replace(
-    EDGE_LABEL_RE,
-    (_m, arrowLead, label, trailingSpace) =>
-      `${arrowLead}<span class="procmd-edge-label">[${label}]</span>${trailingSpace}`,
-  );
-}
-
 function wrapRationale(line: string): string {
   return line.replace(
     RATIONALE_RE,
@@ -132,14 +121,10 @@ function transformBody(body: string): string {
     }
 
     // Same-page branch refs: → #foo  becomes  → [#foo](#foo)
-    // (also handles `→ [Label] #foo` per v0.3)
     line = line.replace(
       SAME_PAGE_REF_RE,
       (_m, prefix, id) => `${prefix}[#${id}](#${id})`,
     );
-
-    // Wrap edge-label prefix `[Continue]` etc. so CSS can toggle visibility
-    line = wrapEdgeLabel(line);
 
     // Auto-bold procmd keyword prefixes for visual structure
     line = autoBoldKeyword(line);

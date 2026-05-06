@@ -18,15 +18,6 @@
   // For rationale / step-id: default visible; class 'hide-X' hides them.
   var CATEGORIES = [
     {
-      id: 'edgeLabels',
-      label: 'Edge labels',
-      desc: 'Branch type prefix [Continue], [Escalate], [Delegate], etc.',
-      defaultEnabled: false, // false = hidden by default
-      htmlClass: 'show-edge-labels',
-      // when value is true → add class (show)
-      classWhen: 'true',
-    },
-    {
       id: 'rationale',
       label: 'Rationale',
       desc: 'Because: / Against: lines under branches',

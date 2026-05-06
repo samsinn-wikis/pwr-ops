@@ -1,6 +1,6 @@
 ---
 type: procedure
-procedure-md: 0.3
+procedure-md: 0.4
 procedure-id: ES-3.3
 title: Post-SGTR Cooldown Using Steam Dump
 profile: nuclear-erg

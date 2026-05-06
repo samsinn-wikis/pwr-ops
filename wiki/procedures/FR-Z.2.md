@@ -1,6 +1,6 @@
 ---
 type: procedure
-procedure-md: 0.3
+procedure-md: 0.4
 procedure-id: FR-Z.2
 title: Response to Containment Flooding
 profile: nuclear-erg

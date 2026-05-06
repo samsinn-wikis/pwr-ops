@@ -1,6 +1,6 @@
 ---
 type: procedure
-procedure-md: 0.3
+procedure-md: 0.4
 procedure-id: FR-Z.3
 title: Response to High Containment Radiation
 profile: nuclear-erg

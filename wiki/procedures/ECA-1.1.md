@@ -1,6 +1,6 @@
 ---
 type: procedure
-procedure-md: 0.3
+procedure-md: 0.4
 procedure-id: ECA-1.1
 title: Loss of Emergency Coolant Recirculation
 profile: nuclear-erg

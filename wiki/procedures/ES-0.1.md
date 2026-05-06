@@ -1,6 +1,6 @@
 ---
 type: procedure
-procedure-md: 0.3
+procedure-md: 0.4
 procedure-id: ES-0.1
 title: Reactor Trip Response
 profile: nuclear-erg
