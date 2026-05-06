@@ -10,10 +10,59 @@
 .procmd-rationale  { display: inline; }
 .procmd-step-id-suffix { display: inline; }
 
+/* Inline tag references — monospace identifier with subtle background. */
+.procmd-tag {
+  display: inline;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.92em;
+  padding: 0 0.25em;
+  border-radius: 0.2em;
+  background: rgba(127, 127, 127, 0.10);
+  color: var(--md-typeset-a-color, #4051b5);
+  white-space: nowrap;
+}
+
+/* Tag appendix — subtle visual separation from the procedure body. */
+.procmd-tag-appendix {
+  display: block;
+  margin-top: 2.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(127, 127, 127, 0.25);
+  font-size: 0.88em;
+  color: var(--md-default-fg-color--light, #555);
+}
+.procmd-tag-appendix h2 {
+  font-size: 1.05rem;
+  margin-bottom: 0.4rem;
+  color: var(--md-default-fg-color--light, #555);
+  font-weight: 600;
+}
+.procmd-tag-appendix ul {
+  list-style: none;
+  padding-left: 0;
+}
+.procmd-tag-appendix li {
+  margin: 0.6rem 0;
+  padding: 0.4rem 0.6rem;
+  background: rgba(127, 127, 127, 0.05);
+  border-left: 2px solid rgba(127, 127, 127, 0.3);
+  border-radius: 0 0.2em 0.2em 0;
+  line-height: 1.5;
+}
+/* The first line of each entry is `id: <TAG>`. python-markdown wraps the
+ * whole list-item content in implicit <br>-separated text; the id line
+ * carries the tag name. Bold-style the id for visual hierarchy. */
+.procmd-tag-appendix li::first-line {
+  font-weight: 600;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
 /* ---- Override classes (set on <html>) ---------------------------------- */
 
 html.hide-rationale        .procmd-rationale     { display: none; }
 html.hide-step-id-suffix   .procmd-step-id-suffix { display: none; }
+html.hide-tag              .procmd-tag           { display: none; }
+html.hide-tag-appendix     .procmd-tag-appendix  { display: none; }
 
 /* When rationale is hidden, also hide the trailing <br/> that markdown's
  * hard-break emits after the line — otherwise the line break remains and

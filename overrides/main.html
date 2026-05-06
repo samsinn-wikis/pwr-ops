@@ -13,6 +13,8 @@
     var c = document.documentElement.classList;
     if (p.prefs.rationale === false)    c.add('hide-rationale');
     if (p.prefs.stepIdSuffix === false) c.add('hide-step-id-suffix');
+    if (p.prefs.tag === false)          c.add('hide-tag');
+    if (p.prefs.tagAppendix === false)  c.add('hide-tag-appendix');
   } catch (e) {}
 })();
 </script>

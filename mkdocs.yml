@@ -59,6 +59,9 @@ markdown_extensions:
   - attr_list
   - def_list
   - footnotes
+  # Required for <section markdown="1"> wrappers (procmd v0.5 ## Tags appendix)
+  # to have their inner content parsed as markdown rather than raw HTML.
+  - md_in_html
 
 extra_css:
   - visibility.css
@@ -68,7 +71,7 @@ extra_javascript:
 
 extra:
   wiki_version: "0.1.0"
-  procmd_version: "0.2"
+  procmd_version: "0.5"
 
 nav:
   - Home: index.md

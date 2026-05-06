@@ -34,6 +34,22 @@
       htmlClass: 'hide-step-id-suffix',
       classWhen: 'false',
     },
+    {
+      id: 'tag',
+      label: 'Tag references',
+      desc: '«TAG» inline references in step bodies',
+      defaultEnabled: true,
+      htmlClass: 'hide-tag',
+      classWhen: 'false',
+    },
+    {
+      id: 'tagAppendix',
+      label: 'Tag appendix',
+      desc: 'The ## Tags reference section at end of procedure',
+      defaultEnabled: true,
+      htmlClass: 'hide-tag-appendix',
+      classWhen: 'false',
+    },
   ];
 
   function defaultPrefs() {
