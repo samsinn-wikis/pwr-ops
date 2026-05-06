@@ -1,0 +1,102 @@
+/* procmd visibility controls — toggleable categories.
+ *
+ * Defaults: edge labels HIDDEN; rationale + step ID suffix VISIBLE.
+ * Override classes are applied to <html> by the visibility.js bundle (and
+ * by an inline <script> in the page <head> for FOUC prevention).
+ */
+
+/* ---- Defaults ---------------------------------------------------------- */
+
+.procmd-edge-label { display: none; }
+
+.procmd-rationale  { display: inline; }
+.procmd-step-id-suffix { display: inline; }
+
+/* ---- Override classes (set on <html>) ---------------------------------- */
+
+html.show-edge-labels      .procmd-edge-label    { display: inline; }
+html.hide-rationale        .procmd-rationale     { display: none; }
+html.hide-step-id-suffix   .procmd-step-id-suffix { display: none; }
+
+/* ---- Eye icon button --------------------------------------------------- */
+
+.procmd-vis-button {
+  background: transparent;
+  border: 0;
+  padding: 0.4rem;
+  margin-left: 0.2rem;
+  color: var(--md-primary-bg-color, currentColor);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 0.2rem;
+}
+.procmd-vis-button:hover { background: rgba(255,255,255,0.1); }
+.procmd-vis-button svg { width: 1.1rem; height: 1.1rem; }
+
+@media (max-width: 600px) {
+  /* Floating button fallback when Material header collapses */
+  .procmd-vis-button.procmd-vis-floating {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    background: var(--md-primary-fg-color, #444);
+    color: var(--md-primary-bg-color, #fff);
+    padding: 0.6rem;
+    border-radius: 999px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    z-index: 100;
+  }
+}
+
+/* ---- Popover ----------------------------------------------------------- */
+
+.procmd-vis-popover {
+  position: absolute;
+  background: var(--md-default-bg-color, #fff);
+  color: var(--md-default-fg-color, #111);
+  border: 1px solid rgba(0,0,0,0.15);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  border-radius: 0.3rem;
+  padding: 0.6rem;
+  min-width: 18rem;
+  z-index: 200;
+  font-size: 0.85rem;
+}
+.procmd-vis-popover h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.procmd-vis-popover .procmd-vis-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0;
+  cursor: pointer;
+}
+.procmd-vis-popover .procmd-vis-row:hover { background: rgba(0,0,0,0.04); }
+.procmd-vis-popover .procmd-vis-row input[type=checkbox] { margin: 0; }
+.procmd-vis-popover .procmd-vis-row .procmd-vis-desc {
+  display: block;
+  color: var(--md-default-fg-color--light, #555);
+  font-size: 0.75rem;
+  margin-top: 0.1rem;
+}
+.procmd-vis-popover .procmd-vis-reset {
+  margin-top: 0.6rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(0,0,0,0.1);
+  text-align: right;
+}
+.procmd-vis-popover .procmd-vis-reset button {
+  background: transparent;
+  border: 1px solid rgba(0,0,0,0.2);
+  padding: 0.25rem 0.6rem;
+  border-radius: 0.2rem;
+  cursor: pointer;
+  font-size: 0.75rem;
+}
+.procmd-vis-popover .procmd-vis-reset button:hover {
+  background: rgba(0,0,0,0.05);
+}

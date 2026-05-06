@@ -56,9 +56,15 @@ markdown_extensions:
   - def_list
   - footnotes
 
+extra_css:
+  - visibility.css
+
+extra_javascript:
+  - visibility.js
+
 extra:
   wiki_version: "0.1.0"
-  procmd_version: "0.1"
+  procmd_version: "0.2"
 
 nav:
   - Home: index.md

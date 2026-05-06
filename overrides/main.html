@@ -2,6 +2,21 @@
 
 {% block extrahead %}
 <meta name="wiki-version" content="{{ config.extra.wiki_version }}">
+<!-- procmd visibility prefs — applied pre-paint to avoid FOUC -->
+<script>
+(function () {
+  try {
+    var raw = localStorage.getItem('pwr-eops:visibility-prefs');
+    if (!raw) return;
+    var p = JSON.parse(raw);
+    if (p.version !== 1) return;
+    var c = document.documentElement.classList;
+    if (p.prefs.edgeLabels)        c.add('show-edge-labels');
+    if (p.prefs.rationale === false)    c.add('hide-rationale');
+    if (p.prefs.stepIdSuffix === false) c.add('hide-step-id-suffix');
+  } catch (e) {}
+})();
+</script>
 <style>
   .feedback-icon {
     opacity: 0;

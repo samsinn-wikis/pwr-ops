@@ -30,6 +30,15 @@ const OUT_DIR = join(REPO_ROOT, "_build", "wiki");
 const STEP_HEADING_RE = /^(##\s+Step\s+.+?)\s*\[([^\]]+)\]\s*$/;
 const SAME_PAGE_REF_RE = /→\s*#([A-Za-z0-9_-]+)\b/g;
 
+// Edge-label prefix on a branch list item: `- [Label] cond → target`
+// Match a SINGLE-bracket capitalized word (avoids [[wikilink]] which uses
+// double brackets). Only after the `- ` of a list item.
+const EDGE_LABEL_RE = /^(\s*-\s+)\[([A-Z][a-zA-Z]*)\]\s+/;
+
+// Rationale lines: ^(indent)**Because:** ... or ^(indent)**Against:** ...
+// Matches AFTER autoBoldKeyword has run.
+const RATIONALE_RE = /^(\s*)(\*\*(?:Because|Against):\*\*\s+.*)$/;
+
 // procmd body keywords — auto-bolded in render so structure scans visually
 const KEYWORDS = [
   "Check",
@@ -71,8 +80,23 @@ function transformStepHeading(line: string): string {
   const idAttr = attrs.find((a) => a.startsWith("id:"));
   if (!idAttr) return line;
   const id = idAttr.slice(3).trim();
-  // Show id as a code-span suffix (visible) AND inject as HTML anchor
-  return `${head} \`${id}\` {#${id}}`;
+  // Wrap the id code-span in a class so CSS can toggle it; attr_list still
+  // applies the {#id} anchor to the heading element itself.
+  return `${head} <span class="procmd-step-id-suffix">\`${id}\`</span> {#${id}}`;
+}
+
+function wrapEdgeLabel(line: string): string {
+  return line.replace(
+    EDGE_LABEL_RE,
+    (_m, lead, label) => `${lead}<span class="procmd-edge-label">[${label}]</span> `,
+  );
+}
+
+function wrapRationale(line: string): string {
+  return line.replace(
+    RATIONALE_RE,
+    (_m, indent, content) => `${indent}<span class="procmd-rationale">${content}</span>`,
+  );
 }
 
 function autoBoldKeyword(line: string): string {
@@ -107,8 +131,15 @@ function transformBody(body: string): string {
     // Same-page branch refs: → #foo  becomes  → [#foo](#foo)
     line = line.replace(SAME_PAGE_REF_RE, (_m, id) => `→ [#${id}](#${id})`);
 
+    // Wrap edge-label prefix `[Continue]` etc. so CSS can toggle visibility
+    line = wrapEdgeLabel(line);
+
     // Auto-bold procmd keyword prefixes for visual structure
     line = autoBoldKeyword(line);
+
+    // Wrap rationale lines (Because:/Against:) AFTER auto-bold so the
+    // span captures the full bolded line.
+    line = wrapRationale(line);
 
     // Hard break: append two trailing spaces unless line is blank
     if (!isBlank(line)) {
@@ -180,6 +211,26 @@ async function walkMarkdown(dir: string): Promise<string[]> {
   return out;
 }
 
+// Static assets to copy into _build/wiki/ alongside the rendered markdown.
+// These need to live under docs_dir so MkDocs `extra_css` / `extra_javascript`
+// can reference them by relative path.
+const STATIC_ASSETS = ["visibility.css", "visibility.js"];
+
+async function copyStaticAssets(): Promise<void> {
+  const overrides = join(REPO_ROOT, "overrides");
+  for (const name of STATIC_ASSETS) {
+    const src = join(overrides, name);
+    const dst = join(OUT_DIR, name);
+    try {
+      const content = await readFile(src, "utf-8");
+      await mkdir(dirname(dst), { recursive: true });
+      await writeFile(dst, content, "utf-8");
+    } catch {
+      // missing asset — skip silently
+    }
+  }
+}
+
 async function buildAll(): Promise<number> {
   const files = await walkMarkdown(SRC_DIR);
   let changed = 0;
@@ -187,6 +238,7 @@ async function buildAll(): Promise<number> {
     const r = await processFile(f);
     if (r.changed) changed++;
   }
+  await copyStaticAssets();
   return changed;
 }
 

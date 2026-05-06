@@ -70,6 +70,27 @@ defined in the `@context` against the placeholder ontology URI
 Neo4j with `apoc.load.jsonld(...)` or into GraphDB via its JSON-LD
 loader.
 
+### Visibility controls
+
+An eye icon in the page header opens a popover with toggles for
+optional content categories:
+
+| Category | Coverage | Default |
+|---|---|---|
+| Edge labels | `[Continue]` / `[Escalate]` / `[Delegate]` / `[Recover]` / `[Fallback]` / `[Monitor]` / `[Terminate]` prefix on branches | Hidden |
+| Rationale | `Because:` / `Against:` lines under branches | Visible |
+| Step IDs | Code-span suffix on step headings (e.g. `verify-reactor-trip`) | Visible |
+
+Preferences persist per browser at `localStorage` key
+`pwr-eops:visibility-prefs`. A "Reset defaults" button restores all
+categories to spec defaults. CSF declarations, Cautions, and Notes are
+always visible (operationally important; not togglable).
+
+The mechanism is purely browser-side: the build-time transform wraps
+toggleable elements in classed `<span>` tags; the JS bundle adds
+override classes to `<html>` based on stored prefs; CSS handles the
+display switching. Source files (`wiki/procedures/*.md`) are unchanged.
+
 Source files (`wiki/procedures/*.md`) are canonical procmd. The build
 pipeline transforms them to MkDocs-flavored markdown in `_build/wiki/`
 (gitignored, regenerated on every change). MkDocs reads `_build/wiki/`.
