@@ -1,6 +1,6 @@
 ---
 type: procedure
-procedure-md: 0.1
+procedure-md: 0.2
 procedure-id: FR-C.1
 title: Response to Inadequate Core Cooling
 profile: nuclear-erg

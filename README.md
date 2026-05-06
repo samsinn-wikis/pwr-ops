@@ -54,7 +54,21 @@ bun validate.ts
 pip install -r requirements.txt
 bun scripts/render-procmd.ts --watch &   # rebuild on source change
 mkdocs serve                              # serves _build/wiki/
+
+# Export the corpus as a knowledge graph (JSON-LD)
+bun scripts/export-kg.ts                  # → _build/kg.jsonld
 ```
+
+### Knowledge graph
+
+After deploy, the corpus is also published as JSON-LD at
+`https://samsinn-wikis.github.io/pwr-eops/kg.jsonld`. Predicates
+(`escalatesTo`, `delegatesTo`, `recoversVia`, `fallbacksTo`,
+`continuesTo`, `monitorsCsf`, `triggeredBy`, `belongsToCategory`, …) are
+defined in the `@context` against the placeholder ontology URI
+`https://samsinn-wikis.github.io/pwr-eops/ontology/v1#`. Load into
+Neo4j with `apoc.load.jsonld(...)` or into GraphDB via its JSON-LD
+loader.
 
 Source files (`wiki/procedures/*.md`) are canonical procmd. The build
 pipeline transforms them to MkDocs-flavored markdown in `_build/wiki/`

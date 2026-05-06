@@ -41,11 +41,17 @@ jobs:
       - name: Validate procmd corpus
         run: bun validate.ts
 
+      - name: Export KG (JSON-LD)
+        run: bun scripts/export-kg.ts
+
       - name: Render procmd → enriched markdown
         run: bun scripts/render-procmd.ts
 
       - name: Build site
         run: mkdocs build
+
+      - name: Stage KG artifact into site
+        run: cp _build/kg.jsonld site/kg.jsonld
 
       - uses: actions/upload-pages-artifact@v3
         with:

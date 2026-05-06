@@ -1,6 +1,6 @@
 ---
 type: procedure
-procedure-md: 0.1
+procedure-md: 0.2
 procedure-id: ECA-2.1
 title: Uncontrolled Depressurization of All Steam Generators
 profile: nuclear-erg

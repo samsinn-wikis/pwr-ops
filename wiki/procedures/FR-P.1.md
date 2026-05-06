@@ -1,6 +1,6 @@
 ---
 type: procedure
-procedure-md: 0.1
+procedure-md: 0.2
 procedure-id: FR-P.1
 title: Response to Imminent Pressurized Thermal Shock Condition
 profile: nuclear-erg

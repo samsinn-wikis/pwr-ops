@@ -1,6 +1,6 @@
 ---
 type: procedure
-procedure-md: 0.1
+procedure-md: 0.2
 procedure-id: ES-1.4
 title: Transfer to Hot Leg Recirculation
 profile: nuclear-erg

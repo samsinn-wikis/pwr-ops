@@ -1,6 +1,6 @@
 ---
 type: procedure
-procedure-md: 0.1
+procedure-md: 0.2
 procedure-id: FR-H.4
 title: Response to Loss of Normal Steam Release Capabilities
 profile: nuclear-erg

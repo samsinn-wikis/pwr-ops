@@ -1,6 +1,6 @@
 ---
 type: procedure
-procedure-md: 0.1
+procedure-md: 0.2
 procedure-id: FR-S.1
 title: Response to Nuclear Power Generation / ATWS
 profile: nuclear-erg

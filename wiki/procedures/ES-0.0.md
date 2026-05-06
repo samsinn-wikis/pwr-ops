@@ -1,6 +1,6 @@
 ---
 type: procedure
-procedure-md: 0.1
+procedure-md: 0.2
 procedure-id: ES-0.0
 title: Rediagnosis
 profile: nuclear-erg
