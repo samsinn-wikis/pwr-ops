@@ -103,8 +103,18 @@ function autoBoldKeyword(line: string): string {
 function wrapTagRefs(line: string): string {
   return line.replace(
     TAG_REF_RE,
-    (_m, id) => `<span class="procmd-tag">«${id}»</span>`,
+    (_m, id) => `<a class="procmd-tag" href="#tag-${id}">«${id}»</a>`,
   );
+}
+
+// Inside the `## Tags` appendix, each entry begins `- id: <TAG-ID>`. We add
+// an anchor so the body refs can jump to it: `- id: <span id="tag-X">X</span>`.
+const APPENDIX_ID_LINE_RE = /^(\s*-\s+id:\s+)([A-Z][A-Z0-9-]*)\s*$/;
+
+function injectAppendixAnchor(line: string): string {
+  const m = line.match(APPENDIX_ID_LINE_RE);
+  if (!m) return line;
+  return `${m[1]}<span class="procmd-tag-target" id="tag-${m[2]}">${m[2]}</span>`;
 }
 
 function transformBody(body: string): string {
@@ -164,8 +174,9 @@ function transformBody(body: string): string {
     // span captures the full bolded line.
     line = wrapRationale(line);
 
-    // Wrap «TAG» inline references so CSS can toggle them
-    line = wrapTagRefs(line);
+    // Wrap «TAG» inline references — body refs become anchor links to the
+    // appendix; appendix `- id:` lines get a target anchor.
+    line = inTagsAppendix ? injectAppendixAnchor(line) : wrapTagRefs(line);
 
     // Hard break: append two trailing spaces unless line is blank
     if (!isBlank(line)) {

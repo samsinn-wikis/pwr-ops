@@ -10,7 +10,8 @@
 .procmd-rationale  { display: inline; }
 .procmd-step-id-suffix { display: inline; }
 
-/* Inline tag references — monospace identifier with subtle background. */
+/* Inline tag references — monospace identifier with subtle background.
+ * Rendered as <a href="#tag-ID"> so click jumps to the appendix entry. */
 .procmd-tag {
   display: inline;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -20,6 +21,21 @@
   background: rgba(127, 127, 127, 0.10);
   color: var(--md-typeset-a-color, #4051b5);
   white-space: nowrap;
+  text-decoration: none;
+}
+.procmd-tag:hover {
+  background: rgba(127, 127, 127, 0.20);
+  text-decoration: none;
+}
+
+/* Flash the targeted appendix entry briefly when jumped to. */
+.procmd-tag-appendix li:target,
+.procmd-tag-appendix li:has(.procmd-tag-target:target) {
+  animation: procmd-tag-flash 1.6s ease-out;
+}
+@keyframes procmd-tag-flash {
+  0%   { background: rgba(64, 81, 181, 0.35); }
+  100% { background: rgba(127, 127, 127, 0.05); }
 }
 
 /* Tag appendix — subtle visual separation from the procedure body. */
