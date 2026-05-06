@@ -24,6 +24,10 @@ jobs:
         with:
           python-version: "3.12"
 
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
       - name: Install dependencies
         run: pip install -r requirements.txt
 
@@ -33,6 +37,12 @@ jobs:
           if [ -n "$FEEDBACK_URL" ]; then
             sed -i "s|feedback_worker_url: \"\"|feedback_worker_url: \"$FEEDBACK_URL\"|" mkdocs.yml
           fi
+
+      - name: Validate procmd corpus
+        run: bun validate.ts
+
+      - name: Render procmd → enriched markdown
+        run: bun scripts/render-procmd.ts
 
       - name: Build site
         run: mkdocs build

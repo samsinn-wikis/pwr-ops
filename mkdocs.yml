@@ -1,7 +1,7 @@
 site_name: "PWR Emergency Operating Procedures"
 site_description: "Westinghouse PWR EOPs in Procedure Markdown (procmd) format — demo and design artifact"
 site_url: "https://samsinn-wikis.github.io/pwr-eops/"
-docs_dir: wiki
+docs_dir: _build/wiki
 repo_url: "https://github.com/samsinn-wikis/pwr-eops"
 repo_name: "samsinn-wikis/pwr-eops"
 

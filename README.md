@@ -47,13 +47,24 @@ It is NOT an authoritative source of nuclear plant operating procedures.
 ## Local setup
 
 ```bash
-# Render the wiki locally
-pip install -r requirements.txt
-mkdocs serve
-
 # Validate the procedure corpus
 bun validate.ts
+
+# Render procmd → enriched markdown in _build/, then serve with live reload
+pip install -r requirements.txt
+bun scripts/render-procmd.ts --watch &   # rebuild on source change
+mkdocs serve                              # serves _build/wiki/
 ```
+
+Source files (`wiki/procedures/*.md`) are canonical procmd. The build
+pipeline transforms them to MkDocs-flavored markdown in `_build/wiki/`
+(gitignored, regenerated on every change). MkDocs reads `_build/wiki/`.
+
+The transform preserves source line structure as hard breaks, converts
+`[id: x]` step attributes to `{#x}` HTML anchors, and rewrites bare
+`→ #step` references to clickable anchor links. Wikilinks like
+`[[E-3]]` and `[[E-3#step]]` are handled by the MkDocs `roamlinks`
+plugin.
 
 ## Status (v0.1)
 
