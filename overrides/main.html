@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+<meta name="wiki-version" content="{{ config.extra.wiki_version }}">
+<style>
+  .feedback-icon {
+    opacity: 0;
+    transition: opacity 0.2s;
+    cursor: pointer;
+    margin-left: 0.5em;
+    font-size: 0.7em;
+    vertical-align: middle;
+    text-decoration: none;
+  }
+  h2:hover .feedback-icon,
+  h3:hover .feedback-icon {
+    opacity: 0.6;
+  }
+  .feedback-icon:hover {
+    opacity: 1 !important;
+  }
+  .feedback-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+  }
+  .feedback-modal-overlay.active {
+    display: flex;
+  }
+  .feedback-modal {
+    background: var(--md-default-bg-color, #fff);
+    color: var(--md-default-fg-color, #333);
+    border-radius: 8px;
+    padding: 24px;
+    max-width: 480px;
+    width: 90%;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+  }
+  .feedback-modal h3 {
+    margin-top: 0;
+    font-size: 1.1em;
+  }
+  .feedback-modal .fb-type-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .feedback-modal .fb-type-group label {
+    padding: 4px 12px;
+    border: 1px solid var(--md-default-fg-color--lighter, #ccc);
+    border-radius: 16px;
+    cursor: pointer;
+    font-size: 0.85em;
+  }
+  .feedback-modal .fb-type-group input:checked + label {
+    background: var(--md-primary-fg-color, #4051b5);
+    color: #fff;
+    border-color: var(--md-primary-fg-color, #4051b5);
+  }
+  .feedback-modal .fb-type-group input {
+    display: none;
+  }
+  .feedback-modal textarea {
+    width: 100%;
+    min-height: 100px;
+    border: 1px solid var(--md-default-fg-color--lighter, #ccc);
+    border-radius: 4px;
+    padding: 8px;
+    font-family: inherit;
+    font-size: 0.9em;
+    background: var(--md-default-bg-color, #fff);
+    color: var(--md-default-fg-color, #333);
+    resize: vertical;
+    box-sizing: border-box;
+  }
+  .feedback-modal input[type="text"] {
+    width: 100%;
+    border: 1px solid var(--md-default-fg-color--lighter, #ccc);
+    border-radius: 4px;
+    padding: 6px 8px;
+    font-family: inherit;
+    font-size: 0.9em;
+    background: var(--md-default-bg-color, #fff);
+    color: var(--md-default-fg-color, #333);
+    box-sizing: border-box;
+  }
+  .feedback-modal button.fb-submit {
+    background: var(--md-primary-fg-color, #4051b5);
+    color: #fff;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    margin-top: 8px;
+  }
+  .feedback-modal button.fb-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .feedback-modal .fb-status {
+    font-size: 0.85em;
+    margin-top: 8px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+{{ super() }}
+
+<div class="feedback-modal-overlay" id="fb-overlay">
+  <div class="feedback-modal">
+    <h3>Leave feedback on this section</h3>
+    <p id="fb-section-label" style="font-size:0.85em; color: var(--md-default-fg-color--light, #666); margin-bottom:12px;"></p>
+    <div class="fb-type-group">
+      <input type="radio" name="fb-type" id="fb-correction" value="correction">
+      <label for="fb-correction">Correction</label>
+      <input type="radio" name="fb-type" id="fb-suggestion" value="suggestion">
+      <label for="fb-suggestion">Suggestion</label>
+      <input type="radio" name="fb-type" id="fb-missing" value="missing">
+      <label for="fb-missing">Missing info</label>
+      <input type="radio" name="fb-type" id="fb-unclear" value="unclear">
+      <label for="fb-unclear">Unclear</label>
+    </div>
+    <textarea id="fb-text" placeholder="Describe the issue or suggestion..." required></textarea>
+    <div style="margin-top:8px;">
+      <input type="text" id="fb-name" placeholder="Your name (optional)">
+    </div>
+    <button class="fb-submit" id="fb-submit" disabled>Submit feedback</button>
+    <div class="fb-status" id="fb-status"></div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var DEBOUNCE_MS = 30000;
+  var lastSubmit = 0;
+  var workerUrl = '{{ config.extra.feedback_worker_url }}';
+
+  // Add feedback icons to h2 and h3 with ids
+  document.querySelectorAll('h2[id], h3[id]').forEach(function(h) {
+    var icon = document.createElement('a');
+    icon.className = 'feedback-icon';
+    icon.textContent = '\uD83D\uDCAC';
+    icon.title = 'Leave feedback on this section';
+    icon.href = '#';
+    icon.addEventListener('click', function(e) {
+      e.preventDefault();
+      openModal(h.id, h.textContent.replace('\uD83D\uDCAC', '').trim());
+    });
+    h.appendChild(icon);
+  });
+
+  var overlay = document.getElementById('fb-overlay');
+  var sectionLabel = document.getElementById('fb-section-label');
+  var submitBtn = document.getElementById('fb-submit');
+  var statusEl = document.getElementById('fb-status');
+  var textArea = document.getElementById('fb-text');
+  var currentSection = '';
+
+  function openModal(sectionId, sectionText) {
+    currentSection = sectionId;
+    sectionLabel.textContent = 'Section: ' + sectionText;
+    overlay.classList.add('active');
+    statusEl.textContent = '';
+    textArea.value = '';
+    document.getElementById('fb-name').value = '';
+    document.querySelectorAll('input[name="fb-type"]').forEach(function(r) { r.checked = false; });
+    submitBtn.disabled = true;
+  }
+
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) overlay.classList.remove('active');
+  });
+
+  // Enable submit when type selected and text entered
+  function checkReady() {
+    var typeSelected = document.querySelector('input[name="fb-type"]:checked');
+    submitBtn.disabled = !(typeSelected && textArea.value.trim());
+  }
+  document.querySelectorAll('input[name="fb-type"]').forEach(function(r) {
+    r.addEventListener('change', checkReady);
+  });
+  textArea.addEventListener('input', checkReady);
+
+  submitBtn.addEventListener('click', function() {
+    var now = Date.now();
+    if (now - lastSubmit < DEBOUNCE_MS) {
+      statusEl.textContent = 'Please wait before submitting again.';
+      return;
+    }
+    var type = document.querySelector('input[name="fb-type"]:checked').value;
+    var text = textArea.value.trim();
+    var name = document.getElementById('fb-name').value.trim();
+    var payload = {
+      page: window.location.pathname,
+      section: currentSection,
+      type: type,
+      text: text,
+      name: name || 'Anonymous',
+      wiki_version: document.querySelector('meta[name="wiki-version"]').content,
+      timestamp: new Date().toISOString()
+    };
+
+    if (!workerUrl) {
+      statusEl.textContent = 'Demo mode: feedback would be sent to ' + JSON.stringify(payload);
+      lastSubmit = now;
+      return;
+    }
+
+    submitBtn.disabled = true;
+    statusEl.textContent = 'Sending...';
+    fetch(workerUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(function(r) {
+      if (r.ok) {
+        statusEl.textContent = 'Thank you! Feedback submitted.';
+        lastSubmit = now;
+        setTimeout(function() { overlay.classList.remove('active'); }, 1500);
+      } else {
+        statusEl.textContent = 'Error submitting feedback. Please try again.';
+        submitBtn.disabled = false;
+      }
+    }).catch(function() {
+      statusEl.textContent = 'Network error. Please try again.';
+      submitBtn.disabled = false;
+    });
+  });
+})();
+</script>
+{% endblock %}
