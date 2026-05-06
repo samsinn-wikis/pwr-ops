@@ -30,6 +30,27 @@ const OUT_DIR = join(REPO_ROOT, "_build", "wiki");
 const STEP_HEADING_RE = /^(##\s+Step\s+.+?)\s*\[([^\]]+)\]\s*$/;
 const SAME_PAGE_REF_RE = /→\s*#([A-Za-z0-9_-]+)\b/g;
 
+// procmd body keywords — auto-bolded in render so structure scans visually
+const KEYWORDS = [
+  "Check",
+  "Action",
+  "When",
+  "Until",
+  "Abort-if",
+  "Within",
+  "Concurrent",
+  "By",
+  "Caution",
+  "Note",
+  "Because",
+  "Against",
+  "CSF",
+  "RNO",
+];
+const KEYWORD_PREFIX_RE = new RegExp(
+  `^(\\s*-?\\s*)(${KEYWORDS.join("|")}):`,
+);
+
 function isHeading(line: string): boolean {
   return /^#{1,6}\s/.test(line);
 }
@@ -50,7 +71,12 @@ function transformStepHeading(line: string): string {
   const idAttr = attrs.find((a) => a.startsWith("id:"));
   if (!idAttr) return line;
   const id = idAttr.slice(3).trim();
-  return `${head} {#${id}}`;
+  // Show id as a code-span suffix (visible) AND inject as HTML anchor
+  return `${head} \`${id}\` {#${id}}`;
+}
+
+function autoBoldKeyword(line: string): string {
+  return line.replace(KEYWORD_PREFIX_RE, (_m, lead, kw) => `${lead}**${kw}:**`);
 }
 
 function transformBody(body: string): string {
@@ -80,6 +106,9 @@ function transformBody(body: string): string {
 
     // Same-page branch refs: → #foo  becomes  → [#foo](#foo)
     line = line.replace(SAME_PAGE_REF_RE, (_m, id) => `→ [#${id}](#${id})`);
+
+    // Auto-bold procmd keyword prefixes for visual structure
+    line = autoBoldKeyword(line);
 
     // Hard break: append two trailing spaces unless line is blank
     if (!isBlank(line)) {
