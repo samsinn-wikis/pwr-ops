@@ -4,6 +4,9 @@ site_url: "https://samsinn-wikis.github.io/pwr-eops/"
 docs_dir: _build/wiki
 repo_url: "https://github.com/samsinn-wikis/pwr-eops"
 repo_name: "samsinn-wikis/pwr-eops"
+# Edit links point at the canonical source under wiki/, not the gitignored
+# transformed output under _build/wiki/.
+edit_uri: edit/main/wiki/
 
 theme:
   name: material
