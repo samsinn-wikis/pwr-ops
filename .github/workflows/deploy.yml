@@ -68,6 +68,9 @@ jobs:
       - name: Export KG (JSON-LD)
         run: bun scripts/export-kg.ts
 
+      - name: Build tag + setpoint catalogues
+        run: bun scripts/build-catalogues.ts
+
       - name: Build machine-readable manifest
         run: bun scripts/build-manifest.ts
 

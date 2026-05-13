@@ -142,5 +142,8 @@ nav:
     - systems/containment.md
     - systems/nis.md
     - systems/bop.md
+  - Catalogues:
+    - Tag catalogue: tags/index.md
+    - Setpoint catalogue: setpoints/index.md
   - Profiles:
     - profiles/nuclear-erg.md

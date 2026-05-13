@@ -776,6 +776,22 @@
       "csfsRelated": [
         "subcriticality"
       ]
+    },
+    {
+      "id": "index",
+      "type": "tag-catalogue",
+      "title": "Tag Catalogue (canonical)",
+      "file": "wiki/tags/index.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR",
+      "referencePlant": "vogtle"
+    },
+    {
+      "id": "index",
+      "type": "setpoint-catalogue",
+      "title": "Setpoint Catalogue (canonical)",
+      "file": "wiki/setpoints/index.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR",
+      "referencePlant": "vogtle"
     }
   ]
 }
