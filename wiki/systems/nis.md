@@ -48,9 +48,9 @@ flowchart LR
     SR_DRAW -. overlap .- IR_DRAW
     IR_DRAW -. overlap .- PR_DRAW
 
-    classDef det fill:#fff3cd,stroke:#856404
-    classDef draw fill:#d4e6f1,stroke:#1f618d
-    classDef logic fill:#fadbd8,stroke:#943126
+    classDef det fill:#fff3cd,stroke:#856404,color:#1a1a1a
+    classDef draw fill:#d4e6f1,stroke:#1f618d,color:#1a1a1a
+    classDef logic fill:#fadbd8,stroke:#943126,color:#1a1a1a
     class SR_DET,IR_DET,PR_DET det
     class SR_DRAW,IR_DRAW,PR_DRAW draw
     class RPS,BD_ALARM logic

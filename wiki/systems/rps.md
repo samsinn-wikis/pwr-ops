@@ -46,8 +46,8 @@ flowchart LR
     ROD_PWR -- "de-energized" --> RODS
     RODS -- "fall under gravity" --> CORE["Core (subcritical)"]
 
-    classDef logic fill:#fff3cd,stroke:#856404
-    classDef breaker fill:#fadbd8,stroke:#943126
+    classDef logic fill:#fff3cd,stroke:#856404,color:#1a1a1a
+    classDef breaker fill:#fadbd8,stroke:#943126,color:#1a1a1a
     class BISTABLE logic
     class BKR_A,BKR_B breaker
 ```

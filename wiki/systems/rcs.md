@@ -57,8 +57,8 @@ flowchart LR
     RV -. "surge line" .-> PZR
     PZR -. "PORVs / safeties" .-> CTMT["Pressurizer Relief Tank → Containment Sump"]
 
-    classDef vessel fill:#fff3cd,stroke:#856404
-    classDef sg fill:#d4e6f1,stroke:#1f618d
+    classDef vessel fill:#fff3cd,stroke:#856404,color:#1a1a1a
+    classDef sg fill:#d4e6f1,stroke:#1f618d,color:#1a1a1a
     class RV,PZR vessel
     class SG1,SG2,SG3,SG4 sg
 ```
@@ -126,7 +126,7 @@ flowchart LR
     HTR -.-> PT
     SPR -.-> PT
 
-    classDef alarm fill:#fadbd8,stroke:#943126
+    classDef alarm fill:#fadbd8,stroke:#943126,color:#1a1a1a
     class PORV,SAF alarm
 ```
 

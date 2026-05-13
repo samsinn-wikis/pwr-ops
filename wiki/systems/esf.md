@@ -57,8 +57,8 @@ flowchart LR
     BISTABLE --> LATCH
     LATCH --> SI & PA & PB & SPRAY & MSLI & FWI & AFW & DG
 
-    classDef logic fill:#fff3cd,stroke:#856404
-    classDef out fill:#d4e6f1,stroke:#1f618d
+    classDef logic fill:#fff3cd,stroke:#856404,color:#1a1a1a
+    classDef out fill:#d4e6f1,stroke:#1f618d,color:#1a1a1a
     class BISTABLE,LATCH logic
     class SI,PA,PB,SPRAY,MSLI,FWI,AFW,DG out
 ```
