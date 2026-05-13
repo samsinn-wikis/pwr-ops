@@ -74,6 +74,9 @@ jobs:
       - name: Build EAL rules JSON
         run: bun scripts/build-eal-rules.ts
 
+      - name: Build search index
+        run: bun scripts/build-search-index.ts
+
       - name: Build machine-readable manifest
         run: bun scripts/build-manifest.ts
 
