@@ -848,6 +848,125 @@
       "file": "wiki/simulator-bindings/samsinn.md",
       "appliesTo": "Westinghouse-style 4-loop PWR",
       "referencePlant": "vogtle"
+    },
+    {
+      "id": "communication",
+      "type": "operations-doc",
+      "title": "Three-way communication and verification levels",
+      "file": "wiki/operations/communication.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR"
+    },
+    {
+      "id": "configuration-control",
+      "type": "operations-doc",
+      "title": "Configuration control, tag-outs, independent verification",
+      "file": "wiki/operations/configuration-control.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR"
+    },
+    {
+      "id": "conservative-decision-making",
+      "type": "operations-doc",
+      "title": "Conservative decision-making",
+      "file": "wiki/operations/conservative-decision-making.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR"
+    },
+    {
+      "id": "control-room-conops",
+      "type": "operations-doc",
+      "title": "Control-room Conduct of Operations — roles, watch-stand, turnover",
+      "file": "wiki/operations/control-room-conops.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR"
+    },
+    {
+      "id": "pre-job-brief",
+      "type": "operations-doc",
+      "title": "Pre-EOP-entry briefing",
+      "file": "wiki/operations/pre-job-brief.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR"
+    },
+    {
+      "id": "procedure-usage",
+      "type": "operations-doc",
+      "title": "Procedure usage hierarchy and deviation rules",
+      "file": "wiki/operations/procedure-usage.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR"
+    },
+    {
+      "id": "safety-culture",
+      "type": "operations-doc",
+      "title": "Reactor safety culture principles",
+      "file": "wiki/operations/safety-culture.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR"
+    },
+    {
+      "id": "sta-role",
+      "type": "operations-doc",
+      "title": "Shift Technical Advisor (STA) — independent CSF monitoring",
+      "file": "wiki/operations/sta-role.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR"
+    },
+    {
+      "id": "isolate-faulted-sg",
+      "type": "hf-action-class",
+      "title": "Action class — isolate a faulted or ruptured steam generator",
+      "file": "wiki/human-factors/hf-action-isolate-faulted-sg.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR"
+    },
+    {
+      "id": "manual-si-actuation",
+      "type": "hf-action-class",
+      "title": "Action class — manual Safety Injection actuation",
+      "file": "wiki/human-factors/hf-action-manual-si-actuation.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR"
+    },
+    {
+      "id": "trip-rcps-under-voiding",
+      "type": "hf-action-class",
+      "title": "Action class — trip RCPs under RCS voiding",
+      "file": "wiki/human-factors/hf-action-trip-rcps-under-voiding.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR"
+    },
+    {
+      "id": "failure-modes-taxonomy",
+      "type": "hf-failure-mode",
+      "title": "Operator error failure modes — slip, lapse, mistake, violation",
+      "file": "wiki/human-factors/hf-failure-modes-taxonomy.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR"
+    },
+    {
+      "id": "time-pressure-loca",
+      "type": "hf-time-pressure-profile",
+      "title": "Time-pressure profile — Loss-of-Coolant Accident",
+      "file": "wiki/human-factors/hf-time-pressure-loca.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR"
+    },
+    {
+      "id": "time-pressure-sbo",
+      "type": "hf-time-pressure-profile",
+      "title": "Time-pressure profile — Station Blackout",
+      "file": "wiki/human-factors/hf-time-pressure-sbo.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR"
+    },
+    {
+      "id": "time-pressure-sgtr",
+      "type": "hf-time-pressure-profile",
+      "title": "Time-pressure profile — Steam Generator Tube Rupture",
+      "file": "wiki/human-factors/hf-time-pressure-sgtr.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR"
+    },
+    {
+      "id": "davis-besse-2002",
+      "type": "operating-experience",
+      "title": "Davis-Besse vessel-head erosion (March 2002)",
+      "file": "wiki/human-factors/oe-davis-besse-2002.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR"
+    },
+    {
+      "id": "tmi-1979",
+      "type": "operating-experience",
+      "title": "Three Mile Island Unit 2 (March 1979)",
+      "file": "wiki/human-factors/oe-tmi-1979.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR"
     }
   ]
 }

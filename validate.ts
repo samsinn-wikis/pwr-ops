@@ -983,6 +983,38 @@ const SOURCES_REQUIRED_TYPES = new Set([
   "operating-experience",
 ]);
 
+/**
+ * Parse the `## Source codes` table from wiki/sources.md (E.0). Returns
+ * the set of declared short codes. The table is the canonical pool;
+ * HF/ConOps pages may only cite codes that appear here.
+ */
+async function loadSourceCodes(): Promise<Set<string>> {
+  const fs = await import("node:fs/promises");
+  const codes = new Set<string>();
+  let content: string;
+  try {
+    content = await fs.readFile(`${REPO_ROOT}wiki/sources.md`, "utf-8");
+  } catch {
+    return codes;
+  }
+  const sectionStart = content.indexOf("## Source codes");
+  if (sectionStart < 0) return codes;
+  const section = content.slice(sectionStart);
+  const lines = section.split("\n");
+  let inTable = false;
+  for (const ln of lines) {
+    if (/^\|[\s|:\-]+\|$/.test(ln)) { inTable = true; continue; }
+    if (!ln.startsWith("|") && inTable) break;
+    if (!inTable) continue;
+    const cells = ln.split("|").slice(1, -1).map((c) => c.trim());
+    if (cells.length < 1) continue;
+    const codeCell = cells[0] ?? "";
+    const m = codeCell.match(/`([A-Za-z0-9_-]+)`/);
+    if (m && m[1]) codes.add(m[1]);
+  }
+  return codes;
+}
+
 async function validateNonProcedurePages(
   procedureIds: Set<string>,
   knownTagIds: Set<string>,
@@ -991,6 +1023,8 @@ async function validateNonProcedurePages(
   const fs = await import("node:fs/promises");
   const path = await import("node:path");
   const wikiDir = `${REPO_ROOT}wiki`;
+  // E.0: load canonical source-code pool once for closed-set membership check.
+  const declaredCodes = await loadSourceCodes();
   const entries = await fs.readdir(wikiDir, { withFileTypes: true });
   for (const ent of entries) {
     if (!ent.isDirectory()) continue;
@@ -1015,6 +1049,19 @@ async function validateNonProcedurePages(
             line: 1,
             msg: `page type '${pageType}' requires a non-empty 'sources:' frontmatter list (citation pool)`,
           });
+        }
+        // E.0 closed-set membership check: every code must appear in
+        // wiki/sources.md's `## Source codes` table.
+        if (declaredCodes.size > 0) {
+          for (const code of list) {
+            if (!declaredCodes.has(code)) {
+              errors.push({
+                file: filePath,
+                line: 1,
+                msg: `'sources:' contains unknown short code '${code}' — must be one of: ${[...declaredCodes].sort().join(", ")} (declared in wiki/sources.md ## Source codes)`,
+              });
+            }
+          }
         }
       }
       // Procedure ref resolution — track line numbers

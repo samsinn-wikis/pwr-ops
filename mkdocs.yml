@@ -161,5 +161,28 @@ nav:
     - Rule table: eal/classification-rules.md
   - Simulator bindings:
     - samsinn: simulator-bindings/samsinn.md
+  - Operations:
+    - Control-room ConOps: operations/control-room-conops.md
+    - Three-way communication: operations/communication.md
+    - Pre-job briefing: operations/pre-job-brief.md
+    - Conservative decision-making: operations/conservative-decision-making.md
+    - Procedure usage hierarchy: operations/procedure-usage.md
+    - STA role: operations/sta-role.md
+    - Configuration control: operations/configuration-control.md
+    - Safety culture: operations/safety-culture.md
+  - Human factors:
+    - Action classes:
+      - Trip RCPs under voiding: human-factors/hf-action-trip-rcps-under-voiding.md
+      - Manual SI actuation: human-factors/hf-action-manual-si-actuation.md
+      - Isolate faulted SG: human-factors/hf-action-isolate-faulted-sg.md
+    - Failure modes:
+      - Slip / lapse / mistake / violation taxonomy: human-factors/hf-failure-modes-taxonomy.md
+    - Time-pressure profiles:
+      - LOCA: human-factors/hf-time-pressure-loca.md
+      - SGTR: human-factors/hf-time-pressure-sgtr.md
+      - SBO: human-factors/hf-time-pressure-sbo.md
+    - Operating experience:
+      - Davis-Besse 2002: human-factors/oe-davis-besse-2002.md
+      - Three Mile Island 1979: human-factors/oe-tmi-1979.md
   - Profiles:
     - profiles/nuclear-erg.md

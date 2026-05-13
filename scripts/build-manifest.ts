@@ -22,7 +22,7 @@ const PROCEDURES_DIR = join(WIKI_DIR, 'procedures')
 const MANIFEST_PATH = join(WIKI_DIR, '_manifest.json')
 
 /** Sibling-dir scan targets (Phase D page types). Order is documentation-only. */
-const PAGE_DIRS: Array<{ dir: string; type: ManifestPageType }> = [
+const PAGE_DIRS: Array<{ dir: string; type: ManifestPageType | ReadonlyArray<ManifestPageType> }> = [
   { dir: 'systems',   type: 'system-description' },
   { dir: 'tags',      type: 'tag-catalogue' },
   { dir: 'setpoints', type: 'setpoint-catalogue' },
@@ -31,6 +31,8 @@ const PAGE_DIRS: Array<{ dir: string; type: ManifestPageType }> = [
   { dir: 'scenarios', type: 'scenario' },
   { dir: 'eal',       type: 'eal-rules' },
   { dir: 'simulator-bindings', type: 'simulator-binding' },
+  { dir: 'operations', type: 'operations-doc' },
+  { dir: 'human-factors', type: ['hf-action-class', 'hf-failure-mode', 'hf-time-pressure-profile', 'operating-experience'] },
 ]
 
 type ManifestPageType =
@@ -42,6 +44,11 @@ type ManifestPageType =
   | 'scenario'
   | 'eal-rules'
   | 'simulator-binding'
+  | 'operations-doc'
+  | 'hf-action-class'
+  | 'hf-failure-mode'
+  | 'hf-time-pressure-profile'
+  | 'operating-experience'
 
 interface ManifestEntry {
   id: string
@@ -146,9 +153,13 @@ const parseListField = (s: string | undefined): string[] => {
   return [t].filter(Boolean)
 }
 
-const scanPagesDir = (dirName: string, expectedType: ManifestPageType): ManifestPageEntry[] => {
+const scanPagesDir = (dirName: string, expectedTypes: ManifestPageType | ReadonlyArray<ManifestPageType>): ManifestPageEntry[] => {
   const path = join(WIKI_DIR, dirName)
   if (!existsSync(path)) return []
+  const accept = Array.isArray(expectedTypes)
+    ? new Set<string>(expectedTypes as ReadonlyArray<string>)
+    : new Set<string>([expectedTypes as string])
+  const defaultType = (Array.isArray(expectedTypes) ? expectedTypes[0] : expectedTypes) as ManifestPageType
   const files = readdirSync(path).filter(f => f.endsWith('.md')).sort()
   const out: ManifestPageEntry[] = []
   for (const f of files) {
@@ -158,18 +169,19 @@ const scanPagesDir = (dirName: string, expectedType: ManifestPageType): Manifest
       console.warn(`skip ${dirName}/${f}: no frontmatter`)
       continue
     }
-    if (fm['type'] !== expectedType) {
-      console.warn(`skip ${dirName}/${f}: type "${fm['type']}" does not match expected "${expectedType}"`)
+    const t = fm['type']
+    if (!t || !accept.has(t)) {
+      console.warn(`skip ${dirName}/${f}: type "${t ?? '(none)'}" not in accepted set {${[...accept].join(', ')}}`)
       continue
     }
-    // Find the id field — system-id / catalogue-id / tech-spec-id / lineup-id
-    const idKey = ['system-id', 'catalogue-id', 'tech-spec-id', 'lineup-id', 'profile-id']
+    // Find the id field — system-id / catalogue-id / tech-spec-id / lineup-id / hf-id / operations-id
+    const idKey = ['system-id', 'catalogue-id', 'tech-spec-id', 'lineup-id', 'profile-id', 'hf-id', 'operations-id', 'oe-id']
       .find(k => fm[k])
     const id = idKey ? fm[idKey]! : f.replace(/\.md$/, '')
     const title = fm['title'] || id
     const entry: ManifestPageEntry = {
       id,
-      type: expectedType,
+      type: t as ManifestPageType,
       title,
       file: `wiki/${dirName}/${f}`,
     }
@@ -178,6 +190,8 @@ const scanPagesDir = (dirName: string, expectedType: ManifestPageType): Manifest
     const csfsRelated = parseListField(fm['csfs-related'])
     if (csfsRelated.length > 0) entry.csfsRelated = csfsRelated
     out.push(entry)
+    // suppress unused-default warning
+    void defaultType
   }
   return out
 }

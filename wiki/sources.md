@@ -101,3 +101,28 @@ setpoints against a real 4-loop Westinghouse-style plant. Examples:
 When you add a new source you used in authoring, add it to the right
 tier with a one-line justification of why it matters. Keep tier 1 small
 — it's the core. Add freely to tiers 4 and 5.
+
+## Source codes (E.0 — canonical pool for HF / ConOps citations)
+
+Phase E HF and ConOps content is anchored to a **closed source pool**.
+Every `type: operations-doc | hf-action-class | hf-failure-mode |
+hf-time-pressure-profile | operating-experience` page must declare a
+`sources:` frontmatter list, and every short code in that list must
+appear in the table below. The wiki validator enforces this at build
+time. Adding a new short code is a one-line edit here followed by a
+re-validate.
+
+This table is the source of truth — the `## Tier` sections above are
+descriptive; this table is normative for HF/ConOps authoring.
+
+| code | type | citation |
+|---|---|---|
+| `nureg-cr-6753` | hf | NRC NUREG/CR-6753 — *Review of Findings for Human Error Contribution to Risk in Operating Events* (2002). Public LER-based human-error taxonomy. |
+| `nureg-cr-6883` | hf | NRC NUREG/CR-6883 — *The SPAR-H Human Reliability Analysis Method* (2005). Performance-shaping-factor taxonomy + nominal HEP multipliers. |
+| `nureg-0700` | hf | NRC NUREG-0700 Rev 2 — *Human-System Interface Design Review Guidelines* (2002). Control-room HSI factors. |
+| `iaea-ns-g-2-14` | both | IAEA NS-G-2.14 — *Conduct of Operations at Nuclear Power Plants* (2008). Spans HF and ConOps. |
+| `oecd-nea-csni-r-2014-6` | hf | OECD-NEA CSNI/R(2014)6 — *Improving Nuclear Safety through Human Factors* (2014). |
+| `nureg-1764` | conops | NRC NUREG-1764 Rev 1 — *Guidance for the Review of Changes to Human Actions* (2007). |
+| `nureg-0800-13` | conops | NRC NUREG-0800 Ch 13 — *Standard Review Plan: Conduct of Operations* (current rev). |
+| `10cfr50-54` | conops | 10 CFR 50.54 — *Conditions of licenses* (operator licensing, fitness for duty, training requirements). |
+| `ansi-ans-3-1` | conops | ANSI/ANS-3.1-2014 — *Selection, Qualification, and Training of Personnel for Nuclear Power Plants*. |
