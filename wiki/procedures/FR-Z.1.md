@@ -47,7 +47,7 @@ Action: if Phase A or B not verified complete, manually initiate; verify all con
 ## Step 3 [id: verify-spray]
 Within: 5 minutes of high-pressure confirmation
 Action: verify containment spray pumps «CSPRAY-A» / «CSPRAY-B» running AND spray flow «SPRAY-FLOW» established
-Action: if pumps not auto-running, manually start; verify spray-additive (sodium hydroxide / spray-additive tank «NaOH-LVL») injecting if iodine-removal additive system is in service
+Action: if pumps not auto-running, manually start; verify spray-additive (sodium hydroxide / spray-additive tank «NAOH-LVL») injecting if iodine-removal additive system is in service
 Caution: containment spray injects RWST inventory into containment as a fine spray — this is irreversible from containment-cleanup perspective and consumes RWST inventory at ~3000 gpm per train
 Caution: spray actuation drives a rapid containment-pressure decrease followed by potential vacuum if heat-removal exceeds source — monitor «CTMT-PR» continuously; sub-atmospheric containment is its own (lesser) hazard
 - Spray established AND containment pressure responding → #monitor
@@ -107,7 +107,7 @@ Within: re-evaluate every 5 minutes
   equipment: containment-spray
   source: Vogtle UFSAR §6.2.2
 
-- id: NaOH-LVL
+- id: NAOH-LVL
   description: containment-spray sodium hydroxide additive tank level
   sim-path: ess.cspray.additive_tank.level
   units: percent
