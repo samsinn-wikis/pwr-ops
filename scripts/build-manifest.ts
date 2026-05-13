@@ -30,6 +30,7 @@ const PAGE_DIRS: Array<{ dir: string; type: ManifestPageType }> = [
   { dir: 'lineups',   type: 'lineup' },
   { dir: 'scenarios', type: 'scenario' },
   { dir: 'eal',       type: 'eal-rules' },
+  { dir: 'simulator-bindings', type: 'simulator-binding' },
 ]
 
 type ManifestPageType =
@@ -40,6 +41,7 @@ type ManifestPageType =
   | 'lineup'
   | 'scenario'
   | 'eal-rules'
+  | 'simulator-binding'
 
 interface ManifestEntry {
   id: string

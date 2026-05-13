@@ -77,6 +77,9 @@ jobs:
       - name: Build search index
         run: bun scripts/build-search-index.ts
 
+      - name: Build simulator bindings
+        run: bun scripts/build-sim-bindings.ts
+
       - name: Build machine-readable manifest
         run: bun scripts/build-manifest.ts
 

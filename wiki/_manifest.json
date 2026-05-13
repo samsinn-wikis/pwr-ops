@@ -840,6 +840,14 @@
       "file": "wiki/eal/classification-rules.md",
       "appliesTo": "Westinghouse-style 4-loop PWR",
       "referencePlant": "vogtle"
+    },
+    {
+      "id": "samsinn",
+      "type": "simulator-binding",
+      "title": "samsinn PWR simulator — tag binding",
+      "file": "wiki/simulator-bindings/samsinn.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR",
+      "referencePlant": "vogtle"
     }
   ]
 }

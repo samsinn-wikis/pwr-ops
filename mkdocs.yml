@@ -157,5 +157,7 @@ nav:
     - ATWS: scenarios/atws.md
   - EAL classification:
     - Rule table: eal/classification-rules.md
+  - Simulator bindings:
+    - samsinn: simulator-bindings/samsinn.md
   - Profiles:
     - profiles/nuclear-erg.md
