@@ -83,6 +83,7 @@ nav:
     - Scope and disclaimers: scope.md
     - Reference sources: sources.md
     - Procedure Markdown (procmd): procmd.md
+    - samsinn integration: samsinn-integration.md
   - Procedures:
     - E-series (Initial Diagnostic):
       - procedures/E-0.md
