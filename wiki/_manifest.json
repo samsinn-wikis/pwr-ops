@@ -260,40 +260,75 @@
       "title": "Response to Loss of Secondary Heat Sink",
       "file": "wiki/procedures/FR-H.1.md",
       "stepCount": 5,
-      "tagDefinitionCount": 0,
-      "coverage": "partial"
+      "tagDefinitionCount": 19,
+      "coverage": "partial",
+      "category": "function-restoration",
+      "csfsMonitored": [
+        "heat-sink"
+      ],
+      "entryTriggers": [
+        "csf-red-path"
+      ]
     },
     {
       "id": "FR-H.2",
       "title": "Response to Steam Generator Overpressure",
       "file": "wiki/procedures/FR-H.2.md",
       "stepCount": 3,
-      "tagDefinitionCount": 0,
-      "coverage": "stub"
+      "tagDefinitionCount": 8,
+      "coverage": "partial",
+      "category": "function-restoration",
+      "csfsMonitored": [
+        "heat-sink"
+      ],
+      "entryTriggers": [
+        "csf-orange-path"
+      ]
     },
     {
       "id": "FR-H.3",
       "title": "Response to Steam Generator High Level",
       "file": "wiki/procedures/FR-H.3.md",
       "stepCount": 3,
-      "tagDefinitionCount": 0,
-      "coverage": "stub"
+      "tagDefinitionCount": 15,
+      "coverage": "partial",
+      "category": "function-restoration",
+      "csfsMonitored": [
+        "heat-sink"
+      ],
+      "entryTriggers": [
+        "csf-yellow-path"
+      ]
     },
     {
       "id": "FR-H.4",
       "title": "Response to Loss of Normal Steam Release Capabilities",
       "file": "wiki/procedures/FR-H.4.md",
       "stepCount": 3,
-      "tagDefinitionCount": 0,
-      "coverage": "stub"
+      "tagDefinitionCount": 12,
+      "coverage": "partial",
+      "category": "function-restoration",
+      "csfsMonitored": [
+        "heat-sink"
+      ],
+      "entryTriggers": [
+        "csf-yellow-path"
+      ]
     },
     {
       "id": "FR-H.5",
       "title": "Response to Steam Generator Low Level",
       "file": "wiki/procedures/FR-H.5.md",
       "stepCount": 3,
-      "tagDefinitionCount": 0,
-      "coverage": "stub"
+      "tagDefinitionCount": 12,
+      "coverage": "partial",
+      "category": "function-restoration",
+      "csfsMonitored": [
+        "heat-sink"
+      ],
+      "entryTriggers": [
+        "csf-yellow-path"
+      ]
     },
     {
       "id": "FR-I.1",
