@@ -74,8 +74,8 @@ Within: re-evaluate every 30 min during continued cooldown
 - id: AEJ-RAD
   description: condenser air-ejector radiation monitor
   sim-path: rad.condenser.air_ejector
-  units: uCi_per_cc
-  equipment: rad-monitoring
+  units: cps
+  equipment: condenser
   source: Vogtle UFSAR §11.5
 
 - id: ARV-A
