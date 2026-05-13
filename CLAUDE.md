@@ -53,6 +53,11 @@ Rules:
 
 - Step IDs must be unique within the page and stable forever — they are
   cross-referenced by other procedures.
+- **Step IDs are contracts.** Once a stub's step ID is committed, the ID
+  is frozen for the life of the page. When Phase C re-authors a stub
+  with full operator content, every existing step ID is preserved;
+  new steps get new IDs. This is what lets per-family commits in Phase C
+  proceed without needing all cross-pages in lockstep.
 - Step labels are display-only (`1`, `3.a`, `Continuous`); never used for
   identity.
 - A `-` list item is a branch *iff* it contains `→`. Items without `→`

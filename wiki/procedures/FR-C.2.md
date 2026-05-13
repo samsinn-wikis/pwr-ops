@@ -1,6 +1,6 @@
 ---
 type: procedure
-procedure-md: 0.5
+procedure-md: 0.6
 procedure-id: FR-C.2
 title: Response to Degraded Core Cooling
 profile: nuclear-erg

@@ -1,6 +1,6 @@
 ---
 type: procedure
-procedure-md: 0.5
+procedure-md: 0.6
 procedure-id: FR-H.5
 title: Response to Steam Generator Low Level
 profile: nuclear-erg

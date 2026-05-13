@@ -1,6 +1,6 @@
 ---
 type: procedure
-procedure-md: 0.5
+procedure-md: 0.6
 procedure-id: ES-0.2
 title: Natural Circulation Cooldown
 profile: nuclear-erg

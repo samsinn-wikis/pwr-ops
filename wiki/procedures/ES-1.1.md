@@ -1,6 +1,6 @@
 ---
 type: procedure
-procedure-md: 0.5
+procedure-md: 0.6
 procedure-id: ES-1.1
 title: SI Termination
 profile: nuclear-erg

@@ -31,6 +31,27 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Verify vendored procmd-core matches SHA pin
+        run: |
+          PIN=$(cat procmd-core.sha | tr -d '[:space:]')
+          if [ -z "$PIN" ]; then
+            echo "::error::procmd-core.sha is empty"
+            exit 1
+          fi
+          BASE="https://raw.githubusercontent.com/michaelhil/samsinn/${PIN}/src/procmd-core"
+          for f in parser.ts types.ts index.ts; do
+            curl -sf "${BASE}/${f}" -o /tmp/upstream-${f} || {
+              echo "::error::Could not fetch ${f} from samsinn@${PIN}"
+              exit 1
+            }
+            if ! diff -q /tmp/upstream-${f} "procmd-core/${f}" > /dev/null; then
+              echo "::error::procmd-core/${f} differs from samsinn@${PIN}"
+              diff /tmp/upstream-${f} "procmd-core/${f}" | head -40
+              exit 1
+            fi
+          done
+          echo "✅ vendored procmd-core matches samsinn@${PIN}"
+
       - name: Configure site URL
         run: |
           FEEDBACK_URL="${{ vars.FEEDBACK_WORKER_URL }}"
@@ -38,8 +59,11 @@ jobs:
             sed -i "s|feedback_worker_url: \"\"|feedback_worker_url: \"$FEEDBACK_URL\"|" mkdocs.yml
           fi
 
-      - name: Validate procmd corpus
+      - name: Validate procmd corpus (validate.ts)
         run: bun validate.ts
+
+      - name: Cross-check corpus with procmd-core parser
+        run: bun scripts/check-procmd-core.ts
 
       - name: Export KG (JSON-LD)
         run: bun scripts/export-kg.ts
@@ -53,10 +77,16 @@ jobs:
       - name: Build site
         run: mkdocs build
 
-      - name: Stage KG + manifest artifacts into site
+      - name: Stage KG + manifest + raw.md sidecars into site
         run: |
           cp _build/kg.jsonld site/kg.jsonld
           cp wiki/_manifest.json site/_manifest.json
+          # Raw markdown sidecars so agents have a second fetch path when
+          # raw.githubusercontent.com is rate-limited or degraded. Mirrors
+          # the source procmd verbatim (not the build-time enriched form).
+          mkdir -p site/procedures site/profiles
+          cp wiki/procedures/*.md site/procedures/
+          cp wiki/profiles/*.md site/profiles/
 
       - uses: actions/upload-pages-artifact@v3
         with:

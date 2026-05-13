@@ -1,8 +1,7 @@
 {
   "version": 1,
   "wiki": "pwr-eops",
-  "procmdVersion": "0.5",
-  "generatedAt": "2026-05-13T08:28:18.756Z",
+  "procmdVersion": "0.6",
   "procedures": [
     {
       "id": "E-0",

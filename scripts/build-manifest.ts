@@ -15,6 +15,7 @@
  */
 import { readdirSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { join, dirname } from 'node:path'
+import { parseProcedure } from '../procmd-core/index.ts'
 
 const REPO_ROOT = join(import.meta.dir, '..')
 const PROCEDURES_DIR = join(REPO_ROOT, 'wiki', 'procedures')
@@ -36,54 +37,16 @@ interface Manifest {
   version: 1
   wiki: string
   procmdVersion: string
-  generatedAt: string
   procedures: ManifestEntry[]
 }
 
-const parseFrontmatter = (raw: string): Record<string, string> | null => {
-  if (!raw.startsWith('---\n')) return null
-  const end = raw.indexOf('\n---', 4)
-  if (end < 0) return null
-  const fm = raw.slice(4, end)
-  const out: Record<string, string> = {}
-  for (const line of fm.split('\n')) {
-    const m = line.match(/^([a-zA-Z][a-zA-Z0-9_-]*):\s*(.*)$/)
-    if (m) out[m[1]!] = m[2]!.trim()
-  }
-  return out
-}
-
-const parseList = (s: string | undefined): string[] => {
-  if (!s) return []
-  const t = s.trim()
-  if (t.startsWith('[') && t.endsWith(']')) {
-    return t.slice(1, -1).split(',').map(x => x.trim()).filter(Boolean)
-  }
-  return [t]
-}
-
-const countSteps = (body: string): number => {
-  const m = body.match(/^##\s+Step\b/gm)
-  return m ? m.length : 0
-}
-
-const countTagDefs = (body: string): number => {
-  // Match "- id: TAG-NAME" lines inside (or after) a `## Tags` heading.
-  const tagsIdx = body.search(/^##\s+Tags\b/m)
-  if (tagsIdx < 0) return 0
-  const tagsBlock = body.slice(tagsIdx)
-  const m = tagsBlock.match(/^-\s+id:\s+[A-Z]/gm)
-  return m ? m.length : 0
-}
-
-const classifyCoverage = (body: string, stepCount: number, tagDefs: number): 'developed' | 'partial' | 'stub' => {
-  const lineCount = body.split('\n').length
+const classifyCoverage = (bodyLines: number, stepCount: number, tagDefs: number): 'developed' | 'partial' | 'stub' => {
   // Heuristic — calibrated against the current corpus:
   //   developed: ≥10 steps with tag appendix + ≥100 lines of body
   //   partial:   ≥5 steps OR ≥50 lines
   //   stub:      otherwise (typical Phase-1 stubs are 3–4 steps, ~30 lines)
-  if (stepCount >= 10 && tagDefs >= 5 && lineCount >= 100) return 'developed'
-  if (stepCount >= 5 || lineCount >= 50) return 'partial'
+  if (stepCount >= 10 && tagDefs >= 5 && bodyLines >= 100) return 'developed'
+  if (stepCount >= 5 || bodyLines >= 50) return 'partial'
   return 'stub'
 }
 
@@ -94,33 +57,25 @@ const buildManifest = (): Manifest => {
   for (const f of files) {
     const path = join(PROCEDURES_DIR, f)
     const raw = readFileSync(path, 'utf-8')
-    const fm = parseFrontmatter(raw)
-    if (!fm) {
-      console.warn(`skip ${f}: no frontmatter`)
+    const parsed = parseProcedure(raw)
+    if ('error' in parsed) {
+      console.warn(`skip ${f}: ${parsed.error}`)
       continue
     }
-    const id = fm['procedure-id']
-    const title = fm['title']
-    if (!id || !title) {
-      console.warn(`skip ${f}: missing procedure-id or title`)
-      continue
-    }
-    const body = raw.slice(raw.indexOf('\n---', 4) + 4)
-    const stepCount = countSteps(body)
-    const tagDefinitionCount = countTagDefs(body)
+    const bodyLines = raw.slice(raw.indexOf('\n---', 4) + 4).split('\n').length
+    const stepCount = parsed.steps.length
+    const tagDefinitionCount = parsed.tagDefinitions.length
     const entry: ManifestEntry = {
-      id,
-      title,
+      id: parsed.frontmatter.procedureId,
+      title: parsed.frontmatter.title,
       file: `wiki/procedures/${f}`,
       stepCount,
       tagDefinitionCount,
-      coverage: classifyCoverage(body, stepCount, tagDefinitionCount),
+      coverage: classifyCoverage(bodyLines, stepCount, tagDefinitionCount),
     }
-    if (fm['category']) entry.category = fm['category']
-    const csfs = parseList(fm['csfs-monitored'])
-    if (csfs.length > 0) entry.csfsMonitored = csfs
-    const triggers = parseList(fm['entry-triggers'])
-    if (triggers.length > 0) entry.entryTriggers = triggers
+    if (parsed.frontmatter.category) entry.category = parsed.frontmatter.category
+    if (parsed.frontmatter.csfsMonitored.length > 0) entry.csfsMonitored = [...parsed.frontmatter.csfsMonitored]
+    if (parsed.frontmatter.entryTriggers.length > 0) entry.entryTriggers = [...parsed.frontmatter.entryTriggers]
     procedures.push(entry)
   }
 
@@ -136,7 +91,6 @@ const buildManifest = (): Manifest => {
     version: 1,
     wiki: 'pwr-eops',
     procmdVersion,
-    generatedAt: new Date().toISOString(),
     procedures,
   }
 }

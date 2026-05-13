@@ -1,6 +1,6 @@
 ---
 type: procedure
-procedure-md: 0.5
+procedure-md: 0.6
 procedure-id: ECA-3.3
 title: SGTR Without Pressurizer Pressure Control
 profile: nuclear-erg

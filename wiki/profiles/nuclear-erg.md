@@ -1,6 +1,6 @@
 ---
 type: procedure-profile
-procedure-md: 0.5
+procedure-md: 0.6
 profile-id: nuclear-erg
 title: Nuclear Emergency Response Guidelines profile
 ---

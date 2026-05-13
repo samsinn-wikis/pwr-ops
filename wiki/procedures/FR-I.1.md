@@ -1,6 +1,6 @@
 ---
 type: procedure
-procedure-md: 0.5
+procedure-md: 0.6
 procedure-id: FR-I.1
 title: Response to High Pressurizer Level
 profile: nuclear-erg

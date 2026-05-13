@@ -1352,17 +1352,21 @@ build the agent-reasoning substrate.
 
 ## 21. Open questions (residual, non-blocking)
 
-1. **Wiki scope at Phase D exit** (per F-NEW-8). When Phase D ships 12
-   system descriptions plus 5 catalogues, the README's "demonstration of
-   procmd format" framing is no longer accurate. Three options at Phase D
-   exit: (a) rename `pwr-eops` → `pwr-operator-knowledge-base`; (b)
-   accept the scope drift; (c) split Phase E content into a sibling
-   wiki. Defer the decision; flag now.
+1. ~~**Wiki scope at Phase D exit**~~ — **2026-05-13 revision:**
+   de-deferred. Renaming now (when corpus is ~39 mostly-stub procedures
+   + 5 reference docs) is dramatically cheaper than later. Owner
+   selects new name; rename happens as Phase A′ step #1. GitHub
+   auto-redirects old-name URLs for years, so external citation
+   breakage is bounded. **Default: `pwr-knowledge-base`** unless owner
+   redirects.
 2. **HF taxonomy authority.** Plan uses OECD-NEA + IAEA NS-G-2.14
-   (public). INPO content is proprietary and not used. If owner wants
-   INPO-aligned content, source authority changes.
-3. **Sidecar raw.md publishing** to GitHub Pages (per §14.3). Defer
-   until tag duplication actually becomes painful.
+   (public). INPO content is proprietary and not used.
+3. ~~**Sidecar raw.md publishing**~~ — **2026-05-13 revision:**
+   de-deferred and moved to Phase A′ step #2. Cost ~30 min, benefit
+   immediate: every procedure has two independent fetch paths
+   (raw.githubusercontent + GitHub Pages). The conflation with
+   build-time tag-catalogue inlining (which IS premature) was my
+   reasoning error.
 
 ---
 

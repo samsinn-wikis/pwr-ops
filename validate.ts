@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * pwr-eops procedure validator — single-file structural checker for procmd v0.5.
+ * pwr-eops procedure validator — single-file structural checker for procmd v0.6.
  *
  * Walks wiki/procedures/*.md and wiki/profiles/*.md, parses each, and reports:
  *   - frontmatter shape errors
@@ -24,9 +24,9 @@
  * Usage:  bun validate.ts [--verbose]
  */
 
-const SUPPORTED_SPEC_VERSION = "0.5";
+const SUPPORTED_SPEC_VERSION = "0.6";
 
-// v0.5: tag-id charset is uppercase + digits + hyphens, must start with a letter.
+// v0.6: tag-id charset is uppercase + digits + hyphens, must start with a letter.
 const TAG_ID_RE = /^[A-Z][A-Z0-9-]*$/;
 // Inline tag reference syntax: «TAG-ID» (U+00AB, U+00BB)
 const TAG_REF_RE = /«([A-Z][A-Z0-9-]*)»/g;
@@ -469,7 +469,7 @@ function parseProcedure(path: string, content: string): Procedure {
     errors.push({
       file: path,
       line: 1,
-      msg: `procedure-md version '${fm.fields["procedure-md"]}' not supported (validator requires ${SUPPORTED_SPEC_VERSION}; v0.1 corpora must be migrated)`,
+      msg: `procedure-md version '${fm.fields["procedure-md"]}' not supported (validator requires ${SUPPORTED_SPEC_VERSION}; no backward compatibility)`,
     });
 
   // Parse steps
