@@ -27,7 +27,9 @@
 [data-md-color-scheme="slate"] .mermaid g.node.relief .nodeLabel,
 [data-md-color-scheme="slate"] .mermaid g.node.sg .nodeLabel,
 [data-md-color-scheme="slate"] .mermaid g.node.src .nodeLabel,
+[data-md-color-scheme="slate"] .mermaid g.node.store .nodeLabel,
 [data-md-color-scheme="slate"] .mermaid g.node.tank .nodeLabel,
+[data-md-color-scheme="slate"] .mermaid g.node.tool .nodeLabel,
 [data-md-color-scheme="slate"] .mermaid g.node.turbine .nodeLabel,
 [data-md-color-scheme="slate"] .mermaid g.node.vessel .nodeLabel,
 [data-md-color-scheme="slate"] .mermaid g.node.alarm text,
@@ -45,7 +47,9 @@
 [data-md-color-scheme="slate"] .mermaid g.node.relief text,
 [data-md-color-scheme="slate"] .mermaid g.node.sg text,
 [data-md-color-scheme="slate"] .mermaid g.node.src text,
+[data-md-color-scheme="slate"] .mermaid g.node.store text,
 [data-md-color-scheme="slate"] .mermaid g.node.tank text,
+[data-md-color-scheme="slate"] .mermaid g.node.tool text,
 [data-md-color-scheme="slate"] .mermaid g.node.turbine text,
 [data-md-color-scheme="slate"] .mermaid g.node.vessel text {
   color: #1a1a1a !important;
