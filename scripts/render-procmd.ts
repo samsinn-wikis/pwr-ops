@@ -36,7 +36,9 @@ const SAME_PAGE_REF_RE = /(→\s*)#([A-Za-z0-9_-]+)\b/g;
 
 // Rationale lines: ^(indent)**Because:** ... or ^(indent)**Against:** ...
 // Matches AFTER autoBoldKeyword has run.
-const RATIONALE_RE = /^(\s*)(\*\*(?:Because|Against):\*\*\s+.*)$/;
+// Matches AFTER autoBoldKeyword turns `Because:` / `Against:` into
+// `<strong class="kw-because|kw-against">Because:</strong>` (G.3′ classes).
+const RATIONALE_RE = /^(\s*)(<strong class="kw-(?:because|against)">(?:Because|Against):<\/strong>\s+.*)$/;
 
 // v0.5: «TAG-ID» inline tag references — wrap in a span so CSS can toggle
 // visibility. The pattern only matches inside guillemets, so prose using
@@ -97,7 +99,15 @@ function wrapRationale(line: string): string {
 }
 
 function autoBoldKeyword(line: string): string {
-  return line.replace(KEYWORD_PREFIX_RE, (_m, lead, kw) => `${lead}**${kw}:**`);
+  // G.3′ — emit a class-tagged <strong> so procedure.css can give each keyword
+  // (Check / Action / Caution / Note / Within / etc.) a distinct visual
+  // treatment. Markdown's `**...**` produces a plain <strong>, which CSS can't
+  // distinguish by text content. md_in_html is enabled in mkdocs.yml so this
+  // inline HTML passes through Python-Markdown unchanged.
+  return line.replace(KEYWORD_PREFIX_RE, (_m, lead, kw) => {
+    const cls = `kw-${String(kw).toLowerCase()}`;
+    return `${lead}<strong class="${cls}">${kw}:</strong>`;
+  });
 }
 
 function wrapTagRefs(line: string): string {

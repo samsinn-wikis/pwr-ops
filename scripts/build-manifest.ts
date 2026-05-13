@@ -28,6 +28,7 @@ const PAGE_DIRS: Array<{ dir: string; type: ManifestPageType }> = [
   { dir: 'setpoints', type: 'setpoint-catalogue' },
   { dir: 'tech-specs', type: 'tech-spec' },
   { dir: 'lineups',   type: 'lineup' },
+  { dir: 'scenarios', type: 'scenario' },
 ]
 
 type ManifestPageType =
@@ -36,6 +37,7 @@ type ManifestPageType =
   | 'setpoint-catalogue'
   | 'tech-spec'
   | 'lineup'
+  | 'scenario'
 
 interface ManifestEntry {
   id: string

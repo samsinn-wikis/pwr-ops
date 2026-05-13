@@ -792,6 +792,14 @@
       "file": "wiki/setpoints/index.md",
       "appliesTo": "Westinghouse-style 4-loop PWR",
       "referencePlant": "vogtle"
+    },
+    {
+      "id": "sb-loca",
+      "type": "scenario",
+      "title": "Small-break LOCA (3-inch cold-leg break, Loop 1)",
+      "file": "wiki/scenarios/sb-loca.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR",
+      "referencePlant": "vogtle"
     }
   ]
 }

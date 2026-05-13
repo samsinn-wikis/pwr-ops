@@ -1060,6 +1060,72 @@ async function validateNonProcedurePages(
   return errors;
 }
 
+// ---------- Scenario validation (F.0) -------------------------------------
+
+async function validateScenarios(
+  stepIdsByProcedure: Map<string, Set<string>>,
+  knownTagIds: Set<string>,
+): Promise<ValidationError[]> {
+  const errors: ValidationError[] = [];
+  const fs = await import("node:fs/promises");
+  const path = await import("node:path");
+  const dir = `${REPO_ROOT}wiki/scenarios`;
+  let files: string[] = [];
+  try {
+    files = (await fs.readdir(dir)).filter((f) => f.endsWith(".md"));
+  } catch {
+    return errors; // no scenarios dir yet — fine
+  }
+  const { parseScenario } = await import("./procmd-core/scenario-parser.ts");
+  for (const f of files) {
+    const filePath = path.join(dir, f);
+    const content = await fs.readFile(filePath, "utf-8");
+    const r = parseScenario(content);
+    if ("error" in r) {
+      errors.push({ file: filePath, line: 1, msg: `scenario parse failed: ${r.error}` });
+      continue;
+    }
+    for (const w of r.warnings) {
+      errors.push({ file: filePath, line: 1, severity: "warning", msg: `scenario: ${w}` });
+    }
+    // Expected-traversal refs must resolve
+    for (const ref of r.expectedTraversal) {
+      const [procId, stepId] = ref.split("#");
+      if (!procId || !stepId) {
+        errors.push({ file: filePath, line: 1, msg: `scenario expected-traversal entry '${ref}' is malformed; expected '<procedure-id>#<step-id>'` });
+        continue;
+      }
+      const steps = stepIdsByProcedure.get(procId);
+      if (!steps) {
+        errors.push({ file: filePath, line: 1, msg: `scenario expected-traversal '${ref}': procedure '${procId}' not found` });
+        continue;
+      }
+      if (!steps.has(stepId)) {
+        errors.push({ file: filePath, line: 1, msg: `scenario expected-traversal '${ref}': step '${stepId}' not found in '${procId}'` });
+      }
+    }
+    // initial-state / expected-terminal-state / injection tag references —
+    // warning on unknown tag (system pages have already established this
+    // semantics for plant-model tags not yet adopted into procedures).
+    const allRefs: string[] = [
+      ...Object.keys(r.initialState),
+      ...Object.keys(r.expectedTerminalState),
+      ...r.injections.map((i) => i.tag),
+    ];
+    for (const tag of allRefs) {
+      if (!knownTagIds.has(tag)) {
+        errors.push({
+          file: filePath,
+          line: 1,
+          severity: "warning",
+          msg: `scenario references tag '${tag}' which is not defined in any procedure's tag appendix`,
+        });
+      }
+    }
+  }
+  return errors;
+}
+
 // ---------- Main ----------------------------------------------------------
 
 async function main() {
@@ -1127,6 +1193,15 @@ async function main() {
   const knownTagIds = new Set<string>();
   for (const p of procedures) for (const t of p.tags) knownTagIds.add(t.id);
   allMessages.push(...await validateNonProcedurePages(procedureIds, knownTagIds));
+
+  // F.0 scenario validation: parse every wiki/scenarios/*.md with the
+  // procmd-core scenario parser; verify expected-traversal refs resolve to
+  // known <procedure-id>#<step-id> pairs.
+  const stepIdsByProcedure = new Map<string, Set<string>>();
+  for (const p of procedures) {
+    stepIdsByProcedure.set(p.procedureId, new Set(p.steps.map((s) => s.id)));
+  }
+  allMessages.push(...await validateScenarios(stepIdsByProcedure, knownTagIds));
 
   // Split errors and warnings
   const errors = allMessages.filter((m) => (m.severity ?? "error") === "error");

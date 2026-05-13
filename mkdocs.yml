@@ -65,6 +65,7 @@ markdown_extensions:
 
 extra_css:
   - visibility.css
+  - procedure.css
 
 extra_javascript:
   - visibility.js
@@ -148,5 +149,7 @@ nav:
     - Catalogues:
       - Tag catalogue: tags/index.md
       - Setpoint catalogue: setpoints/index.md
+  - Scenarios:
+    - Small-break LOCA: scenarios/sb-loca.md
   - Profiles:
     - profiles/nuclear-erg.md

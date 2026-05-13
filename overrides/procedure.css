@@ -1,0 +1,139 @@
+/* G.3′ — procedure body keyword styling.
+ *
+ * render-procmd.ts emits <strong class="kw-<keyword>"> for every procmd
+ * body keyword (Check / Action / Caution / Note / Within / Because /
+ * Against / Abort-if / Until / When / By / Concurrent / CSF / RNO).
+ * This stylesheet gives each a distinct visual treatment so an operator
+ * can scan the step body the way they would scan a real ERG: structure
+ * jumps out, semantics are obvious without reading prose.
+ *
+ * Pure CSS — works in both light and dark Material themes via the
+ * built-in palette CSS variables.
+ */
+
+/* === Default: every keyword is monospaced + slightly tighter so the
+ *    body prose breathes around it. ============================== */
+
+[class*="kw-"] {
+  font-family: var(--md-code-font, ui-monospace, SFMono-Regular, monospace);
+  font-size: 0.92em;
+  font-weight: 700;
+  letter-spacing: 0;
+  padding: 0 0.15em;
+  border-radius: 2px;
+  margin-right: 0.15em;
+}
+
+/* === Action / Check: the two primary operator instruction types ====
+ *    Action is "do something now"; Check is "verify a state". Use
+ *    accent (Material primary) for Action, neutral high-contrast for
+ *    Check so they stand apart at a glance. ======================= */
+
+.kw-action {
+  color: var(--md-accent-fg-color, #5e35b1);
+  background: var(--md-accent-bg-color--light, rgba(94, 53, 177, 0.10));
+}
+
+.kw-check {
+  color: var(--md-primary-fg-color, #1f618d);
+  background: rgba(31, 97, 141, 0.08);
+}
+
+/* === Caution: amber, never miss. =============================== */
+
+.kw-caution {
+  color: #856404;
+  background: rgba(255, 235, 130, 0.30);
+}
+
+[data-md-color-scheme="slate"] .kw-caution {
+  color: #ffd76e;
+  background: rgba(255, 215, 110, 0.18);
+}
+
+/* === Note: lighter, informational. =============================== */
+
+.kw-note {
+  color: #5e6c84;
+  background: rgba(94, 108, 132, 0.10);
+}
+
+[data-md-color-scheme="slate"] .kw-note {
+  color: #a5b3c2;
+  background: rgba(165, 179, 194, 0.12);
+}
+
+/* === Within / Abort-if / Until / When / By / Concurrent — lifecycle.
+ *    Italic + violet to mark "time-constraint or conditional scope". */
+
+.kw-within,
+.kw-abort-if,
+.kw-until,
+.kw-when,
+.kw-by,
+.kw-concurrent {
+  color: #6c3483;
+  font-style: italic;
+  background: rgba(108, 52, 131, 0.10);
+}
+
+[data-md-color-scheme="slate"] .kw-within,
+[data-md-color-scheme="slate"] .kw-abort-if,
+[data-md-color-scheme="slate"] .kw-until,
+[data-md-color-scheme="slate"] .kw-when,
+[data-md-color-scheme="slate"] .kw-by,
+[data-md-color-scheme="slate"] .kw-concurrent {
+  color: #d4a8e8;
+  background: rgba(212, 168, 232, 0.14);
+}
+
+/* === Because / Against: rationale continuations under a branch.
+ *    Already wrapped by render-procmd in span.procmd-rationale, which
+ *    we tone down (smaller, italic) — the kw-because / kw-against
+ *    label stays distinct inside. =================================== */
+
+.procmd-rationale {
+  font-size: 0.92em;
+  font-style: italic;
+  opacity: 0.85;
+  margin-left: 0.5em;
+}
+
+.kw-because {
+  color: #1e7d32;
+  background: rgba(30, 125, 50, 0.08);
+}
+
+.kw-against {
+  color: #c0392b;
+  background: rgba(192, 57, 43, 0.08);
+}
+
+[data-md-color-scheme="slate"] .kw-because {
+  color: #66bb6a;
+  background: rgba(102, 187, 106, 0.12);
+}
+
+[data-md-color-scheme="slate"] .kw-against {
+  color: #e57373;
+  background: rgba(229, 115, 115, 0.12);
+}
+
+/* === CSF / RNO: cross-cutting page-structure markers. ============= */
+
+.kw-csf,
+.kw-rno {
+  color: var(--md-primary-fg-color, #1f618d);
+  font-weight: 800;
+}
+
+/* === Branch arrows in `- … → target` lines.
+ *    No render-side class today; style the arrow glyph itself via the
+ *    list-item context. Lists inside step bodies look like
+ *      <ul><li>condition → <a href="#target">target</a></li></ul>
+ *    so we don't need a class hook — just bump weight on the arrow. */
+
+.md-typeset li {
+  /* Modest indent so the arrow lines up visually with keyword leaders. */
+  line-height: 1.55;
+}

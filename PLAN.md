@@ -1606,3 +1606,4 @@ Total: ~7–10 weeks E + F v1, plus ~1.5 weeks parallel H/G upfront.
 | OD-8 | Setpoint-value mismatch severity | **Decided 2026-05-13: error (with missing-vs-populated guard). Implemented.** |
 | OD-9 | F.1 EAL rules location | **Decided 2026-05-13: `wiki/_eal-rules.json` sibling.** |
 | OD-10 | G.1 ownership | **Decided 2026-05-13: samsinn renderer, not wiki render-procmd. Implemented.** |
+| OD-11 | G.3 two-column ERG render | **Decided 2026-05-13: drop as scoped (can't be pure CSS; RNO analogy semantically wrong). Replaced with G.3′: pure-CSS step-styling polish in `overrides/procedure.css` giving Check / Action / Caution / Note / Within / branches distinct visual treatment. Two-column RNO-style render deferred to Phase F when validation traces show whether procedures structurally have RNO-shaped branches.** |
