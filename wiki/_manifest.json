@@ -8,7 +8,7 @@
       "title": "Reactor Trip or Safety Injection",
       "file": "wiki/procedures/E-0.md",
       "stepCount": 18,
-      "tagDefinitionCount": 32,
+      "tagDefinitionCount": 33,
       "coverage": "developed",
       "category": "diagnostic-eop",
       "csfsMonitored": [
@@ -29,7 +29,7 @@
       "title": "Loss of Reactor or Secondary Coolant",
       "file": "wiki/procedures/E-1.md",
       "stepCount": 12,
-      "tagDefinitionCount": 18,
+      "tagDefinitionCount": 19,
       "coverage": "developed",
       "category": "diagnostic-eop",
       "csfsMonitored": [
@@ -45,9 +45,9 @@
       "id": "E-2",
       "title": "Faulted Steam Generator Isolation",
       "file": "wiki/procedures/E-2.md",
-      "stepCount": 8,
+      "stepCount": 10,
       "tagDefinitionCount": 23,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "diagnostic-eop",
       "csfsMonitored": [
         "heat-sink",
