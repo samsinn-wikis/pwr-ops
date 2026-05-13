@@ -129,5 +129,9 @@ nav:
     - procedures/FR-I.1.md
     - procedures/FR-I.2.md
     - procedures/FR-I.3.md
+  - Plant systems:
+    - systems/rcs.md
+    - systems/eccs.md
+    - systems/afw.md
   - Profiles:
     - profiles/nuclear-erg.md

@@ -146,15 +146,27 @@ csfs-related: [core-cooling, rcs-inventory, rcs-integrity]
 Body convention (sections appear in this order; not all required):
 
 - `## Function` — one-paragraph purpose
-- `## Components` — major components with brief descriptions
+- `## Components` — major components with brief descriptions; include a
+  mermaid topology diagram (flowchart LR) showing pumps / valves /
+  vessels and their connections where it aids comprehension
 - `## Instrumentation` — key instruments (cross-reference `«TAG»` if appropriate)
-- `## Setpoints` — design / Tech Spec setpoints with citation
+- `## Setpoints` — design / Tech Spec setpoints with citation; include a
+  mermaid state or control-loop diagram if the setpoint logic has a
+  control-feedback or interlock structure
 - `## Normal alignment` — operating-state flow paths and valve positions
 - `## Failure modes` — common failure modes and their EOP cross-references
 - `## References` — Vogtle UFSAR sections, WTSM chapter, other public references
 
 System pages MAY use inline `«TAG»` references to instruments; the tag
 catalogue is the authoritative resolution.
+
+**Mermaid convention:** Use `flowchart LR` (left-to-right) for topology
+(component-to-component flow paths); `flowchart TD` or `stateDiagram-v2`
+for control-loop / state diagrams; `sequenceDiagram` for operator-system
+interaction timing if useful. Keep diagrams readable on mobile (≤ 8
+labeled nodes per top-level layout where practical). MkDocs renders
+mermaid via the `pymdownx.superfences` mermaid format already configured
+in `mkdocs.yml`.
 
 ### Tag catalogue (`type: tag-catalogue`)
 

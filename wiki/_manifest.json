@@ -634,5 +634,42 @@
       ]
     }
   ],
-  "pages": []
+  "pages": [
+    {
+      "id": "afw",
+      "type": "system-description",
+      "title": "Auxiliary Feedwater System (AFW)",
+      "file": "wiki/systems/afw.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR",
+      "referencePlant": "vogtle",
+      "csfsRelated": [
+        "heat-sink"
+      ]
+    },
+    {
+      "id": "eccs",
+      "type": "system-description",
+      "title": "Emergency Core Cooling System (ECCS)",
+      "file": "wiki/systems/eccs.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR",
+      "referencePlant": "vogtle",
+      "csfsRelated": [
+        "core-cooling",
+        "rcs-inventory"
+      ]
+    },
+    {
+      "id": "rcs",
+      "type": "system-description",
+      "title": "Reactor Coolant System (RCS)",
+      "file": "wiki/systems/rcs.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR",
+      "referencePlant": "vogtle",
+      "csfsRelated": [
+        "core-cooling",
+        "rcs-inventory",
+        "rcs-integrity"
+      ]
+    }
+  ]
 }
