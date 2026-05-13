@@ -7,16 +7,24 @@ page must follow.
 
 ## Page types
 
-This wiki has exactly three page types:
+The wiki supports the following page types. Each declares `type:` in its
+frontmatter (except plain prose pages); each lives in a fixed sibling
+directory under `wiki/`.
 
 | Type | Frontmatter `type:` | Location | Purpose |
 |---|---|---|---|
-| Procedure | `procedure` | `wiki/procedures/<id>.md` | One Westinghouse-style EOP authored in procmd v0.1 |
-| Profile | `procedure-profile` | `wiki/profiles/<id>.md` | Domain synonyms; only `nuclear-erg.md` for v0.1 |
-| Page | (no frontmatter type) | `wiki/index.md`, `wiki/scope.md` | Catalog and coverage map. Plain markdown |
+| Procedure | `procedure` | `wiki/procedures/<id>.md` | One Westinghouse-style EOP authored in procmd (current spec: v0.7) |
+| Profile | `procedure-profile` | `wiki/profiles/<id>.md` | Domain synonyms + taxonomy vocabulary (`nuclear-erg`) |
+| System description | `system-description` | `wiki/systems/<id>.md` | One plant system (function, components, instrumentation, alignment, failure modes) |
+| Tag catalogue | `tag-catalogue` | `wiki/tags/<id>.md` | Canonical instrument / equipment tag definitions; per-procedure appendices may override |
+| Setpoint catalogue | `setpoint-catalogue` | `wiki/setpoints/<id>.md` | Aggregated numeric setpoints with source citations |
+| Tech-spec excerpt | `tech-spec` | `wiki/tech-specs/<id>.md` | LCO / SR / AOT excerpts from Vogtle Tech Specs |
+| Lineup | `lineup` | `wiki/lineups/<id>.md` | Valve / breaker / pump alignments per plant mode |
+| Page | (no frontmatter type) | `wiki/index.md`, `wiki/scope.md`, `wiki/procmd.md`, `wiki/sources.md` | Catalog and reference prose |
 
-No other page types are valid. Do not create prose pages alongside
-procedures — this is a procedural wiki only.
+Pages of unrecognized types are still rendered by MkDocs as plain
+markdown but are not picked up by samsinn agents via the `procedure_lookup`
+or `wiki_lookup` tools.
 
 ## Procedure page schema
 
@@ -25,7 +33,7 @@ Frontmatter (required, in this order):
 ```yaml
 ---
 type: procedure
-procedure-md: 0.1
+procedure-md: 0.7
 procedure-id: E-0                              # must match filename
 title: Reactor Trip or Safety Injection
 profile: nuclear-erg
@@ -79,7 +87,7 @@ Frontmatter:
 ```yaml
 ---
 type: procedure-profile
-procedure-md: 0.1
+procedure-md: 0.7
 profile-id: nuclear-erg
 title: Nuclear Emergency Response Guidelines profile
 ---
@@ -114,3 +122,111 @@ When reasoning about Westinghouse-style ERG structure, lean on:
 Do NOT reproduce verbatim WOG-copyrighted procedure text. The
 goal is faithful logical *structure* with original prose, not a
 redistribution of WOG documents.
+
+## Phase D page-type schemas
+
+These schemas govern pages added in Phase D and later. None of these are
+procmd-shaped (no step graph); they are plain markdown with a defined
+frontmatter shape so samsinn agents can discover them via the
+`wiki_lookup` tool.
+
+### System description (`type: system-description`)
+
+```yaml
+---
+type: system-description
+system-id: rcs
+title: Reactor Coolant System
+applies-to: Westinghouse-style 4-loop PWR
+reference-plant: vogtle
+csfs-related: [core-cooling, rcs-inventory, rcs-integrity]
+---
+```
+
+Body convention (sections appear in this order; not all required):
+
+- `## Function` — one-paragraph purpose
+- `## Components` — major components with brief descriptions
+- `## Instrumentation` — key instruments (cross-reference `«TAG»` if appropriate)
+- `## Setpoints` — design / Tech Spec setpoints with citation
+- `## Normal alignment` — operating-state flow paths and valve positions
+- `## Failure modes` — common failure modes and their EOP cross-references
+- `## References` — Vogtle UFSAR sections, WTSM chapter, other public references
+
+System pages MAY use inline `«TAG»` references to instruments; the tag
+catalogue is the authoritative resolution.
+
+### Tag catalogue (`type: tag-catalogue`)
+
+```yaml
+---
+type: tag-catalogue
+catalogue-id: pwr-4loop
+title: Tag catalogue — Westinghouse-style 4-loop PWR
+applies-to: Westinghouse-style 4-loop PWR
+reference-plant: vogtle
+---
+```
+
+Body is a single `## Tags` appendix block in the same shape used by
+procedure tag appendices. The catalogue is the canonical resolution for
+any `«TAG»` reference appearing in a system page or procedure that does
+not declare a local appendix entry.
+
+### Setpoint catalogue (`type: setpoint-catalogue`)
+
+```yaml
+---
+type: setpoint-catalogue
+catalogue-id: pwr-4loop
+title: Setpoint catalogue — Westinghouse-style 4-loop PWR
+applies-to: Westinghouse-style 4-loop PWR
+reference-plant: vogtle
+---
+```
+
+Body is grouped tables of setpoints per system, each row carrying
+{setpoint name, value, units, source citation}. Procedure pages cite the
+catalogue via plain wikilink.
+
+### Tech-spec excerpt (`type: tech-spec`)
+
+```yaml
+---
+type: tech-spec
+tech-spec-id: 3.4.3-pt-limits
+title: Tech Spec 3.4.3 — RCS pressure-temperature limits
+applies-to: Vogtle Tech Specs (representative)
+---
+```
+
+Body: LCO / SR / AOT excerpt with the action-statement table. Cross-
+referenced from procedure steps that depend on the tech-spec action.
+
+### Lineup (`type: lineup`)
+
+```yaml
+---
+type: lineup
+lineup-id: post-trip-stable
+title: Post-trip stable alignment (Mode 3)
+applies-to: Westinghouse-style 4-loop PWR
+reference-plant: vogtle
+---
+```
+
+Body: valve / breaker / pump status tables for a named plant state
+(normal, post-trip, recirculation, mid-loop). Cross-referenced from
+procedure steps that change alignment.
+
+## Validation scope for new types
+
+`validate.ts` validates only `wiki/procedures/*.md` and
+`wiki/profiles/*.md`. New page types live in sibling directories and are:
+
+- Rendered verbatim by MkDocs (no procmd transform).
+- Indexed by `scripts/build-manifest.ts` so samsinn's `wiki_lookup` tool
+  can discover them.
+- Free-form markdown content — author discretion within the section
+  conventions above. No structural validation enforced; readability and
+  consistency are the standards.
