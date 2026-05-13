@@ -101,10 +101,19 @@ function autoBoldKeyword(line: string): string {
 }
 
 function wrapTagRefs(line: string): string {
-  return line.replace(
+  const tagged = line.replace(
     TAG_REF_RE,
     (_m, id) => `<a class="procmd-tag" href="#tag-${id}">«${id}»</a>`,
   );
+  // Wrap consecutive tag refs separated by " / " or " · " (the patterns the
+  // author corpus uses for multi-tag groups) inside a single .procmd-tag-group
+  // span. When the user hides tags via the visibility popover, the entire
+  // group collapses — preventing orphaned separator characters like " / / / ".
+  // The interior anchors keep their href, so click-to-jump still works.
+  const ANCHOR = '<a class="procmd-tag"[^>]*>«[^«»]+»</a>';
+  const SEP = '\\s*[/·]\\s*';
+  const GROUP_RE = new RegExp(`(${ANCHOR})(?:(${SEP})(${ANCHOR}))+`, 'g');
+  return tagged.replace(GROUP_RE, m => `<span class="procmd-tag-group">${m}</span>`);
 }
 
 // Inside the `## Tags` appendix, each entry begins `- id: <TAG-ID>`. We add

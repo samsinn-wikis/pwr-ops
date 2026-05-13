@@ -4,7 +4,7 @@ procedure-md: 0.7
 procedure-id: ES-3.2
 title: Post-SGTR Cooldown Using Blowdown
 profile: nuclear-erg
-applies-to: Westinghouse 4-loop PWR
+applies-to: Westinghouse-style 4-loop PWR
 reference-plant: vogtle
 category: recovery-procedure
 csfs-monitored: [heat-sink, containment]

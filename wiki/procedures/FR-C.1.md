@@ -4,7 +4,7 @@ procedure-md: 0.7
 procedure-id: FR-C.1
 title: Response to Inadequate Core Cooling
 profile: nuclear-erg
-applies-to: Westinghouse 4-loop PWR
+applies-to: Westinghouse-style 4-loop PWR
 reference-plant: vogtle
 category: function-restoration
 csfs-monitored: [core-cooling]

@@ -4,7 +4,7 @@ procedure-md: 0.7
 procedure-id: ES-0.0
 title: Rediagnosis
 profile: nuclear-erg
-applies-to: Westinghouse 4-loop PWR
+applies-to: Westinghouse-style 4-loop PWR
 reference-plant: vogtle
 category: diagnostic-eop
 csfs-monitored: [subcriticality, core-cooling, heat-sink, rcs-integrity, containment, rcs-inventory]

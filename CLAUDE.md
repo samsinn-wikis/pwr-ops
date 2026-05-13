@@ -11,7 +11,7 @@ This wiki has exactly three page types:
 
 | Type | Frontmatter `type:` | Location | Purpose |
 |---|---|---|---|
-| Procedure | `procedure` | `wiki/procedures/<id>.md` | One Westinghouse EOP authored in procmd v0.1 |
+| Procedure | `procedure` | `wiki/procedures/<id>.md` | One Westinghouse-style EOP authored in procmd v0.1 |
 | Profile | `procedure-profile` | `wiki/profiles/<id>.md` | Domain synonyms; only `nuclear-erg.md` for v0.1 |
 | Page | (no frontmatter type) | `wiki/index.md`, `wiki/scope.md` | Catalog and coverage map. Plain markdown |
 
@@ -29,7 +29,7 @@ procedure-md: 0.1
 procedure-id: E-0                              # must match filename
 title: Reactor Trip or Safety Injection
 profile: nuclear-erg
-applies-to: Westinghouse 4-loop PWR
+applies-to: Westinghouse-style 4-loop PWR
 ---
 ```
 
@@ -67,7 +67,7 @@ Rules:
   `→ [[<procedure-id>]]` (enter at first step) or `→ END`.
 - `Caution:` and `Note:` may be authored as `!!! warning` /
   `!!! note` admonitions; both forms render and parse.
-- Westinghouse `RNO:` is a profile synonym for the negative-branch
+- Westinghouse-style `RNO:` is a profile synonym for the negative-branch
   pattern — it expands as a normal `- Not <condition> → <target>` line.
   Use `RNO:` in source for readability; the parser resolves it via the
   `nuclear-erg` profile.
@@ -105,12 +105,12 @@ page (the validator will catch it, but it's avoidable churn).
 
 ## Reference materials
 
-When reasoning about Westinghouse ERG structure, lean on:
+When reasoning about Westinghouse-style ERG structure, lean on:
 - General PWR thermal-hydraulics knowledge from training data
 - Public NUREG references (NUREG/CR-5572, NUREG-0660 Action Plan)
-- Westinghouse Owners Group public training summaries
+- Westinghouse-style Owners Group public training summaries
 - University PWR operator-training course materials
 
-Do NOT reproduce verbatim Westinghouse-copyrighted procedure text. The
+Do NOT reproduce verbatim WOG-copyrighted procedure text. The
 goal is faithful logical *structure* with original prose, not a
 redistribution of WOG documents.

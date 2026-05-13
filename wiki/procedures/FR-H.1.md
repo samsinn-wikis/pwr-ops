@@ -4,7 +4,7 @@ procedure-md: 0.7
 procedure-id: FR-H.1
 title: Response to Loss of Secondary Heat Sink
 profile: nuclear-erg
-applies-to: Westinghouse 4-loop PWR
+applies-to: Westinghouse-style 4-loop PWR
 reference-plant: vogtle
 category: function-restoration
 csfs-monitored: [heat-sink]

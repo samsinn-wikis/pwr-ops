@@ -15,7 +15,7 @@ taxonomy below.
 
 ## Synonyms
 
-- `RNO:` ≡ `- Not <preceding-condition> →` (Westinghouse "Response Not Obtained" two-column convention)
+- `RNO:` ≡ `- Not <preceding-condition> →` (Westinghouse-style "Response Not Obtained" two-column convention)
 - `CSF:` ≡ procedure-level `Concurrent: <name> [independent]` (Critical Safety Function — runs from event entry through recovery, does not terminate with the EOP)
 
 ## Taxonomy
@@ -62,7 +62,7 @@ when an explicit `[Label]` is absent on a branch:
 
 ## RNO usage
 
-In Westinghouse ERG two-column format, the left column is the
+In Westinghouse-style ERG two-column format, the left column is the
 instruction (`Check:` or `Action:`), and the right column is the action
 to take if the expected response is not obtained. In procmd this is
 encoded as a negative branch on the immediate Decision:

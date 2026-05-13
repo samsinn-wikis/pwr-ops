@@ -77,7 +77,8 @@
 
 html.hide-rationale        .procmd-rationale     { display: none; }
 html.hide-step-id-suffix   .procmd-step-id-suffix { display: none; }
-html.hide-tag              .procmd-tag           { display: none; }
+html.hide-tag              .procmd-tag,
+html.hide-tag              .procmd-tag-group     { display: none; }
 html.hide-tag-appendix     .procmd-tag-appendix  { display: none; }
 
 /* When rationale is hidden, also hide the trailing <br/> that markdown's

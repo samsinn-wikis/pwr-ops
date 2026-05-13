@@ -4,7 +4,7 @@ procedure-md: 0.7
 procedure-id: ECA-0.0
 title: Loss of All AC Power
 profile: nuclear-erg
-applies-to: Westinghouse 4-loop PWR
+applies-to: Westinghouse-style 4-loop PWR
 reference-plant: vogtle
 category: extreme-conditions
 csfs-monitored: [subcriticality, core-cooling, heat-sink, rcs-integrity, containment, rcs-inventory]

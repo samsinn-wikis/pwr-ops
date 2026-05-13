@@ -4,7 +4,7 @@ procedure-md: 0.7
 procedure-id: ES-0.1
 title: Reactor Trip Response
 profile: nuclear-erg
-applies-to: Westinghouse 4-loop PWR
+applies-to: Westinghouse-style 4-loop PWR
 reference-plant: vogtle
 category: recovery-procedure
 csfs-monitored: [subcriticality, core-cooling, heat-sink, rcs-integrity, containment, rcs-inventory]

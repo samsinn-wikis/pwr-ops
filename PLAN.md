@@ -2,7 +2,7 @@
 
 This document is the working brief for taking the pwr-ops wiki from
 "procmd-format demo with one developed EOP" to "authentic-style
-Westinghouse PWR EOP reference set with surrounding operational
+Westinghouse-style PWR EOP reference set with surrounding operational
 context, suitable for samsinn agents to reason against in nuclear-plant
 simulations." It supersedes the casual notes in `README.md` ("Phase 1 /
 Phase 2") with a concrete, prioritized work plan.
@@ -23,7 +23,7 @@ one-line steps + branch targets only — Phase-1 schema-pass material).
 | ID | Lines | Steps | Notes |
 |---|---|---|---|
 | E-0 | 341 | 18 | Reference quality. Rich `Because:` rationales, 36 `## Tags` declarations, sim-paths. **Spot issue:** step 7 lists `MSLI signal AND MSIV will not close → #verify-feedwater-isolation` with rationale "continue diagnostic; faulted-SG isolation will be addressed in step 15" — the branch and its non-failure twin merge to the same target; this is fine in procmd but the *operator-visible* implication (you've identified a stuck-open MSIV and are continuing past) deserves a `Caution:` not a `Because:` comment buried on a branch. **Verdict: OK with one minor revision.** |
-| E-1 | 204 | ~11 | Coherent LOCA flow. **Audit findings:** (a) Step 3 RCP-trip criterion lacks a numeric subcooling threshold — real Westinghouse criterion is something like "RCS pressure ≤ subcooling-margin threshold AND ≥1 charging or SI pump running" — current text is structurally right but operationally vague. (b) Recirculation transfer trigger (RWST low) is not present as an explicit branch — it's deferred to ES-1.3, which is a stub. **Verdict: OK structurally; needs setpoint-level firmness.** |
+| E-1 | 204 | ~11 | Coherent LOCA flow. **Audit findings:** (a) Step 3 RCP-trip criterion lacks a numeric subcooling threshold — real Westinghouse-style criterion is something like "RCS pressure ≤ subcooling-margin threshold AND ≥1 charging or SI pump running" — current text is structurally right but operationally vague. (b) Recirculation transfer trigger (RWST low) is not present as an explicit branch — it's deferred to ES-1.3, which is a stub. **Verdict: OK structurally; needs setpoint-level firmness.** |
 | E-2 | 205 | ~11 | Faulted-SG isolation. **Audit findings:** (a) "Isolate AFW to faulted SG" must be explicitly time-ordered before MSIV closure for that SG to avoid water-hammer / level swell — check ordering. (b) Steam dump cross-tie / interconnection between SGs is not addressed. **Verdict: OK; minor sequencing review.** |
 | E-3 | 239 | ~12 | SGTR. **Audit findings:** (a) Identification of ruptured SG (N-16 vs blowdown radiation) could be a `Decision:` step that explicitly enumerates the four detection paths in priority order. (b) Backfill/blowdown/steam-dump branch to ES-3.1 / ES-3.2 / ES-3.3 is correct *but* those targets are stubs, so the procedure currently "ends in nothing." **Verdict: OK; depends on its successor procedures being completed.** |
 
@@ -86,7 +86,7 @@ nuclear-plant event.
    under-used. Either: declare them locally on every page, or
    centralize them in a "tags catalogue" file (procmd extension —
    see §4).
-3. **No Caution: / Note: usage outside E-0.** Real Westinghouse EOPs
+3. **No Caution: / Note: usage outside E-0.** Real Westinghouse-style EOPs
    have ubiquitous cautions (especially around RCP trip, AFW flow
    verification, containment isolation timing). The stubs are devoid
    of these.
@@ -115,8 +115,8 @@ Captured in `wiki/sources.md` (new). Key takeaways for authors:
 - **NUREG-0899** + **NUMARC/NESP-007 Rev. 2** + **EPRI EOP Writers'
   Guide** define the form and language; copy *form*, never *text*.
 - **NUREG/CR-5572 Vol. II** is the closest open evaluation of the
-  Westinghouse ERG set — useful for sanity-checking transitions.
-- **NRC *Westinghouse Technology Systems Manual* (WTSM)** is the
+  Westinghouse-style ERG set — useful for sanity-checking transitions.
+- **NRC *Westinghouse-style Technology Systems Manual* (WTSM)** is the
   authoritative open per-system reference; cite it for setpoints,
   system descriptions, and the conceptual model behind a step.
 - **NUREG-0700 / 0711** govern the control-room HSI conventions and
@@ -544,7 +544,7 @@ existing implementation surface:
 | F12 | **Medium** | Tool description says "paste verbatim, do not summarize." For large procedures this forces the entire page into the chat context every time. Agents have no way to ask for "just step `verify-si-pumps`" or "just the entry conditions." | **Adopt** — `step: '<step-id>'` parameter that returns only the named step + adjacent branch targets. `mode: 'summary'` returns frontmatter + entry-conditions + step count. |
 | F13 | **Medium** | No `procedure-md` version handshake. Parser doesn't read the frontmatter `procedure-md:` field; if wiki ships v0.7 with breaking changes, the tool silently produces wrong output. | **Adopt** — parser asserts compatible `procedure-md:` version; on mismatch, return raw md with a banner "tool version X, procedure version Y — showing raw source." |
 | F14 | **Medium** | No fallback fetch path. If raw.githubusercontent.com is rate-limited or down, tool fails. The rendered HTML at samsinn-wikis.github.io is the same content. | **Adopt** — fallback to `https://samsinn-wikis.github.io/pwr-ops/procedures/<id>/raw.md` *if* the wiki builds a sidecar raw.md per page (Phase A wiki-side change). Otherwise fall back to scraping the rendered HTML — uglier but always available. |
-| F15 | **Medium** | Authentic Westinghouse "two-column" ERG visual style (instruction column / Response Not Obtained column) is the single most distinctive feature of real WOG procedures. Neither the wiki render nor the agent render reproduces it. CLAUDE.md notes this is "flattened to procmd" — the flattening is correct semantically but loses operational feel for the web reader. | **Adopt selectively** — add a `two-column` render mode to the wiki build (CSS only; the procmd source stays flat). Procedure mds get a "View two-column" toggle alongside the existing visibility popover. Agent render unchanged. |
+| F15 | **Medium** | Authentic Westinghouse-style "two-column" ERG visual style (instruction column / Response Not Obtained column) is the single most distinctive feature of real WOG procedures. Neither the wiki render nor the agent render reproduces it. CLAUDE.md notes this is "flattened to procmd" — the flattening is correct semantically but loses operational feel for the web reader. | **Adopt selectively** — add a `two-column` render mode to the wiki build (CSS only; the procmd source stays flat). Procedure mds get a "View two-column" toggle alongside the existing visibility popover. Agent render unchanged. |
 | F16 | **Medium** | Renderer marks any branch-bearing step as a diamond. Many `Check:` steps in E-0 have one "OK → next, fault → escalate" pair — they're conditional jumps, not decisions. Visually noisy. | **Adopt low-priority** — heuristic: diamond only if ≥2 *substantive* branches (excluding "OK → next" continuation). Cosmetic. |
 | F17 | **Medium** | Centralized tag catalogue (§4.5) — neither parser nor renderer currently knows about cross-file tag definitions. Naively adopting it makes every procedure require a second wiki fetch on parse, or makes the wiki render time pre-inline the catalogue. | **Adopt with explicit design** — wiki render pipeline inlines the catalogue at build time (so each procedure's deployed `.md` is self-contained) AND keeps the canonical catalogue page for human readers. Parser unchanged. Trade: deployed md gets larger; wins simplicity. |
 | F18 | **Medium** | `entry-condition:` frontmatter (§4.4) — parser reads only specific frontmatter fields explicitly; unknown fields silently ignored. Authoring it without parser changes means agents still don't see it. | **Adopt** — parser passes through *all* frontmatter as `fm.extra: Record<string, unknown>` so additive fields work without parser churn. Just be careful with YAML parsing — current parser uses a naive line regex that won't handle nested YAML maps. |
@@ -924,7 +924,7 @@ procmd v0.7's first real new keyword: `Decision:`.
 **Vogtle Units 1 & 2 UFSAR** is the reference plant for all numeric
 setpoints, alarm thresholds, and operating limits. Cite as `per Vogtle
 UFSAR Rev. X §15.6` in tag `source:` fields. The wiki's `applies-to:`
-frontmatter remains `Westinghouse 4-loop PWR` for generality, but the
+frontmatter remains `Westinghouse-style 4-loop PWR` for generality, but the
 *numbers* are Vogtle-specific. README + scope.md gain a paragraph
 declaring Vogtle as the numeric reference.
 

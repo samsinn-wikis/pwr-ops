@@ -6,9 +6,9 @@ title: Scope and disclaimers
 
 ## What this wiki covers
 
-Coverage targets the standard **Westinghouse 4-loop Pressurized Water
+Coverage targets the standard **Westinghouse-style 4-loop Pressurized Water
 Reactor** baseline EOP set, organized in the four families used by the
-Westinghouse Owners Group:
+Westinghouse-style Owners Group:
 
 - **E-series** (4 procedures) — initial diagnostic and mitigation: reactor
   trip / safety injection entry, LOCA, faulted steam generator, steam
@@ -42,7 +42,7 @@ Total: ~39 procedure pages plus one profile page.
 
 Procedure structure and prose are reconstructed from Claude's general
 nuclear-engineering training-data knowledge. The format follows the
-publicly described Westinghouse Emergency Response Guidelines (ERG)
+publicly described Westinghouse-style Emergency Response Guidelines (ERG)
 two-column structure (instruction column / Response Not Obtained column),
 flattened to procmd's branch syntax via the `nuclear-erg` profile's
 `RNO:` synonym.
@@ -51,11 +51,11 @@ Reference materials drawn upon (in general training data, not directly
 cited):
 
 - NRC NUREG references (notably NUREG-0660, NUREG-0696, NUREG/CR-5572)
-- Public Westinghouse Owners Group training summaries
+- Public Westinghouse-style Owners Group training summaries
 - University PWR operator-training course materials
 - Open-literature reactor safety analysis papers and textbooks
 
-**No verbatim Westinghouse-copyrighted procedure text is reproduced.**
+**No verbatim Westinghouse-style-copyrighted procedure text is reproduced.**
 The objective is faithful logical structure with original prose.
 
 ## Status of the content
@@ -65,7 +65,7 @@ The objective is faithful logical structure with original prose.
 >
 > Procedures here have NOT been:
 > - reviewed by qualified nuclear operators or shift supervisors
-> - validated against current Westinghouse Owners Group revision-level
+> - validated against current Westinghouse-style Owners Group revision-level
 >   procedure sets
 > - cross-checked against any specific plant's licensing basis
 > - approved for operator training, qualification, or licensing exams

@@ -4,7 +4,7 @@ procedure-md: 0.7
 procedure-id: FR-H.5
 title: Response to Steam Generator Low Level
 profile: nuclear-erg
-applies-to: Westinghouse 4-loop PWR
+applies-to: Westinghouse-style 4-loop PWR
 reference-plant: vogtle
 category: function-restoration
 csfs-monitored: [heat-sink]

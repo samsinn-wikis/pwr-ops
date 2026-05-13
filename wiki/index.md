@@ -1,10 +1,10 @@
 ---
-title: Westinghouse PWR Operations — Index
+title: Westinghouse-style PWR Operations — Index
 ---
 
-# Westinghouse PWR Operations Knowledge Base
+# Westinghouse-style PWR Operations Knowledge Base
 
-Westinghouse PWR operating knowledge — emergency operating procedures
+Westinghouse-style PWR operating knowledge — emergency operating procedures
 (complete set of E, ES, ECA, FR families) plus the plant reference,
 conduct of operations, human factors, and scenario layers — authored in
 [Procedure Markdown (procmd) v0.6](procmd.md) and consumed both by human

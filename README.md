@@ -1,6 +1,6 @@
-# pwr-ops — Westinghouse PWR Operations Knowledge Base (LLM-reconstructed)
+# pwr-ops — Westinghouse-style PWR Operations Knowledge Base (LLM-reconstructed)
 
-A wiki holding Westinghouse Pressurized Water Reactor operating
+A wiki holding Westinghouse-style Pressurized Water Reactor operating
 knowledge — emergency operating procedures, plant reference, conduct of
 operations, human factors, and scenario libraries — authored in
 [Procedure Markdown (procmd) v0.6](https://github.com/michaelhil/samsinn/blob/master/docs/procedure-md.md)
@@ -15,11 +15,11 @@ operating procedures (see disclaimers below).
 
 > **This wiki contains LLM-reconstructed procedures, not licensed plant
 > operating procedures. The content is based on Claude's general nuclear
-> engineering knowledge from training data, NOT verbatim Westinghouse
+> engineering knowledge from training data, NOT verbatim Westinghouse-style
 > Owners Group documents.**
 >
 > The procedures here are approximations of the *logical structure* of
-> Westinghouse Emergency Response Guidelines, intended to demonstrate the
+> Westinghouse-style Emergency Response Guidelines, intended to demonstrate the
 > procmd format. They have not been reviewed by qualified nuclear
 > operators, validated against current revision-level WOG documents, or
 > sanctioned for use in plant operations.
@@ -30,7 +30,7 @@ operating procedures (see disclaimers below).
 > licensed procedure set.
 >
 > Errors are expected. Branch destinations, step ordering, setpoint
-> values, and recovery paths may differ from current Westinghouse ERG
+> values, and recovery paths may differ from current Westinghouse-style ERG
 > revisions. Inadvertent omissions and miscategorizations are likely.
 
 ## What this wiki is
@@ -113,7 +113,8 @@ plugin.
 
 ## License
 
-Procedure structure and prose: CC-BY-4.0. Westinghouse, Westinghouse
-Electric Company, and the Westinghouse Owners Group are referenced for
-context only — this wiki is not affiliated with, endorsed by, or
-sanctioned by any of those organizations.
+Procedure structure and prose: CC-BY-4.0. This wiki is not affiliated
+with, endorsed by, or sanctioned by any reactor vendor, owners group,
+or licensee. Brand and entity names appearing in source citations
+(NRC publications, public UFSARs) are referenced for factual
+attribution only.

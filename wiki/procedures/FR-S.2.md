@@ -4,7 +4,7 @@ procedure-md: 0.7
 procedure-id: FR-S.2
 title: Response to Loss of Core Shutdown
 profile: nuclear-erg
-applies-to: Westinghouse 4-loop PWR
+applies-to: Westinghouse-style 4-loop PWR
 reference-plant: vogtle
 category: function-restoration
 csfs-monitored: [subcriticality]

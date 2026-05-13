@@ -4,7 +4,7 @@ procedure-md: 0.7
 procedure-id: ECA-3.2
 title: SGTR with Loss of Reactor Coolant — Saturated Recovery
 profile: nuclear-erg
-applies-to: Westinghouse 4-loop PWR
+applies-to: Westinghouse-style 4-loop PWR
 reference-plant: vogtle
 category: extreme-conditions
 csfs-monitored: [core-cooling, rcs-inventory, containment]

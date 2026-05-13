@@ -5,11 +5,11 @@ title: Reference Sources
 # Reference Sources
 
 This wiki is **LLM-reconstructed** from publicly available references on
-Westinghouse Pressurized Water Reactor design and Emergency Response
-Guidelines. It does **not** redistribute proprietary Westinghouse Owners
+Westinghouse-style Pressurized Water Reactor design and Emergency Response
+Guidelines. It does **not** redistribute proprietary Westinghouse-style Owners
 Group ERG text. The sources listed here are the authoritative public
 materials a contributor (human or LLM agent) should consult to keep the
-content faithful to the real-world Westinghouse style.
+content faithful to the real-world Westinghouse-style style.
 
 If you cite a procedure step against one of these sources, name the
 source short-id and section in the commit message — e.g.
@@ -29,24 +29,24 @@ can get to the ERG philosophy without acquiring WOG-licensed material.
 | **NUREG-0800 SRP** | *Standard Review Plan*, esp. Chapter 13.5 (Plant Procedures) and 18 (Human Factors) | Review criteria the NRC applies to plant EOP programs; useful as a self-audit checklist. |
 | **NUREG-0700 Rev. 2** | *Human-System Interface Design Review Guidelines* | The reference for control-room HSI conventions referenced in steps (alarm presentation, indicator labelling, etc.). |
 | **NUREG-0711 Rev. 3** | *Human Factors Engineering Program Review Model* | Frame for human-factors annotations on a procedure (workload, error-likely steps, time-critical actions). |
-| **NUREG/CR-5572** | *Methods for Review and Evaluation of Emergency Procedure Guidelines, Vol. II — Applications to Westinghouse Plants* | Direct technical commentary on the Westinghouse ERG set; identifies known issues and review findings. |
+| **NUREG/CR-5572** | *Methods for Review and Evaluation of Emergency Procedure Guidelines, Vol. II — Applications to Westinghouse-style Plants* | Direct technical commentary on the Westinghouse-style ERG set; identifies known issues and review findings. |
 | **NUREG/CR-6981** | *Assessment of Emergency Response Planning and Implementation for Large-Scale Evacuations* | Background for off-site / EOF interactions referenced in extended procedures. |
 | **NUMARC/NESP-007 Rev. 2** | *Methodology for the Development of Emergency Operating Procedures* | Industry-side counterpart to NUREG-0899; gives the EPG → EOP translation method. |
 | **EPRI EOP Writers' Guide** (TR-1003414 and successors) | *Emergency Operating Procedure Writers' Guide* | The format/style template most U.S. utilities adapted; basis for two-column instruction/RNO layout. |
 
-## Tier 2 — Westinghouse-specific training material (open)
+## Tier 2 — Westinghouse-style-specific training material (open)
 
-The NRC-published *Westinghouse Technology Systems Manual* and the
-Westinghouse Technology training course materials are the most
-authoritative open Westinghouse-specific references. They were prepared
-by the NRC for staff training on Westinghouse plants and describe the
+The NRC-published *Westinghouse-style Technology Systems Manual* and the
+Westinghouse-style Technology training course materials are the most
+authoritative open Westinghouse-style-specific references. They were prepared
+by the NRC for staff training on Westinghouse-style plants and describe the
 real systems, setpoints, and operating philosophy.
 
 | Short-id | Document |
 |---|---|
-| **WTSM** | NRC *Westinghouse Technology Systems Manual* (per-system chapters: NSSS, NIS, RPS, ECCS, AFW, Containment, etc.) — [ML21166A218](https://www.nrc.gov/docs/ML2116/ML21166A218.pdf) |
-| **WT-100 / WT-200 / R-104P** | NRC *Westinghouse Technology* course outlines and 100/200-level objectives — useful for terminology and conceptual scope |
-| **Procedures Development and Maintenance** | Westinghouse Nuclear data sheet describing the procedures program services |
+| **WTSM** | NRC *Westinghouse-style Technology Systems Manual* (per-system chapters: NSSS, NIS, RPS, ECCS, AFW, Containment, etc.) — [ML21166A218](https://www.nrc.gov/docs/ML2116/ML21166A218.pdf) |
+| **WT-100 / WT-200 / R-104P** | NRC *Westinghouse-style Technology* course outlines and 100/200-level objectives — useful for terminology and conceptual scope |
+| **Procedures Development and Maintenance** | Westinghouse-style Nuclear data sheet describing the procedures program services |
 
 ## Tier 3 — Owners-group public-facing material
 
@@ -56,9 +56,9 @@ status-tree topology, and entry conditions.
 
 | Short-id | Document |
 |---|---|
-| **PWROG Procedures Committee** | Westinghouse PWR Owners Group public charter pages for the Procedures Committee (formerly WOG Procedures Subcommittee) |
-| **IAEA INIS h9jk7-yph67** | *The Emergency Response Guidelines for the Westinghouse Pressurized Water Reactor* (conference paper, public-domain summary of ERG philosophy and structure) |
-| **Westinghouse SAMG** | Westinghouse Severe Accident Management Guidance Support data sheet — context for the EOP → SAMG handoff at the lower bound of FR-C |
+| **PWROG Procedures Committee** | Westinghouse-style PWR Owners Group public charter pages for the Procedures Committee (formerly WOG Procedures Subcommittee) |
+| **IAEA INIS h9jk7-yph67** | *The Emergency Response Guidelines for the Westinghouse-style Pressurized Water Reactor* (conference paper, public-domain summary of ERG philosophy and structure) |
+| **Westinghouse-style SAMG** | Westinghouse-style Severe Accident Management Guidance Support data sheet — context for the EOP → SAMG handoff at the lower bound of FR-C |
 
 ## Tier 4 — Academic / textbook references
 
@@ -77,10 +77,10 @@ all you like.
 
 Many U.S. PWR Updated Final Safety Analysis Reports are public on the
 NRC ADAMS document system. Useful for sanity-checking tag values and
-setpoints against a real 4-loop Westinghouse plant. Examples:
+setpoints against a real 4-loop Westinghouse-style plant. Examples:
 
 - Vogtle UFSAR, Sequoyah UFSAR, Watts Bar UFSAR, Catawba/McGuire UFSAR
-  — all 4-loop Westinghouse, all publicly accessible via ADAMS.
+  — all 4-loop Westinghouse-style, all publicly accessible via ADAMS.
 
 ## How to cite from these sources without copying
 
