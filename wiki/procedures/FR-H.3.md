@@ -9,7 +9,6 @@ reference-plant: vogtle
 category: function-restoration
 csfs-monitored: [heat-sink]
 entry-triggers: [csf-yellow-path]
-validation-needed: true
 ---
 
 # FR-H.3 — Response to Steam Generator High Level

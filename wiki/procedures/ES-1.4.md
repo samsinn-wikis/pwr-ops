@@ -9,7 +9,6 @@ reference-plant: vogtle
 category: recovery-procedure
 csfs-monitored: [core-cooling]
 entry-triggers: [post-trip-stable]
-validation-needed: true
 ---
 
 # ES-1.4 — Transfer to Hot Leg Recirculation

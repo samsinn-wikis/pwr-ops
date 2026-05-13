@@ -258,3 +258,52 @@ html.hide-rationale .procmd-rationale + br { display: none; }
 .procmd-vis-popover .procmd-vis-reset button:hover {
   background: rgba(0,0,0,0.05);
 }
+
+/* ---- Tag hover tooltips ---------------------------------------------- */
+/* Hover-revealed details for «TAG» refs in procedure body. Mirrors the
+   appendix entry; click on the tag still jumps to that entry. */
+.procmd-tag-tooltip {
+  position: absolute;
+  z-index: 1000;
+  background: var(--md-default-bg-color, #fff);
+  color: var(--md-default-fg-color, #333);
+  border: 1px solid var(--md-default-fg-color--lightest, #ddd);
+  border-radius: 6px;
+  padding: 8px 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-size: 0.85em;
+  max-width: 360px;
+  pointer-events: none;
+  animation: procmd-tag-tooltip-fade-in 0.12s ease-out;
+}
+@keyframes procmd-tag-tooltip-fade-in {
+  from { opacity: 0; transform: translateY(-2px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.procmd-tag-tooltip-id {
+  font-weight: 700;
+  font-family: var(--md-code-font-family, monospace);
+  font-size: 0.95em;
+  margin-bottom: 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--md-default-fg-color--lightest, #eee);
+  color: var(--md-primary-fg-color, #3f51b5);
+}
+.procmd-tag-tooltip-row {
+  display: grid;
+  grid-template-columns: 84px 1fr;
+  gap: 8px;
+  margin: 2px 0;
+  line-height: 1.35;
+}
+.procmd-tag-tooltip-key {
+  font-weight: 600;
+  color: var(--md-default-fg-color--light, #555);
+  font-size: 0.85em;
+  text-transform: lowercase;
+}
+.procmd-tag-tooltip-val {
+  font-family: var(--md-code-font-family, monospace);
+  font-size: 0.9em;
+  word-break: break-word;
+}

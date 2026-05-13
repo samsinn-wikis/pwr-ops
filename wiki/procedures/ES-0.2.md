@@ -9,7 +9,6 @@ reference-plant: vogtle
 category: recovery-procedure
 csfs-monitored: [core-cooling, heat-sink, rcs-integrity]
 entry-triggers: [post-trip-stable]
-validation-needed: true
 ---
 
 # ES-0.2 — Natural Circulation Cooldown

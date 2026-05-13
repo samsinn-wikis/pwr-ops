@@ -80,7 +80,7 @@
       "file": "wiki/procedures/ECA-0.0.md",
       "stepCount": 4,
       "tagDefinitionCount": 27,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "extreme-conditions",
       "csfsMonitored": [
         "subcriticality",
@@ -100,7 +100,7 @@
       "file": "wiki/procedures/ECA-1.1.md",
       "stepCount": 4,
       "tagDefinitionCount": 8,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "extreme-conditions",
       "csfsMonitored": [
         "core-cooling",
@@ -116,7 +116,7 @@
       "file": "wiki/procedures/ECA-1.2.md",
       "stepCount": 4,
       "tagDefinitionCount": 9,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "extreme-conditions",
       "csfsMonitored": [
         "containment",
@@ -133,7 +133,7 @@
       "file": "wiki/procedures/ECA-2.1.md",
       "stepCount": 4,
       "tagDefinitionCount": 24,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "extreme-conditions",
       "csfsMonitored": [
         "heat-sink",
@@ -149,7 +149,7 @@
       "file": "wiki/procedures/ECA-3.1.md",
       "stepCount": 3,
       "tagDefinitionCount": 15,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "extreme-conditions",
       "csfsMonitored": [
         "core-cooling",
@@ -166,7 +166,7 @@
       "file": "wiki/procedures/ECA-3.2.md",
       "stepCount": 3,
       "tagDefinitionCount": 15,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "extreme-conditions",
       "csfsMonitored": [
         "core-cooling",
@@ -183,7 +183,7 @@
       "file": "wiki/procedures/ECA-3.3.md",
       "stepCount": 3,
       "tagDefinitionCount": 11,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "extreme-conditions",
       "csfsMonitored": [
         "core-cooling",
@@ -200,7 +200,7 @@
       "file": "wiki/procedures/ES-0.0.md",
       "stepCount": 2,
       "tagDefinitionCount": 18,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "diagnostic-eop",
       "csfsMonitored": [
         "subcriticality",
@@ -220,7 +220,7 @@
       "file": "wiki/procedures/ES-0.1.md",
       "stepCount": 3,
       "tagDefinitionCount": 9,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "recovery-procedure",
       "csfsMonitored": [
         "subcriticality",
@@ -240,7 +240,7 @@
       "file": "wiki/procedures/ES-0.2.md",
       "stepCount": 4,
       "tagDefinitionCount": 17,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "recovery-procedure",
       "csfsMonitored": [
         "core-cooling",
@@ -257,7 +257,7 @@
       "file": "wiki/procedures/ES-1.1.md",
       "stepCount": 3,
       "tagDefinitionCount": 20,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "recovery-procedure",
       "csfsMonitored": [
         "core-cooling",
@@ -273,7 +273,7 @@
       "file": "wiki/procedures/ES-1.2.md",
       "stepCount": 4,
       "tagDefinitionCount": 10,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "recovery-procedure",
       "csfsMonitored": [
         "core-cooling",
@@ -290,7 +290,7 @@
       "file": "wiki/procedures/ES-1.3.md",
       "stepCount": 4,
       "tagDefinitionCount": 11,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "recovery-procedure",
       "csfsMonitored": [
         "core-cooling",
@@ -306,7 +306,7 @@
       "file": "wiki/procedures/ES-1.4.md",
       "stepCount": 3,
       "tagDefinitionCount": 6,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "recovery-procedure",
       "csfsMonitored": [
         "core-cooling"
@@ -321,7 +321,7 @@
       "file": "wiki/procedures/ES-3.1.md",
       "stepCount": 3,
       "tagDefinitionCount": 10,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "recovery-procedure",
       "csfsMonitored": [
         "heat-sink",
@@ -337,7 +337,7 @@
       "file": "wiki/procedures/ES-3.2.md",
       "stepCount": 3,
       "tagDefinitionCount": 3,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "recovery-procedure",
       "csfsMonitored": [
         "heat-sink",
@@ -353,7 +353,7 @@
       "file": "wiki/procedures/ES-3.3.md",
       "stepCount": 4,
       "tagDefinitionCount": 10,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "recovery-procedure",
       "csfsMonitored": [
         "heat-sink",
@@ -369,7 +369,7 @@
       "file": "wiki/procedures/FR-C.1.md",
       "stepCount": 4,
       "tagDefinitionCount": 17,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "function-restoration",
       "csfsMonitored": [
         "core-cooling"
@@ -384,7 +384,7 @@
       "file": "wiki/procedures/FR-C.2.md",
       "stepCount": 3,
       "tagDefinitionCount": 12,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "function-restoration",
       "csfsMonitored": [
         "core-cooling"
@@ -399,7 +399,7 @@
       "file": "wiki/procedures/FR-C.3.md",
       "stepCount": 3,
       "tagDefinitionCount": 4,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "function-restoration",
       "csfsMonitored": [
         "core-cooling"
@@ -414,7 +414,7 @@
       "file": "wiki/procedures/FR-H.1.md",
       "stepCount": 5,
       "tagDefinitionCount": 19,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "function-restoration",
       "csfsMonitored": [
         "heat-sink"
@@ -429,7 +429,7 @@
       "file": "wiki/procedures/FR-H.2.md",
       "stepCount": 3,
       "tagDefinitionCount": 8,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "function-restoration",
       "csfsMonitored": [
         "heat-sink"
@@ -444,7 +444,7 @@
       "file": "wiki/procedures/FR-H.3.md",
       "stepCount": 3,
       "tagDefinitionCount": 15,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "function-restoration",
       "csfsMonitored": [
         "heat-sink"
@@ -459,7 +459,7 @@
       "file": "wiki/procedures/FR-H.4.md",
       "stepCount": 3,
       "tagDefinitionCount": 12,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "function-restoration",
       "csfsMonitored": [
         "heat-sink"
@@ -474,7 +474,7 @@
       "file": "wiki/procedures/FR-H.5.md",
       "stepCount": 3,
       "tagDefinitionCount": 12,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "function-restoration",
       "csfsMonitored": [
         "heat-sink"
@@ -489,7 +489,7 @@
       "file": "wiki/procedures/FR-I.1.md",
       "stepCount": 3,
       "tagDefinitionCount": 6,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "function-restoration",
       "csfsMonitored": [
         "rcs-inventory"
@@ -504,7 +504,7 @@
       "file": "wiki/procedures/FR-I.2.md",
       "stepCount": 3,
       "tagDefinitionCount": 9,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "function-restoration",
       "csfsMonitored": [
         "rcs-inventory"
@@ -519,7 +519,7 @@
       "file": "wiki/procedures/FR-I.3.md",
       "stepCount": 3,
       "tagDefinitionCount": 7,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "function-restoration",
       "csfsMonitored": [
         "rcs-inventory"
@@ -534,7 +534,7 @@
       "file": "wiki/procedures/FR-P.1.md",
       "stepCount": 3,
       "tagDefinitionCount": 11,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "function-restoration",
       "csfsMonitored": [
         "rcs-integrity"
@@ -549,7 +549,7 @@
       "file": "wiki/procedures/FR-P.2.md",
       "stepCount": 3,
       "tagDefinitionCount": 8,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "function-restoration",
       "csfsMonitored": [
         "rcs-integrity"
@@ -564,7 +564,7 @@
       "file": "wiki/procedures/FR-S.1.md",
       "stepCount": 4,
       "tagDefinitionCount": 14,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "function-restoration",
       "csfsMonitored": [
         "subcriticality"
@@ -579,7 +579,7 @@
       "file": "wiki/procedures/FR-S.2.md",
       "stepCount": 3,
       "tagDefinitionCount": 10,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "function-restoration",
       "csfsMonitored": [
         "subcriticality"
@@ -594,7 +594,7 @@
       "file": "wiki/procedures/FR-Z.1.md",
       "stepCount": 4,
       "tagDefinitionCount": 7,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "function-restoration",
       "csfsMonitored": [
         "containment"
@@ -609,7 +609,7 @@
       "file": "wiki/procedures/FR-Z.2.md",
       "stepCount": 3,
       "tagDefinitionCount": 8,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "function-restoration",
       "csfsMonitored": [
         "containment"
@@ -624,7 +624,7 @@
       "file": "wiki/procedures/FR-Z.3.md",
       "stepCount": 3,
       "tagDefinitionCount": 5,
-      "coverage": "partial",
+      "coverage": "developed",
       "category": "function-restoration",
       "csfsMonitored": [
         "containment"

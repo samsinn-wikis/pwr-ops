@@ -9,7 +9,6 @@ reference-plant: vogtle
 category: function-restoration
 csfs-monitored: [heat-sink]
 entry-triggers: [csf-red-path]
-validation-needed: true
 ---
 
 # FR-H.1 — Response to Loss of Secondary Heat Sink

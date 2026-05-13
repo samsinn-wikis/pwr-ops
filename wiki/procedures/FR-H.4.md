@@ -9,7 +9,6 @@ reference-plant: vogtle
 category: function-restoration
 csfs-monitored: [heat-sink]
 entry-triggers: [csf-yellow-path]
-validation-needed: true
 ---
 
 # FR-H.4 — Response to Loss of Normal Steam Release Capabilities

@@ -9,7 +9,6 @@ reference-plant: vogtle
 category: diagnostic-eop
 csfs-monitored: [subcriticality, core-cooling, heat-sink, rcs-integrity, containment, rcs-inventory]
 entry-triggers: [diagnostic-fallback]
-validation-needed: true
 ---
 
 # ES-0.0 — Rediagnosis

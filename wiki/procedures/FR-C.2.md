@@ -9,7 +9,6 @@ reference-plant: vogtle
 category: function-restoration
 csfs-monitored: [core-cooling]
 entry-triggers: [csf-orange-path]
-validation-needed: true
 ---
 
 # FR-C.2 — Response to Degraded Core Cooling

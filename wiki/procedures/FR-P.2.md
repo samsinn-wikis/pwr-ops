@@ -9,7 +9,6 @@ reference-plant: vogtle
 category: function-restoration
 csfs-monitored: [rcs-integrity]
 entry-triggers: [csf-orange-path]
-validation-needed: true
 ---
 
 # FR-P.2 — Response to Anticipated Pressurized Thermal Shock Condition

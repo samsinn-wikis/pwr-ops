@@ -9,7 +9,6 @@ reference-plant: vogtle
 category: recovery-procedure
 csfs-monitored: [core-cooling, rcs-inventory]
 entry-triggers: [post-trip-stable]
-validation-needed: true
 ---
 
 # ES-1.3 — Transfer to Cold Leg Recirculation

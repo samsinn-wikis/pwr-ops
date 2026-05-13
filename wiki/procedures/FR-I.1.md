@@ -9,7 +9,6 @@ reference-plant: vogtle
 category: function-restoration
 csfs-monitored: [rcs-inventory]
 entry-triggers: [csf-orange-path]
-validation-needed: true
 ---
 
 # FR-I.1 — Response to High Pressurizer Level

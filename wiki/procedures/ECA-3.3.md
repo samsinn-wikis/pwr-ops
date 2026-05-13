@@ -9,7 +9,6 @@ reference-plant: vogtle
 category: extreme-conditions
 csfs-monitored: [core-cooling, rcs-inventory, containment]
 entry-triggers: [csf-orange-path]
-validation-needed: true
 ---
 
 # ECA-3.3 — SGTR Without Pressurizer Pressure Control

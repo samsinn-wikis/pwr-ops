@@ -9,7 +9,6 @@ reference-plant: vogtle
 category: function-restoration
 csfs-monitored: [core-cooling]
 entry-triggers: [csf-yellow-path]
-validation-needed: true
 ---
 
 # FR-C.3 — Response to Saturated Core Cooling Conditions

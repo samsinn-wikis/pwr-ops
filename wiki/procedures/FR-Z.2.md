@@ -9,7 +9,6 @@ reference-plant: vogtle
 category: function-restoration
 csfs-monitored: [containment]
 entry-triggers: [csf-orange-path]
-validation-needed: true
 ---
 
 # FR-Z.2 — Response to Containment Flooding

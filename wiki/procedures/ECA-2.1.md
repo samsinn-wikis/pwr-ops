@@ -9,7 +9,6 @@ reference-plant: vogtle
 category: extreme-conditions
 csfs-monitored: [heat-sink, rcs-integrity]
 entry-triggers: [csf-orange-path]
-validation-needed: true
 ---
 
 # ECA-2.1 — Uncontrolled Depressurization of All Steam Generators

@@ -9,7 +9,6 @@ reference-plant: vogtle
 category: function-restoration
 csfs-monitored: [containment]
 entry-triggers: [csf-yellow-path]
-validation-needed: true
 ---
 
 # FR-Z.3 — Response to High Containment Radiation

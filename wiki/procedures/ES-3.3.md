@@ -9,7 +9,6 @@ reference-plant: vogtle
 category: recovery-procedure
 csfs-monitored: [heat-sink, containment]
 entry-triggers: [post-trip-stable]
-validation-needed: true
 ---
 
 # ES-3.3 — Post-SGTR Cooldown Using Steam Dump

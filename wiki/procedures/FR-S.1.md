@@ -9,7 +9,6 @@ reference-plant: vogtle
 category: function-restoration
 csfs-monitored: [subcriticality]
 entry-triggers: [csf-red-path]
-validation-needed: true
 ---
 
 # FR-S.1 — Response to Nuclear Power Generation / ATWS

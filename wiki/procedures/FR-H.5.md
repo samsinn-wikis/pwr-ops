@@ -9,7 +9,6 @@ reference-plant: vogtle
 category: function-restoration
 csfs-monitored: [heat-sink]
 entry-triggers: [csf-yellow-path]
-validation-needed: true
 ---
 
 # FR-H.5 — Response to Steam Generator Low Level

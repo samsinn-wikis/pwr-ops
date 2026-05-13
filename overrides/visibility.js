@@ -306,4 +306,129 @@
   } else {
     initSource();
   }
+
+  // ---- Tag hover tooltips -------------------------------------------------
+  // Each <a class="procmd-tag" href="#tag-X"> in the rendered body gets a
+  // tooltip showing the appendix entry for X. Click behavior (jump to the
+  // appendix anchor) is preserved — the tooltip is hover-only.
+
+  /** Map of tag-id → { description, simPath, units, equipment, source, extra } */
+  function buildTagDefs() {
+    const defs = {};
+    var targets = document.querySelectorAll('.procmd-tag-target');
+    for (var i = 0; i < targets.length; i++) {
+      var span = targets[i];
+      var id = span.textContent.trim();
+      // The appendix entry is the parent <p> containing the span; its
+      // textContent has the full "id: X\n  description: ...\n  ..." block.
+      var p = span.closest('p') || span.parentElement;
+      if (!p) continue;
+      var text = p.textContent || '';
+      var entry = {};
+      var lines = text.split('\n');
+      for (var j = 0; j < lines.length; j++) {
+        var line = lines[j].trim();
+        var m = line.match(/^([a-zA-Z][a-zA-Z0-9_-]*):\s*(.+)$/);
+        if (m) entry[m[1]] = m[2].trim();
+      }
+      // Drop the "id" key — it's the lookup, not a displayed property.
+      delete entry.id;
+      defs[id] = entry;
+    }
+    return defs;
+  }
+
+  function buildTooltipNode(id, def) {
+    var node = document.createElement('div');
+    node.className = 'procmd-tag-tooltip';
+    node.setAttribute('role', 'tooltip');
+    var html = '<div class="procmd-tag-tooltip-id">«' + id + '»</div>';
+    var keyOrder = ['description', 'sim-path', 'units', 'equipment', 'setpoint', 'range', 'source'];
+    var seen = {};
+    for (var k = 0; k < keyOrder.length; k++) {
+      var key = keyOrder[k];
+      if (def[key]) {
+        html += '<div class="procmd-tag-tooltip-row"><span class="procmd-tag-tooltip-key">' +
+                key + '</span><span class="procmd-tag-tooltip-val">' +
+                escapeHTML(def[key]) + '</span></div>';
+        seen[key] = true;
+      }
+    }
+    // Any extra fields (e.g. notes, owner, etc.) author may have added.
+    var extras = Object.keys(def).filter(function (k) { return !seen[k]; });
+    for (var e = 0; e < extras.length; e++) {
+      var ek = extras[e];
+      html += '<div class="procmd-tag-tooltip-row"><span class="procmd-tag-tooltip-key">' +
+              ek + '</span><span class="procmd-tag-tooltip-val">' +
+              escapeHTML(def[ek]) + '</span></div>';
+    }
+    node.innerHTML = html;
+    return node;
+  }
+
+  function escapeHTML(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  var activeTooltip = null;
+  function showTooltip(link, def) {
+    hideTooltip();
+    var id = link.textContent.replace(/[«»]/g, '').trim();
+    var tip = buildTooltipNode(id, def);
+    document.body.appendChild(tip);
+    // Position below-right of the link, viewport-clamped.
+    var rect = link.getBoundingClientRect();
+    var top = rect.bottom + 6 + window.scrollY;
+    var left = rect.left + window.scrollX;
+    var tipWidth = tip.offsetWidth;
+    var viewportRight = window.scrollX + window.innerWidth - 8;
+    if (left + tipWidth > viewportRight) left = Math.max(8, viewportRight - tipWidth);
+    tip.style.top = top + 'px';
+    tip.style.left = left + 'px';
+    activeTooltip = tip;
+  }
+  function hideTooltip() {
+    if (activeTooltip && activeTooltip.parentNode) {
+      activeTooltip.parentNode.removeChild(activeTooltip);
+    }
+    activeTooltip = null;
+  }
+
+  function mountTagTooltips() {
+    var defs = buildTagDefs();
+    var links = document.querySelectorAll('.md-content__inner a.procmd-tag');
+    if (links.length === 0) return;
+    for (var i = 0; i < links.length; i++) {
+      (function (link) {
+        var id = link.textContent.replace(/[«»]/g, '').trim();
+        var def = defs[id];
+        if (!def) return;  // appendix entry not found for this id; bail silently
+        var enterTimer = null;
+        link.addEventListener('mouseenter', function () {
+          // Small delay so cursors passing through don't pop tooltips
+          enterTimer = setTimeout(function () { showTooltip(link, def); }, 120);
+        });
+        link.addEventListener('mouseleave', function () {
+          if (enterTimer) { clearTimeout(enterTimer); enterTimer = null; }
+          hideTooltip();
+        });
+        link.addEventListener('focus', function () { showTooltip(link, def); });
+        link.addEventListener('blur', hideTooltip);
+        // Click behavior preserved — default <a href="#tag-X"> jump remains.
+      })(links[i]);
+    }
+    // Hide on scroll/resize for clean positioning model.
+    window.addEventListener('scroll', hideTooltip, { passive: true });
+    window.addEventListener('resize', hideTooltip);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', mountTagTooltips);
+  } else {
+    mountTagTooltips();
+  }
 })();

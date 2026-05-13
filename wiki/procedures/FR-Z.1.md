@@ -9,7 +9,6 @@ reference-plant: vogtle
 category: function-restoration
 csfs-monitored: [containment]
 entry-triggers: [csf-red-path]
-validation-needed: true
 ---
 
 # FR-Z.1 — Response to High Containment Pressure

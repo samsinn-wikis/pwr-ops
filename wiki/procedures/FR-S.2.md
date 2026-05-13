@@ -9,7 +9,6 @@ reference-plant: vogtle
 category: function-restoration
 csfs-monitored: [subcriticality]
 entry-triggers: [csf-orange-path]
-validation-needed: true
 ---
 
 # FR-S.2 — Response to Loss of Core Shutdown

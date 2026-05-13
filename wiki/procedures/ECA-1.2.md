@@ -9,7 +9,6 @@ reference-plant: vogtle
 category: extreme-conditions
 csfs-monitored: [containment, rcs-inventory, rcs-integrity]
 entry-triggers: [csf-orange-path]
-validation-needed: true
 ---
 
 # ECA-1.2 — LOCA Outside Containment

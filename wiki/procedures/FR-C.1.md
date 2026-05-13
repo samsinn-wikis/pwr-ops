@@ -9,7 +9,6 @@ reference-plant: vogtle
 category: function-restoration
 csfs-monitored: [core-cooling]
 entry-triggers: [csf-red-path]
-validation-needed: true
 ---
 
 # FR-C.1 — Response to Inadequate Core Cooling

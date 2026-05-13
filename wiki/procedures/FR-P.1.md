@@ -9,7 +9,6 @@ reference-plant: vogtle
 category: function-restoration
 csfs-monitored: [rcs-integrity]
 entry-triggers: [csf-red-path]
-validation-needed: true
 ---
 
 # FR-P.1 — Response to Imminent Pressurized Thermal Shock Condition

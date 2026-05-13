@@ -9,7 +9,6 @@ reference-plant: vogtle
 category: function-restoration
 csfs-monitored: [rcs-inventory]
 entry-triggers: [csf-yellow-path]
-validation-needed: true
 ---
 
 # FR-I.3 — Response to Voids in Reactor Vessel

@@ -9,7 +9,6 @@ reference-plant: vogtle
 category: function-restoration
 csfs-monitored: [heat-sink]
 entry-triggers: [csf-orange-path]
-validation-needed: true
 ---
 
 # FR-H.2 — Response to Steam Generator Overpressure

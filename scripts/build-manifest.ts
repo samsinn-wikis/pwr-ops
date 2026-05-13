@@ -40,13 +40,47 @@ interface Manifest {
   procedures: ManifestEntry[]
 }
 
-const classifyCoverage = (bodyLines: number, stepCount: number, tagDefs: number): 'developed' | 'partial' | 'stub' => {
-  // Heuristic — calibrated against the current corpus:
-  //   developed: ≥10 steps with tag appendix + ≥100 lines of body
-  //   partial:   ≥5 steps OR ≥50 lines
-  //   stub:      otherwise (typical Phase-1 stubs are 3–4 steps, ~30 lines)
-  if (stepCount >= 10 && tagDefs >= 5 && bodyLines >= 100) return 'developed'
-  if (stepCount >= 5 || bodyLines >= 50) return 'partial'
+import type { ParsedProcedure } from '../procmd-core/index.ts'
+
+/**
+ * Content-based coverage classifier. Looks at what's actually in each step
+ * (not just step count), since FR-x / ECA family procedures are inherently
+ * short (3-5 steps) yet operationally complete. A "rich step" has more than
+ * a one-line Check: — it carries multiple keyword lines OR carries branch
+ * rationale (Because:/Against:). A procedure is `developed` when most of
+ * its steps are rich AND its tag appendix is meaningfully populated with
+ * source citations.
+ */
+const classifyByContent = (parsed: ParsedProcedure): 'developed' | 'partial' | 'stub' => {
+  if (parsed.steps.length === 0) return 'stub'
+
+  let richSteps = 0
+  for (const step of parsed.steps) {
+    const keywordLines =
+      step.checks.length +
+      step.actions.length +
+      step.cautions.length +
+      step.notes.length +
+      step.withins.length
+    const branchRationale = step.branches.filter(b => b.because || b.against).length
+    const hasDecision = step.decision ? 1 : 0
+    // A step is "rich" when it has multiple keyword lines OR carries branch
+    // rationale OR uses the v0.7 Decision: keyword — i.e., it's more than a
+    // bare Check:/branch stub.
+    if (keywordLines >= 2 || branchRationale >= 1 || hasDecision === 1) richSteps += 1
+  }
+  const richFraction = richSteps / parsed.steps.length
+
+  const tagCount = parsed.tagDefinitions.length
+  const tagsWithSource = parsed.tagDefinitions.filter(t => t.extra['source']).length
+
+  // Developed: the vast majority of steps carry substantive content AND the
+  // appendix has cited tag definitions backing the inline references.
+  if (richFraction >= 0.75 && tagsWithSource >= 3) return 'developed'
+  // Partial: some content present (rich steps or a populated appendix) but
+  // below developed threshold.
+  if (richFraction >= 0.30 || tagCount >= 3) return 'partial'
+  // Stub: schema-pass content only.
   return 'stub'
 }
 
@@ -62,7 +96,6 @@ const buildManifest = (): Manifest => {
       console.warn(`skip ${f}: ${parsed.error}`)
       continue
     }
-    const bodyLines = raw.slice(raw.indexOf('\n---', 4) + 4).split('\n').length
     const stepCount = parsed.steps.length
     const tagDefinitionCount = parsed.tagDefinitions.length
     const entry: ManifestEntry = {
@@ -71,7 +104,7 @@ const buildManifest = (): Manifest => {
       file: `wiki/procedures/${f}`,
       stepCount,
       tagDefinitionCount,
-      coverage: classifyCoverage(bodyLines, stepCount, tagDefinitionCount),
+      coverage: classifyByContent(parsed),
     }
     if (parsed.frontmatter.category) entry.category = parsed.frontmatter.category
     if (parsed.frontmatter.csfsMonitored.length > 0) entry.csfsMonitored = [...parsed.frontmatter.csfsMonitored]

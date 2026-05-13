@@ -9,7 +9,6 @@ reference-plant: vogtle
 category: extreme-conditions
 csfs-monitored: [subcriticality, core-cooling, heat-sink, rcs-integrity, containment, rcs-inventory]
 entry-triggers: [station-blackout]
-validation-needed: true
 ---
 
 # ECA-0.0 — Loss of All AC Power (Station Blackout)

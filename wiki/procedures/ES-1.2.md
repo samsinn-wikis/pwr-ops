@@ -9,7 +9,6 @@ reference-plant: vogtle
 category: recovery-procedure
 csfs-monitored: [core-cooling, rcs-integrity, rcs-inventory]
 entry-triggers: [post-trip-stable]
-validation-needed: true
 ---
 
 # ES-1.2 — Post-LOCA Cooldown and Depressurization

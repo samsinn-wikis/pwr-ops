@@ -9,7 +9,6 @@ reference-plant: vogtle
 category: extreme-conditions
 csfs-monitored: [core-cooling, rcs-inventory]
 entry-triggers: [csf-red-path]
-validation-needed: true
 ---
 
 # ECA-1.1 — Loss of Emergency Coolant Recirculation

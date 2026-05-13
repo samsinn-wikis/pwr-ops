@@ -9,7 +9,6 @@ reference-plant: vogtle
 category: recovery-procedure
 csfs-monitored: [subcriticality, core-cooling, heat-sink, rcs-integrity, containment, rcs-inventory]
 entry-triggers: [post-trip-stable]
-validation-needed: true
 ---
 
 # ES-0.1 — Reactor Trip Response
