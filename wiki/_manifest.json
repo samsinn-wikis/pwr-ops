@@ -215,24 +215,45 @@
       "title": "Response to Inadequate Core Cooling",
       "file": "wiki/procedures/FR-C.1.md",
       "stepCount": 4,
-      "tagDefinitionCount": 0,
-      "coverage": "stub"
+      "tagDefinitionCount": 17,
+      "coverage": "partial",
+      "category": "function-restoration",
+      "csfsMonitored": [
+        "core-cooling"
+      ],
+      "entryTriggers": [
+        "csf-red-path"
+      ]
     },
     {
       "id": "FR-C.2",
       "title": "Response to Degraded Core Cooling",
       "file": "wiki/procedures/FR-C.2.md",
       "stepCount": 3,
-      "tagDefinitionCount": 0,
-      "coverage": "stub"
+      "tagDefinitionCount": 12,
+      "coverage": "partial",
+      "category": "function-restoration",
+      "csfsMonitored": [
+        "core-cooling"
+      ],
+      "entryTriggers": [
+        "csf-orange-path"
+      ]
     },
     {
       "id": "FR-C.3",
       "title": "Response to Saturated Core Cooling Conditions",
       "file": "wiki/procedures/FR-C.3.md",
       "stepCount": 3,
-      "tagDefinitionCount": 0,
-      "coverage": "stub"
+      "tagDefinitionCount": 4,
+      "coverage": "partial",
+      "category": "function-restoration",
+      "csfsMonitored": [
+        "core-cooling"
+      ],
+      "entryTriggers": [
+        "csf-yellow-path"
+      ]
     },
     {
       "id": "FR-H.1",
@@ -326,8 +347,7 @@
         "subcriticality"
       ],
       "entryTriggers": [
-        "atws-red-path",
-        "power-after-trip"
+        "csf-red-path"
       ]
     },
     {
@@ -342,8 +362,7 @@
         "subcriticality"
       ],
       "entryTriggers": [
-        "shutdown-margin-orange-path",
-        "boron-dilution"
+        "csf-orange-path"
       ]
     },
     {
