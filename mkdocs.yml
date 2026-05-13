@@ -71,7 +71,7 @@ extra_javascript:
 
 extra:
   wiki_version: "0.1.0"
-  procmd_version: "0.6"
+  procmd_version: "0.7"
   # Substituted at CI time from vars.FEEDBACK_WORKER_URL by the deploy workflow.
   # Empty string means the feedback modal runs in demo mode (logs payload, no POST).
   feedback_worker_url: ""

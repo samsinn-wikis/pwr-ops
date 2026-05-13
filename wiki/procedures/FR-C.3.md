@@ -1,6 +1,6 @@
 ---
 type: procedure
-procedure-md: 0.6
+procedure-md: 0.7
 procedure-id: FR-C.3
 title: Response to Saturated Core Cooling Conditions
 profile: nuclear-erg

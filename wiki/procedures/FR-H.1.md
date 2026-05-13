@@ -1,6 +1,6 @@
 ---
 type: procedure
-procedure-md: 0.6
+procedure-md: 0.7
 procedure-id: FR-H.1
 title: Response to Loss of Secondary Heat Sink
 profile: nuclear-erg

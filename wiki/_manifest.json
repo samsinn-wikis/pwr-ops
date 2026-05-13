@@ -1,7 +1,7 @@
 {
   "version": 1,
   "wiki": "pwr-ops",
-  "procmdVersion": "0.6",
+  "procmdVersion": "0.7",
   "procedures": [
     {
       "id": "E-0",

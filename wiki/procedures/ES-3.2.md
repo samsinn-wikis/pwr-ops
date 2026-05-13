@@ -1,6 +1,6 @@
 ---
 type: procedure
-procedure-md: 0.6
+procedure-md: 0.7
 procedure-id: ES-3.2
 title: Post-SGTR Cooldown Using Blowdown
 profile: nuclear-erg

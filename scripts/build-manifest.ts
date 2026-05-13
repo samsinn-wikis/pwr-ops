@@ -80,7 +80,7 @@ const buildManifest = (): Manifest => {
   }
 
   // Read procmd version + wiki version from mkdocs.yml extras for traceability
-  let procmdVersion = '0.6'
+  let procmdVersion = '0.7'
   try {
     const mk = readFileSync(join(REPO_ROOT, 'mkdocs.yml'), 'utf-8')
     const m = mk.match(/procmd_version:\s*"?([\d.]+)"?/)

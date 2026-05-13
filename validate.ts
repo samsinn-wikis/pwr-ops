@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * pwr-ops procedure validator — single-file structural checker for procmd v0.6.
+ * pwr-ops procedure validator — single-file structural checker for procmd v0.7.
  *
  * Walks wiki/procedures/*.md and wiki/profiles/*.md, parses each, and reports:
  *   - frontmatter shape errors
@@ -24,9 +24,9 @@
  * Usage:  bun validate.ts [--verbose]
  */
 
-const SUPPORTED_SPEC_VERSION = "0.6";
+const SUPPORTED_SPEC_VERSION = "0.7";
 
-// v0.6: tag-id charset is uppercase + digits + hyphens, must start with a letter.
+// v0.7: tag-id charset is uppercase + digits + hyphens, must start with a letter.
 const TAG_ID_RE = /^[A-Z][A-Z0-9-]*$/;
 // Inline tag reference syntax: «TAG-ID» (U+00AB, U+00BB)
 const TAG_REF_RE = /«([A-Z][A-Z0-9-]*)»/g;

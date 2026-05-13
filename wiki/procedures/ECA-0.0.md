@@ -1,6 +1,6 @@
 ---
 type: procedure
-procedure-md: 0.6
+procedure-md: 0.7
 procedure-id: ECA-0.0
 title: Loss of All AC Power
 profile: nuclear-erg
