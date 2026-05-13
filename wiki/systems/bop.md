@@ -61,9 +61,9 @@ flowchart LR
     HOTWELL --> CP_A & CP_B --> LP_HTR --> DEAER --> MFP_A & MFP_B
     MFP_A & MFP_B --> HP_HTR --> FWI --> SG
 
-    classDef turbine fill:#fff3cd,stroke:#856404,color:#1a1a1a
-    classDef pump fill:#d4e6f1,stroke:#1f618d,color:#1a1a1a
-    classDef vessel fill:#e8daef,stroke:#6c3483,color:#1a1a1a
+    classDef turbine stroke:#856404,stroke-width:2px
+    classDef pump stroke:#1f618d,stroke-width:2px
+    classDef vessel stroke:#6c3483,stroke-width:2px
     class HP_T,LP_T,GEN turbine
     class CP_A,CP_B,MFP_A,MFP_B pump
     class COND,HOTWELL,DEAER vessel

@@ -65,8 +65,8 @@ flowchart LR
     SUMP -. "after ES-1.3" .-> RHR_B
     RHR_A -. "piggyback alignment" .-> HHSI_A
 
-    classDef tank fill:#fff3cd,stroke:#856404,color:#1a1a1a
-    classDef passive fill:#d4e6f1,stroke:#1f618d,color:#1a1a1a
+    classDef tank stroke:#856404,stroke-width:2px
+    classDef passive stroke:#1f618d,stroke-width:2px
     class RWST,SUMP tank
     class ACC1,ACC2,ACC3,ACC4 passive
 ```

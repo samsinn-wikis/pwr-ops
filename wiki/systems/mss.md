@@ -66,8 +66,8 @@ flowchart LR
     ARV_D --> ATM
     SAF --> ATM
 
-    classDef sg fill:#d4e6f1,stroke:#1f618d,color:#1a1a1a
-    classDef relief fill:#fadbd8,stroke:#943126,color:#1a1a1a
+    classDef sg stroke:#1f618d,stroke-width:2px
+    classDef relief stroke:#943126,stroke-width:2px
     class SG_A,SG_B,SG_C,SG_D sg
     class SAF,ARV_A,ARV_B,ARV_C,ARV_D relief
 ```

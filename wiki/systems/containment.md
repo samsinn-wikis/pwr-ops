@@ -55,8 +55,8 @@ flowchart LR
     NaOH --> SPRAY_A & SPRAY_B
     SPRAY_A & SPRAY_B --> HEADER --> NOZZLES --> SHELL
 
-    classDef boundary fill:#fff3cd,stroke:#856404,color:#1a1a1a
-    classDef isol fill:#fadbd8,stroke:#943126,color:#1a1a1a
+    classDef boundary stroke:#856404,stroke-width:2px
+    classDef isol stroke:#943126,stroke-width:2px
     class SHELL,PEN boundary
     class PA,PB isol
 ```

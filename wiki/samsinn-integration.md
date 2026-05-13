@@ -234,8 +234,8 @@ flowchart LR
     EAL -->|rules + scenarios| JSON
     JSON -.built by.-> WIKI
 
-    classDef tool fill:#d4e6f1,stroke:#1f618d,color:#1a1a1a
-    classDef store fill:#fff3cd,stroke:#856404,color:#1a1a1a
+    classDef tool stroke:#1f618d,stroke-width:2px
+    classDef store stroke:#856404,stroke-width:2px
     class LOOKUP,SEARCH,EAL tool
     class WIKI,JSON store
 ```

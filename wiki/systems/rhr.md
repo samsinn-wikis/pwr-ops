@@ -53,8 +53,8 @@ flowchart LR
     SUMP -. "after ES-1.3" .-> PUMP_A & PUMP_B
     PUMP_A -. "piggyback" .-> HHSI
 
-    classDef pump fill:#d4e6f1,stroke:#1f618d,color:#1a1a1a
-    classDef vessel fill:#fff3cd,stroke:#856404,color:#1a1a1a
+    classDef pump stroke:#1f618d,stroke-width:2px
+    classDef vessel stroke:#856404,stroke-width:2px
     class PUMP_A,PUMP_B,HHSI pump
     class RWST,SUMP vessel
 ```

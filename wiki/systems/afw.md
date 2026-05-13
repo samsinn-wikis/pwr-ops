@@ -58,8 +58,8 @@ flowchart LR
     CV_C --> SG_C
     CV_D --> SG_D
 
-    classDef pump fill:#d4e6f1,stroke:#1f618d,color:#1a1a1a
-    classDef tank fill:#fff3cd,stroke:#856404,color:#1a1a1a
+    classDef pump stroke:#1f618d,stroke-width:2px
+    classDef tank stroke:#856404,stroke-width:2px
     class MD_A,MD_B,TD pump
     class CST,SW tank
 ```

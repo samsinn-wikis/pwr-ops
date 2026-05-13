@@ -56,9 +56,9 @@ flowchart LR
     BAT_B --> DC_B
     DC_A & DC_B --> INV
 
-    classDef src fill:#fff3cd,stroke:#856404,color:#1a1a1a
-    classDef bus fill:#d4e6f1,stroke:#1f618d,color:#1a1a1a
-    classDef gen fill:#fadbd8,stroke:#943126,color:#1a1a1a
+    classDef src stroke:#856404,stroke-width:2px
+    classDef bus stroke:#1f618d,stroke-width:2px
+    classDef gen stroke:#943126,stroke-width:2px
     class OFFSITE,MAIN,SAT,UAT src
     class BUS_A,BUS_B,DC_A,DC_B bus
     class DG_A,DG_B gen
