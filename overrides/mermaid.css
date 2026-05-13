@@ -1,67 +1,35 @@
 /* Mermaid dark-mode label readability.
  *
- * System-page diagrams use classDef directives that set light pastel fills
- * (#fff3cd, #d4e6f1, #fadbd8, #e8daef) plus color:#1a1a1a so labels are
- * readable. Material Material's slate scheme defines
- * `--md-mermaid-label-fg-color` (a light grey/white) and its selector wins
- * specificity against mermaid's inline classDef color, so labels render
- * near-invisible on the light fills in dark mode.
+ * Root cause (verified in Chrome devtools): mermaid renders a flowchart
+ * node label as `<span class="nodeLabel"><p>text</p></span>` inside a
+ * <foreignObject>. Material's slate scheme ships a CSS rule
+ *   `#<svg-id> .nodeLabel, #<svg-id> .nodeLabel p {
+ *      color: var(--md-mermaid-label-fg-color)
+ *    }`
+ * The classDef inline `color:#1a1a1a` styles the <span>, but the inner
+ * <p> inherits the slate label-fg colour (light grey) — unreadable on
+ * our light pastel fills.
  *
- * This stylesheet forces dark label text inside every classDef class our
- * system pages declare, but only when slate is active. Light-mode pages
- * are untouched.
+ * Fix: target both the .nodeLabel element AND every descendant inside
+ * the SVG nodes that use one of our enumerated classDef classes. Scoped
+ * to [data-md-color-scheme="slate"] so light mode is untouched.
  */
 
-[data-md-color-scheme="slate"] .mermaid g.node.alarm .nodeLabel,
-[data-md-color-scheme="slate"] .mermaid g.node.boundary .nodeLabel,
-[data-md-color-scheme="slate"] .mermaid g.node.breaker .nodeLabel,
-[data-md-color-scheme="slate"] .mermaid g.node.bus .nodeLabel,
-[data-md-color-scheme="slate"] .mermaid g.node.det .nodeLabel,
-[data-md-color-scheme="slate"] .mermaid g.node.draw .nodeLabel,
-[data-md-color-scheme="slate"] .mermaid g.node.gen .nodeLabel,
-[data-md-color-scheme="slate"] .mermaid g.node.isol .nodeLabel,
-[data-md-color-scheme="slate"] .mermaid g.node.logic .nodeLabel,
-[data-md-color-scheme="slate"] .mermaid g.node.out .nodeLabel,
-[data-md-color-scheme="slate"] .mermaid g.node.passive .nodeLabel,
-[data-md-color-scheme="slate"] .mermaid g.node.pump .nodeLabel,
-[data-md-color-scheme="slate"] .mermaid g.node.relief .nodeLabel,
-[data-md-color-scheme="slate"] .mermaid g.node.sg .nodeLabel,
-[data-md-color-scheme="slate"] .mermaid g.node.src .nodeLabel,
-[data-md-color-scheme="slate"] .mermaid g.node.store .nodeLabel,
-[data-md-color-scheme="slate"] .mermaid g.node.tank .nodeLabel,
-[data-md-color-scheme="slate"] .mermaid g.node.tool .nodeLabel,
-[data-md-color-scheme="slate"] .mermaid g.node.turbine .nodeLabel,
-[data-md-color-scheme="slate"] .mermaid g.node.vessel .nodeLabel,
-[data-md-color-scheme="slate"] .mermaid g.node.alarm text,
-[data-md-color-scheme="slate"] .mermaid g.node.boundary text,
-[data-md-color-scheme="slate"] .mermaid g.node.breaker text,
-[data-md-color-scheme="slate"] .mermaid g.node.bus text,
-[data-md-color-scheme="slate"] .mermaid g.node.det text,
-[data-md-color-scheme="slate"] .mermaid g.node.draw text,
-[data-md-color-scheme="slate"] .mermaid g.node.gen text,
-[data-md-color-scheme="slate"] .mermaid g.node.isol text,
-[data-md-color-scheme="slate"] .mermaid g.node.logic text,
-[data-md-color-scheme="slate"] .mermaid g.node.out text,
-[data-md-color-scheme="slate"] .mermaid g.node.passive text,
-[data-md-color-scheme="slate"] .mermaid g.node.pump text,
-[data-md-color-scheme="slate"] .mermaid g.node.relief text,
-[data-md-color-scheme="slate"] .mermaid g.node.sg text,
-[data-md-color-scheme="slate"] .mermaid g.node.src text,
-[data-md-color-scheme="slate"] .mermaid g.node.store text,
-[data-md-color-scheme="slate"] .mermaid g.node.tank text,
-[data-md-color-scheme="slate"] .mermaid g.node.tool text,
-[data-md-color-scheme="slate"] .mermaid g.node.turbine text,
-[data-md-color-scheme="slate"] .mermaid g.node.vessel text {
+[data-md-color-scheme="slate"] .mermaid g.node:is(
+  .alarm, .boundary, .breaker, .bus, .det, .draw, .gen, .isol, .logic,
+  .out, .passive, .pump, .relief, .sg, .src, .store, .tank, .tool,
+  .turbine, .vessel
+) .nodeLabel,
+[data-md-color-scheme="slate"] .mermaid g.node:is(
+  .alarm, .boundary, .breaker, .bus, .det, .draw, .gen, .isol, .logic,
+  .out, .passive, .pump, .relief, .sg, .src, .store, .tank, .tool,
+  .turbine, .vessel
+) .nodeLabel *,
+[data-md-color-scheme="slate"] .mermaid g.node:is(
+  .alarm, .boundary, .breaker, .bus, .det, .draw, .gen, .isol, .logic,
+  .out, .passive, .pump, .relief, .sg, .src, .store, .tank, .tool,
+  .turbine, .vessel
+) text {
   color: #1a1a1a !important;
   fill: #1a1a1a !important;
-}
-
-/* Catch-all for any future classDef using these fill colours. Selectors
- * targeting inline style attributes — works when Mermaid emits the fill
- * as an inline style on the node's <rect>/<polygon>/<circle>. */
-[data-md-color-scheme="slate"] .mermaid g.node[style*="#fff3cd"] .nodeLabel,
-[data-md-color-scheme="slate"] .mermaid g.node[style*="#d4e6f1"] .nodeLabel,
-[data-md-color-scheme="slate"] .mermaid g.node[style*="#fadbd8"] .nodeLabel,
-[data-md-color-scheme="slate"] .mermaid g.node[style*="#e8daef"] .nodeLabel {
-  color: #1a1a1a !important;
 }
