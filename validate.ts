@@ -13,7 +13,16 @@
  *   - lifecycle keyword + synonym recognition
  *   - «TAG» references resolve to a `## Tags` appendix entry in the same file
  *   - tag-id charset, required sub-keys, unreferenced entries (warning)
- *   - cross-procedure tag consistency (sim-path/units/equipment must agree)
+ *   - cross-procedure tag consistency (sim-path/units/equipment/range
+ *     must agree; populated-vs-populated setpoint/value mismatch = error)
+ *
+ * H.1: also walks every non-procedure dir under wiki/ (systems, tags,
+ * setpoints, future operations/, human-factors/, scenarios/, ...) and:
+ *   - resolves [[P-id]] procedure refs (error on dangling)
+ *   - resolves «TAG» refs (warning on dangling — system pages legitimately
+ *     document plant-model tags ahead of procedure adoption)
+ *   - enforces non-empty `sources:` frontmatter on operations-doc / hf-*
+ *     / operating-experience page types
  *
  * Rejects older spec versions (procedure-md must equal SUPPORTED_SPEC_VERSION).
  * No backward compatibility; corpora migrate by frontmatter bump.
@@ -351,8 +360,8 @@ function scanTagRefs(
     if (inFence) continue;
     const stripped = stripInert(raw);
     let m: RegExpExecArray | null;
-    TAG_REF_RE.lastIndex = 0;
-    while ((m = TAG_REF_RE.exec(stripped))) {
+    NONPROC_TAG_REF_RE.lastIndex = 0;
+    while ((m = NONPROC_TAG_REF_RE.exec(stripped))) {
       refs.push({ tagId: m[1], line: startLine + i });
     }
   }
@@ -726,6 +735,38 @@ function validateTagConsistency(procedures: Procedure[]): ValidationError[] {
           msg: `tag '${id}' description differs from ${first.path.split("/").pop()} (line ${first.def.line}) — descriptions may legitimately vary; reconcile if intent diverged`,
         });
       }
+      // v0.7 H.1: extra-key value mismatches are ERRORS for numeric/identifying
+      // fields and WARNINGS for citation-like fields. Two procedures asserting
+      // *different populated* setpoints for the same tag is a hallucination
+      // smoke-pattern. Missing-vs-populated is NOT a conflict — a procedure
+      // that omits the range/setpoint is unset, not contradictory.
+      const cmpKeys = new Set<string>([
+        ...Object.keys(first.def.extra),
+        ...Object.keys(cur.def.extra),
+      ]);
+      const CITATION_KEYS = new Set(["source", "ref", "citation", "note"]);
+      for (const k of cmpKeys) {
+        const a = first.def.extra[k] ?? "";
+        const b = cur.def.extra[k] ?? "";
+        if (a === b) continue;
+        if (a === "" || b === "") continue; // unset ≠ conflict
+        const severity = CITATION_KEYS.has(k) ? "warning" : undefined;
+        const err: ValidationError = {
+          file: cur.path,
+          line: cur.def.line,
+          msg: `tag '${id}' ${k} '${b}' conflicts with definition in ${first.path.split("/").pop()} (line ${first.def.line}: '${a}')`,
+        };
+        if (severity) err.severity = severity;
+        errors.push(err);
+      }
+      // `range` at top level (struct-typed). Same missing-vs-populated rule.
+      if (cur.def.range !== first.def.range && cur.def.range && first.def.range) {
+        errors.push({
+          file: cur.path,
+          line: cur.def.line,
+          msg: `tag '${id}' range '${cur.def.range}' conflicts with definition in ${first.path.split("/").pop()} (line ${first.def.line}: '${first.def.range}')`,
+        });
+      }
     }
   }
   return errors;
@@ -921,6 +962,104 @@ function checkReachability(p: Procedure): ValidationError[] {
   return errors;
 }
 
+// ---------- Non-procedure page validation (H.1) --------------------------
+
+/**
+ * Non-procedure pages (system descriptions, catalogues, future operations
+ * docs, HF pages, scenarios, etc.) link to procedures via `[[P-id]]`
+ * roamlinks and to tags via «TAG-ID». Both must resolve. Some page types
+ * additionally require a `sources:` frontmatter list (citation pool).
+ *
+ * Walked directories: every dir under wiki/ except procedures/ and profiles/.
+ */
+const NONPROC_PROC_REF_RE = /\[\[([A-Z][A-Z0-9.-]*)\]\]/g;
+const NONPROC_TAG_REF_RE = /«([A-Z][A-Z0-9-]*)»/g;
+const SOURCES_REQUIRED_TYPES = new Set([
+  "operations-doc",
+  "hf-action-class",
+  "hf-failure-mode",
+  "hf-time-pressure-profile",
+  "hf-performance-shaping-factor",
+  "operating-experience",
+]);
+
+async function validateNonProcedurePages(
+  procedureIds: Set<string>,
+  knownTagIds: Set<string>,
+): Promise<ValidationError[]> {
+  const errors: ValidationError[] = [];
+  const fs = await import("node:fs/promises");
+  const path = await import("node:path");
+  const wikiDir = `${REPO_ROOT}wiki`;
+  const entries = await fs.readdir(wikiDir, { withFileTypes: true });
+  for (const ent of entries) {
+    if (!ent.isDirectory()) continue;
+    if (ent.name === "procedures" || ent.name === "profiles") continue;
+    const dir = path.join(wikiDir, ent.name);
+    const files = (await fs.readdir(dir)).filter((f) => f.endsWith(".md"));
+    for (const f of files) {
+      const filePath = path.join(dir, f);
+      const content = await fs.readFile(filePath, "utf-8");
+      const fm = parseFrontmatter(content);
+      for (const e of fm.errors) {
+        errors.push({ file: filePath, line: 1, msg: e });
+      }
+      const pageType = fm.fields["type"] ?? "";
+      // Citation-pool requirement
+      if (SOURCES_REQUIRED_TYPES.has(pageType)) {
+        const sources = (fm.fields["sources"] ?? "").trim();
+        const list = sources.replace(/^\[|\]$/g, "").split(",").map((s) => s.trim()).filter(Boolean);
+        if (list.length === 0) {
+          errors.push({
+            file: filePath,
+            line: 1,
+            msg: `page type '${pageType}' requires a non-empty 'sources:' frontmatter list (citation pool)`,
+          });
+        }
+      }
+      // Procedure ref resolution — track line numbers
+      const bodyLines = fm.body.split("\n");
+      for (let i = 0; i < bodyLines.length; i++) {
+        const lineNo = fm.bodyStartLine + i;
+        const line = bodyLines[i];
+        let m: RegExpExecArray | null;
+        NONPROC_PROC_REF_RE.lastIndex = 0;
+        while ((m = NONPROC_PROC_REF_RE.exec(line)) !== null) {
+          const ref = m[1];
+          // Skip refs that look like system/concept ids (lowercase letters present)
+          if (!/^[A-Z][A-Z0-9.-]*$/.test(ref)) continue;
+          // Procedure-id heuristic: must contain at least one digit or hyphen
+          if (!/[0-9-]/.test(ref)) continue;
+          if (!procedureIds.has(ref)) {
+            errors.push({
+              file: filePath,
+              line: lineNo,
+              msg: `dangling procedure reference [[${ref}]] — not a known procedure id`,
+            });
+          }
+        }
+        NONPROC_TAG_REF_RE.lastIndex = 0;
+        while ((m = NONPROC_TAG_REF_RE.exec(line)) !== null) {
+          const tag = m[1];
+          if (!knownTagIds.has(tag)) {
+            // Warning, not error: system pages legitimately document tags
+            // that exist in the plant model before any procedure adopts them.
+            // Procedure refs (above) stay errors because those are jumps an
+            // operator might attempt.
+            errors.push({
+              file: filePath,
+              line: lineNo,
+              severity: "warning",
+              msg: `tag reference «${tag}» is not yet defined in any procedure's tag appendix — author or remove`,
+            });
+          }
+        }
+      }
+    }
+  }
+  return errors;
+}
+
 // ---------- Main ----------------------------------------------------------
 
 async function main() {
@@ -980,8 +1119,14 @@ async function main() {
   allMessages.push(...validateCrossRefs(procedures));
   for (const p of procedures) allMessages.push(...checkReachability(p));
 
-  // v0.5 cross-procedure tag consistency
+  // v0.5 cross-procedure tag consistency (extended H.1: setpoint values)
   allMessages.push(...validateTagConsistency(procedures));
+
+  // H.1 non-procedure page validation: cross-page refs + sources requirement
+  const procedureIds = new Set(procedures.map((p) => p.procedureId).filter(Boolean));
+  const knownTagIds = new Set<string>();
+  for (const p of procedures) for (const t of p.tags) knownTagIds.add(t.id);
+  allMessages.push(...await validateNonProcedurePages(procedureIds, knownTagIds));
 
   // Split errors and warnings
   const errors = allMessages.filter((m) => (m.severity ?? "error") === "error");

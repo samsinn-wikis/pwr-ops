@@ -1484,3 +1484,125 @@ shape, the `Because:` / `Against:` rationale rules.
 | Wiki author wants a procmd change but doesn't want to round-trip through talkingAgents | Document the policy: spec changes land in talkingAgents first, get a commit, wiki bumps `procmd-core.sha`. Two-PR pattern, ~30 min round-trip. |
 
 ---
+
+
+---
+
+
+## 24. Updated plan for remaining phases (post Phase D landing, 2026-05-13, stress-tested)
+
+Original §24 was stress-tested via `claude-toolbox:stress-test` skill;
+13 findings recorded, owner decisions OD-6 through OD-10 captured below.
+This version is the post-review revision.
+
+### 24.0 What actually shipped
+
+Snapshot at commit `d21a1c0` (pwr-ops main) + `0182c65` (samsinn master):
+
+- 39/39 developed procedures (by content-based classifier).
+- 12 system descriptions with mermaid topology diagrams.
+- 113-tag canonical catalogue; 66-entry setpoint catalogue (auto-built).
+- Manifest v1 with backward-compatible `pages` array indexing non-procedure pages.
+- Tools: `procedure_lookup` (live), `wiki_lookup` (live, manifest-driven type validation per E.4).
+- procmd v0.7 (`Decision:`) honoured in both samsinn renderer and wiki render-procmd.ts.
+- Site nav: Home / About / Procedures / Plant reference / Profiles.
+
+### 24.1 Phase H — drift guards (~4 days)
+
+Reordered ahead of E because H makes E safer and locks in current work.
+
+**H.1 Cross-page reference + setpoint-value validation — extends the existing `validate.ts` at repo root.** (Decision OD-6: do not extract validator into procmd-core.) Three new checks:
+
+1. **Cross-page refs.** For every page under `wiki/` except `procedures/` and `profiles/`, parse frontmatter + body, collect `[[P-id]]` procedure refs (error on dangling) and `«TAG-ID»` tag refs (warning on dangling — non-procedure pages legitimately document plant-model tags ahead of procedure adoption).
+2. **Setpoint-value consistency.** Extend `validateTagConsistency` to compare every key in `extra` across occurrences. Mismatches between two *populated* values are errors for numeric/identifying fields (`setpoint`, `range`, `value`, `threshold`, …) and warnings for citation-like fields (`source`, `ref`, `citation`, `note`). Missing-vs-populated is not a conflict.
+3. **Required `sources:` on non-procedure pages.** Frontmatter check: `type: operations-doc | hf-action-class | hf-failure-mode | hf-time-pressure-profile | hf-performance-shaping-factor | operating-experience` requires a non-empty `sources: [list]`. Pre-positions schema for E.0.
+
+Invoked by `validate.ts` entry point and run in deploy workflow ahead of `build-manifest`. Workflow fails on any error.
+
+**H.2 procmd-core fixture corpus — feature-focused fixtures + parser goldens in samsinn.** `src/procmd-core/fixtures/feat-*.md` files: one per language feature (Decision:, Within:, Caution:/Note:, freeText branch, …). `parser.test.ts` asserts the load-bearing fields per feature. Wiki repo adopts the same fixtures via the existing `procmd-core.sha` pin in a follow-up; until then, parity is guaranteed by samsinn-side `bun test`. Adding a feature without updating fixtures becomes a CI red.
+
+**H.3 Telemetry digest — deferred.** `procedure_lookup` / `wiki_lookup` emit JSONL telemetry to stderr; nothing captures it today. Defer the digest script until samsinn-side `ToolContext.logEvent` lands (§18.2).
+
+**Exit criteria**: validator errors on dangling procedure refs / setpoint contradictions / missing `sources:`; one fixture per procmd v0.7 feature with passing parser-golden assertions.
+
+### 24.2 Phase G — visual polish (~1 week, parallel to H, time-boxed)
+
+Pure `overrides/` work. Drop pieces that bloat. **Decision OD-10:** G.1/G.2 live in samsinn renderer (`src/packs/pwr-ops/procmd/renderer.ts`), not wiki render-procmd.ts.
+
+**G.1 Diamond only when ≥2 substantive branches.** Mermaid step renders as a diamond only when `step.isDecision === true` AND the step has ≥2 substantive edges (intra to an existing step OR inter to another procedure). freeText branches don't count as substantive. Single-substantive-branch "decisions" render as rectangles.
+
+**G.2 `freeText` branch terminal styling.** freeText targets render as deduped stadium-shaped leaf nodes (`(["body"]):::freetext`) with a distinct CSS class, instead of being silently dropped from the mermaid output. Same free-text body across multiple steps collapses to one node.
+
+**G.3 Two-column ERG render — TIME-BOXED 2 DAYS.** CSS-only experiment in `overrides/erg-twocol.css`. Drop if it doesn't look right.
+
+**G.4 Renderer parity — guaranteed by H.2 fixture goldens.** No grep tripwire. Adding a procmd keyword without renderer paths in both consumers fails CI in whichever consumer's renderer test wasn't updated against the shared fixture.
+
+**Exit criteria**: G.1 + G.2 shipped in samsinn renderer; G.3 shipped-or-dropped with note.
+
+### 24.3 Phase E — Operations + Human Factors (~2–3 weeks, source-gated)
+
+Smaller than the original 3–4 week estimate at LLM-co-author cadence.
+
+**E.0 Source-authority pre-pass (~3 days, hard gate).** Before any HF/ConOps content:
+- Identify 3–5 canonical public sources per HF page type (OECD-NEA OE reports, NRC NUREG/CR-6753, IAEA NS-G-2.14, INPO non-proprietary derivatives). Capture in `wiki/sources.md`.
+- Same for ConOps: NRC NUREG-0700, NUREG-1764, IAEA NS-G-2.14 chapters identified.
+- Validator (H.1) rejects non-procedure pages lacking `sources:`.
+- **Review-gate artifact**: every HF/ConOps page gets a `reviewed-by-human: YYYY-MM-DD` frontmatter line when the owner approves it. Validator emits a *warning* for missing/stale (>90 day) `reviewed-by-human:`. Surfaces in PR CI output without blocking; escalate to error if needed.
+
+Tripwire: if E.0 exceeds 5 days, scope-cut HF to 2 page types (`hf-action-class` + `operating-experience`).
+
+**E.1 ConOps content (`wiki/operations/`, 8 pages).** Per §15.1. Each `type: operations-doc` with `sources:` + `reviewed-by-human:`.
+
+**E.2 Human-factors content (`wiki/human-factors/`, 4 types, ≥8 pages).** Per §15.2.
+
+**E.3 procmd-core schema additions.** Discriminated-union `ParsedPage` in `procmd-core/types.ts`; parsers in `procmd-core/parser-by-type.ts`. Wiki validate.ts (H.1) consumes them.
+
+**E.4 wiki_lookup type enum opens.** (Decision OD-7.) Drop closed `enum:` constraint on `type` parameter. Replace with live-manifest validation: tool accepts any string, validates against `manifest.pages[].type` set at call time. Unknown types return a structured error listing available types. New wiki page types ship without a samsinn release. **Already implemented.**
+
+**Exit criteria**: 8 ConOps + ≥8 HF pages, all with `sources:` + `reviewed-by-human:`, all green through validate.ts. Every EOP family has one `hf-time-pressure-profile` + one cross-linked `operating-experience`.
+
+### 24.4 Phase F — Simulation + agent layer (~3–4 weeks for v1)
+
+Tighter than original 6–8 week estimate.
+
+**F.0 Scenario schema first (~2 days).** Lock in `procmd-core/types.ts` + validator before scenario content. Fields: `initial-state`, `injections`, `expected-traversal`, `expected-terminal-state`.
+
+**F.1 EAL classifier (~3 days). Rules ship as `wiki/_eal-rules.json` sibling to manifest.** (Decision OD-9.) New build step `scripts/build-eal-rules.ts` reads `wiki/eal/classification-rules.md` (human-authored markdown rule tables), emits JSON. samsinn's `eal_classify(scenario)` fetches `_eal-rules.json` like the manifest. Wiki-authored rules, code-executed dispatch.
+
+**F.2 10 reference scenarios.** Per §16.4. Each through F.1 to produce EAL classification.
+
+**F.3 `procedure_search` (~1 week).** Build-time `wiki/_search-index.json` keyed on entry-triggers, tag refs in `Check:` lines, step `Action:` keywords. Tool ranks by symptom-match.
+
+**F.4 One simulator binding (samsinn sim).** `wiki/simulator-bindings/samsinn.md` declares full `TAG → sim variable path` mapping. validate.ts confirms every tag in the canonical catalogue has a binding entry.
+
+**F.5 Validation traces** — schema only; ≥3 traces (LOCA, SGTR, SBO). Beyond v1 deferred.
+
+**Exit criteria**: 10 scenarios + F.1 EAL tool + F.3 procedure_search + F.4 sim binding + ≥3 validation traces.
+
+### 24.5 Sequencing summary
+
+| Order | Phase | Wall-clock | Why |
+|---|---|---|---|
+| 1 | H (drift guards) | ~4 d | Cheap, makes E safer, plugs setpoint-contradiction blind spot. |
+| 1′ | G (visual, parallel) | ~1 wk | Pure overrides, no corpus risk. |
+| 2 | E.0 (source-auth pre-pass, hard gate) | ~3 d | Mandatory before any HF authoring. |
+| 3 | E (ConOps + HF) | ~2–3 wk | Smaller than original estimate. |
+| 4 | F.0 (scenario schema) | ~2 d | Lock cusp-with-sim schema before content. |
+| 5 | F (sim + agent v1) | ~3–4 wk | After E cross-refs land. |
+
+Total: ~7–10 weeks E + F v1, plus ~1.5 weeks parallel H/G upfront.
+
+### 24.6 Open decisions
+
+| # | Decision | Status |
+|---|---|---|
+| OD-1 | Wiki rename at E exit? | Defer to E exit. |
+| OD-2 | Canonical HF / ConOps sources | E.0 deliverable. |
+| OD-3 | F.1 before F.2? | F.1 first — F.2 calls it. |
+| OD-4 | Drop G.3 if it bloats? | Yes, 2-day box. |
+| OD-5 | Defer F.5 validation traces beyond v1? | Yes, ≥3 in v1, rest later. |
+| OD-6 | H.1 location | **Decided 2026-05-13: extend root validate.ts. Implemented.** |
+| OD-7 | wiki_lookup enum coupling | **Decided 2026-05-13: open enum, manifest-driven validation. Implemented.** |
+| OD-8 | Setpoint-value mismatch severity | **Decided 2026-05-13: error (with missing-vs-populated guard). Implemented.** |
+| OD-9 | F.1 EAL rules location | **Decided 2026-05-13: `wiki/_eal-rules.json` sibling.** |
+| OD-10 | G.1 ownership | **Decided 2026-05-13: samsinn renderer, not wiki render-procmd. Implemented.** |

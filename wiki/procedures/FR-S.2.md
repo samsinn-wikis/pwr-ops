@@ -124,6 +124,7 @@ Note: sampling for boron concentration confirmation has a 20–45 minute analyti
   units: psig
   equipment: pressurizer
   source: Vogtle UFSAR §5.4
+  range: [0, 3000]
 
 - id: SUB-MARGIN
   description: RCS subcooling margin (T_sat at PT-455 minus hot-leg temperature)
