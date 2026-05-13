@@ -647,6 +647,40 @@
       ]
     },
     {
+      "id": "bop",
+      "type": "system-description",
+      "title": "Balance of Plant (BOP) — Turbine, Condenser, Feedwater",
+      "file": "wiki/systems/bop.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR",
+      "referencePlant": "vogtle",
+      "csfsRelated": [
+        "heat-sink"
+      ]
+    },
+    {
+      "id": "containment",
+      "type": "system-description",
+      "title": "Containment Building + Containment Spray",
+      "file": "wiki/systems/containment.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR",
+      "referencePlant": "vogtle",
+      "csfsRelated": [
+        "containment"
+      ]
+    },
+    {
+      "id": "cvcs",
+      "type": "system-description",
+      "title": "Chemical and Volume Control System (CVCS)",
+      "file": "wiki/systems/cvcs.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR",
+      "referencePlant": "vogtle",
+      "csfsRelated": [
+        "subcriticality",
+        "rcs-inventory"
+      ]
+    },
+    {
       "id": "eccs",
       "type": "system-description",
       "title": "Emergency Core Cooling System (ECCS)",
@@ -656,6 +690,55 @@
       "csfsRelated": [
         "core-cooling",
         "rcs-inventory"
+      ]
+    },
+    {
+      "id": "electrical",
+      "type": "system-description",
+      "title": "Electrical Distribution (Class 1E + DC)",
+      "file": "wiki/systems/electrical.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR",
+      "referencePlant": "vogtle",
+      "csfsRelated": [
+        "core-cooling",
+        "heat-sink",
+        "rcs-inventory"
+      ]
+    },
+    {
+      "id": "esf",
+      "type": "system-description",
+      "title": "Engineered Safety Features (ESF) Actuation",
+      "file": "wiki/systems/esf.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR",
+      "referencePlant": "vogtle",
+      "csfsRelated": [
+        "core-cooling",
+        "rcs-inventory",
+        "containment"
+      ]
+    },
+    {
+      "id": "mss",
+      "type": "system-description",
+      "title": "Main Steam System (MSS)",
+      "file": "wiki/systems/mss.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR",
+      "referencePlant": "vogtle",
+      "csfsRelated": [
+        "heat-sink",
+        "containment"
+      ]
+    },
+    {
+      "id": "nis",
+      "type": "system-description",
+      "title": "Nuclear Instrumentation System (NIS)",
+      "file": "wiki/systems/nis.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR",
+      "referencePlant": "vogtle",
+      "csfsRelated": [
+        "subcriticality"
       ]
     },
     {
@@ -669,6 +752,29 @@
         "core-cooling",
         "rcs-inventory",
         "rcs-integrity"
+      ]
+    },
+    {
+      "id": "rhr",
+      "type": "system-description",
+      "title": "Residual Heat Removal System (RHR)",
+      "file": "wiki/systems/rhr.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR",
+      "referencePlant": "vogtle",
+      "csfsRelated": [
+        "core-cooling",
+        "rcs-inventory"
+      ]
+    },
+    {
+      "id": "rps",
+      "type": "system-description",
+      "title": "Reactor Protection System (RPS)",
+      "file": "wiki/systems/rps.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR",
+      "referencePlant": "vogtle",
+      "csfsRelated": [
+        "subcriticality"
       ]
     }
   ]

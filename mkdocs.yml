@@ -133,5 +133,14 @@ nav:
     - systems/rcs.md
     - systems/eccs.md
     - systems/afw.md
+    - systems/mss.md
+    - systems/rps.md
+    - systems/rhr.md
+    - systems/esf.md
+    - systems/electrical.md
+    - systems/cvcs.md
+    - systems/containment.md
+    - systems/nis.md
+    - systems/bop.md
   - Profiles:
     - profiles/nuclear-erg.md
