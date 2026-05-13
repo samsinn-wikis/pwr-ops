@@ -1126,6 +1126,91 @@ async function validateScenarios(
   return errors;
 }
 
+// ---------- EAL rules validation (F.1) -----------------------------------
+
+async function validateEalRules(knownTagIds: Set<string>): Promise<ValidationError[]> {
+  const errors: ValidationError[] = [];
+  const fs = await import("node:fs/promises");
+  const path = await import("node:path");
+  const sourceFile = `${REPO_ROOT}wiki/eal/classification-rules.md`;
+  const builtFile = `${REPO_ROOT}wiki/_eal-rules.json`;
+  let exists = false;
+  try { await fs.access(sourceFile); exists = true; } catch { /* fine */ }
+  if (!exists) return errors;
+  let builtRaw: string;
+  try {
+    builtRaw = await fs.readFile(builtFile, "utf-8");
+  } catch {
+    errors.push({
+      file: builtFile,
+      line: 1,
+      msg: `EAL rules source (${path.basename(sourceFile)}) exists but build artifact wiki/_eal-rules.json is missing. Run 'bun scripts/build-eal-rules.ts' before validate.`,
+    });
+    return errors;
+  }
+  let parsed: { rules?: Array<{ ic: string; predicate: string; class: string; source: string }> };
+  try {
+    parsed = JSON.parse(builtRaw);
+  } catch (err) {
+    errors.push({ file: builtFile, line: 1, msg: `_eal-rules.json is not valid JSON: ${(err as Error).message}` });
+    return errors;
+  }
+  const rules = parsed.rules ?? [];
+  const { parsePredicate, tagsInPredicate } = await import("./procmd-core/eal-predicate.ts");
+  let manualCount = 0;
+  for (const r of rules) {
+    if (r.ic === "manual" || r.predicate === "manual") { manualCount += 1; continue; }
+    const p = parsePredicate(r.predicate);
+    if ("error" in p) {
+      errors.push({ file: sourceFile, line: 1, msg: `${r.class} ${r.ic}: predicate parse error — ${p.error}` });
+      continue;
+    }
+    for (const tag of tagsInPredicate(p)) {
+      if (!knownTagIds.has(tag)) {
+        errors.push({
+          file: sourceFile,
+          line: 1,
+          severity: "warning",
+          msg: `${r.class} ${r.ic} references tag «${tag}» which is not defined in any procedure's tag appendix`,
+        });
+      }
+    }
+  }
+  if (manualCount > 15) {
+    errors.push({
+      file: sourceFile,
+      line: 1,
+      severity: "warning",
+      msg: `${manualCount} 'manual' placeholder rules — predicate grammar needs expansion (count > 15 threshold)`,
+    });
+  }
+
+  // Run classifier against every scenario; compare declared expected-eal-class
+  // to result.
+  const { parseScenario, projectScenarioTimeline, classifyEal } = await import("./procmd-core/index.ts");
+  const scenariosDir = `${REPO_ROOT}wiki/scenarios`;
+  let scenarioFiles: string[] = [];
+  try {
+    scenarioFiles = (await fs.readdir(scenariosDir)).filter((f) => f.endsWith(".md"));
+  } catch { /* no scenarios dir */ }
+  for (const f of scenarioFiles) {
+    const filePath = path.join(scenariosDir, f);
+    const content = await fs.readFile(filePath, "utf-8");
+    const r = parseScenario(content);
+    if ("error" in r) continue; // already errored by validateScenarios
+    const samples = projectScenarioTimeline(r.initialState, [...r.injections]);
+    const result = classifyEal(rules as any, samples);
+    if (result.highestClass !== r.expectedEalClass) {
+      errors.push({
+        file: filePath,
+        line: 1,
+        msg: `scenario '${r.scenarioId}': declared expected-eal-class '${r.expectedEalClass}' but classifier returned '${result.highestClass ?? "(none)"}' (matching IC: ${result.matchingIc ?? "none"}). Either the scenario state is wrong or the EAL rules don't cover this scenario.`,
+      });
+    }
+  }
+  return errors;
+}
+
 // ---------- Main ----------------------------------------------------------
 
 async function main() {
@@ -1202,6 +1287,12 @@ async function main() {
     stepIdsByProcedure.set(p.procedureId, new Set(p.steps.map((s) => s.id)));
   }
   allMessages.push(...await validateScenarios(stepIdsByProcedure, knownTagIds));
+
+  // F.1 EAL rules validation: parse the rules file with procmd-core; assert
+  // every predicate parses, every tag referenced exists in some procedure's
+  // tag appendix. Also runs eal_classify against every scenario and verifies
+  // declared expected-eal-class matches the result.
+  allMessages.push(...await validateEalRules(knownTagIds));
 
   // Split errors and warnings
   const errors = allMessages.filter((m) => (m.severity ?? "error") === "error");

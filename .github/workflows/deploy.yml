@@ -71,6 +71,9 @@ jobs:
       - name: Build tag + setpoint catalogues
         run: bun scripts/build-catalogues.ts
 
+      - name: Build EAL rules JSON
+        run: bun scripts/build-eal-rules.ts
+
       - name: Build machine-readable manifest
         run: bun scripts/build-manifest.ts
 

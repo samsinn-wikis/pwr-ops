@@ -151,5 +151,7 @@ nav:
       - Setpoint catalogue: setpoints/index.md
   - Scenarios:
     - Small-break LOCA: scenarios/sb-loca.md
+  - EAL classification:
+    - Rule table: eal/classification-rules.md
   - Profiles:
     - profiles/nuclear-erg.md

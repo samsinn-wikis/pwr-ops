@@ -1607,3 +1607,212 @@ Total: ~7–10 weeks E + F v1, plus ~1.5 weeks parallel H/G upfront.
 | OD-9 | F.1 EAL rules location | **Decided 2026-05-13: `wiki/_eal-rules.json` sibling.** |
 | OD-10 | G.1 ownership | **Decided 2026-05-13: samsinn renderer, not wiki render-procmd. Implemented.** |
 | OD-11 | G.3 two-column ERG render | **Decided 2026-05-13: drop as scoped (can't be pure CSS; RNO analogy semantically wrong). Replaced with G.3′: pure-CSS step-styling polish in `overrides/procedure.css` giving Check / Action / Caution / Note / Within / branches distinct visual treatment. Two-column RNO-style render deferred to Phase F when validation traces show whether procedures structurally have RNO-shaped branches.** |
+
+
+---
+
+## 25. Next-cycle execution plan (2026-05-13, post §24 implementation)
+
+Concrete ~2-week ticket plan for the next pass. Builds on §24 §24.4 F.0
+(scenario schema landed, one scenario authored). Sequenced by dependency
+and packaged into shippable atomic commits.
+
+### 25.0 Snapshot at the start of this cycle
+
+- pwr-ops `d647dbe`: H.1 + H.2 + G.1 + G.2 + G.3′ + E.4 + F.0 live.
+  Validator errors on dangling procedure refs / setpoint mismatches /
+  missing `sources:`; manifest indexes 39 procedures + 12 systems + 2
+  catalogues + 1 scenario.
+- samsinn `2b7a94b`: procmd-core ships `parseScenario`; `wiki_lookup`
+  validates types against live manifest.
+
+### 25.1 Ticket F.1 — EAL classifier (~3 days)
+
+**Goal**: deterministic NEI 99-01 EAL classification (UE / Alert / SAE / GE)
+driven by wiki-authored rules.
+
+**Authoring layer (wiki side)** — `wiki/eal/classification-rules.md`:
+- New page type `eal-rules` in frontmatter (`type: eal-rules`).
+- Body holds **one canonical rule table** per emergency class. Each row:
+  initiating condition string + threshold predicate (in canonical
+  expression syntax, see below) + EAL class + cite source (NEI 99-01
+  IC code).
+- Predicate syntax — minimal subset, only what NEI 99-01 ICs actually
+  use: `«TAG» <op> <value>`, joined by `AND` / `OR`. Operators: `<`,
+  `>`, `<=`, `>=`, `==`, `!=`. No precedence games — left-to-right with
+  explicit parens.
+
+**Build step (wiki side)** — `scripts/build-eal-rules.ts`:
+- Reads `wiki/eal/classification-rules.md`, parses tables under
+  level-2 headings `## Unusual Event` / `## Alert` / `## Site Area
+  Emergency` / `## General Emergency`.
+- Emits `wiki/_eal-rules.json` next to `_manifest.json`. Schema:
+  ```ts
+  interface EalRule { ic: string; predicate: string; class: 'UE'|'Alert'|'SAE'|'GE'; source: string }
+  interface EalRulesFile { version: 1; wiki: 'pwr-ops'; rules: EalRule[] }
+  ```
+- Deploy workflow runs `build-eal-rules.ts` before `build-manifest.ts`.
+
+**Validator (wiki side)** — extend `validate.ts`:
+- Parse predicates; assert every tag referenced exists in some procedure
+  appendix OR in the canonical tag catalogue.
+- Assert every IC code is unique within a class.
+
+**Tool (samsinn side)** — `src/packs/pwr-ops/tools/eal-classify.ts`:
+- `eal_classify({ scenarioId?, initialState?, injections? })` — accepts
+  either a scenario id (fetched + parsed) or inline state.
+- Fetches `_eal-rules.json` (same fallback path as `_manifest.json`).
+- Builds a *projected state at evaluation time* — `initialState` overlaid
+  with `injections.filter(i => i.atTimeS <= evalAtS)`. Default eval time
+  is the last injection's `atTimeS` + 60s; overridable via
+  `evalAtTimeS` parameter.
+- Evaluates predicates against the projected state. Returns the highest
+  class that matches, with the matching IC code + cited source for
+  traceability.
+- Telemetry: one JSONL line per call (`eal_classify_telemetry`).
+
+**Tests**:
+- Predicate parser unit tests (samsinn side): operator precedence,
+  unknown tag, type-mismatched comparison.
+- E2E test: `eal_classify({ scenarioId: 'sb-loca' })` returns UE → Alert
+  transition at the injection time.
+
+**Exit criteria**: deploy workflow ships `_eal-rules.json`; sample
+scenario `sb-loca.md` declares an `expected-eal-class` field; samsinn
+`eal_classify` returns the expected class from live wiki content.
+
+### 25.2 Ticket F.2 — four more reference scenarios (~2 days)
+
+After F.1 lands, author one scenario per remaining priority EOP family.
+Each scenario declares `expected-eal-class` in frontmatter — F.1 verifies.
+
+| Scenario | Path | Expected EOPs | Expected EAL |
+|---|---|---|---|
+| Large-break LOCA | `wiki/scenarios/lb-loca.md` | E-0 → E-1 → ECA-1.1 → ES-1.4 | Alert → SAE |
+| SGTR | `wiki/scenarios/sgtr.md` | E-0 → E-3 → ES-3.1 | Alert |
+| Station blackout | `wiki/scenarios/sbo.md` | E-0 → ECA-0.0 | Alert → SAE |
+| ATWS | `wiki/scenarios/atws.md` | E-0 → FR-S.1 | Alert |
+
+Each scenario validates clean (validator F.0 traversal refs + F.1 EAL
+predicates). Adds 4 to manifest's `pages` array.
+
+**Exit criteria**: 5 scenarios total in `wiki/scenarios/`, covering the
+five major initiator classes (small LOCA, large LOCA, SGTR, SBO, ATWS).
+
+### 25.3 Ticket F.3 — `procedure_search` (~3 days, deferrable)
+
+**Build step (wiki side)** — `scripts/build-search-index.ts`:
+- Walks all procedures, emits `wiki/_search-index.json`. Schema:
+  ```ts
+  interface SearchEntry {
+    procedureId: string
+    entryTriggers: string[]
+    csfsMonitored: string[]
+    keywords: string[]   // unique words from Check:/Action: lines, lowercased, deduped
+    tagRefs: string[]    // unique «TAG» refs across the procedure
+  }
+  ```
+- Stopword filter on `keywords` (drop common english + procedure-noise:
+  "verify", "check", "action", "step", "and", "or", "the").
+
+**Tool (samsinn side)** — `src/packs/pwr-ops/tools/procedure-search.ts`:
+- `procedure_search({ query, csf?, entryTrigger? })`:
+  - Fetches `_search-index.json`. Caches per process for 5 min like the
+    manifest.
+  - Scores each procedure by: (a) substring match on entry-triggers (+5),
+    (b) csf overlap (+3), (c) keyword overlap (+1 per match), (d) tag-ref
+    match (+2 per match).
+  - Returns top 5 procedures sorted by score, with per-result match
+    explanation ("matched entry-trigger 'loca-symptoms'; 3 keyword hits").
+
+**Exit criteria**: tool returns useful results for "subcooling lost",
+"steam generator level low", "boron dilution alarm" without naming the
+procedure id.
+
+### 25.4 Ticket F.4 — samsinn simulator binding page (~1 day)
+
+**Authoring (wiki side)** — `wiki/simulator-bindings/samsinn.md`:
+- `type: simulator-binding`, `simulator-id: samsinn`.
+- Body has one canonical mapping table: `«TAG» | samsinn-sim-path | notes`.
+- Covers every tag in the canonical tag catalogue (113 tags currently).
+
+**Build/validator** — `validate.ts` extension:
+- Parse simulator-binding pages; assert every tag in the canonical tag
+  catalogue has a row in *at least one* simulator-binding page.
+- Warning (not error) for tags not yet bound — gives authoring room.
+
+**Exit criteria**: ≥90% of catalogued tags have a samsinn sim-path entry.
+
+### 25.5 Ticket E.0 — source-authority pre-pass (owner-gated, ~3 days)
+
+**Cannot proceed without owner input.** This ticket establishes the
+citation pool for Phase E HF/ConOps content authoring. Required outputs:
+
+- `wiki/sources.md` gains two new sections: `## Human-factors source pool`
+  and `## Operations / ConOps source pool`. Each section lists 3–5
+  canonical public documents with full citation (title, author/agency,
+  publication date, public URL).
+- Per-document `source-id` short codes assigned (e.g. `nei-99-01`,
+  `nureg-cr-6753`, `iaea-ns-g-2-14`). HF/ConOps pages cite by short code.
+- New procmd-core schema: `ParsedSourcePool` (loaded from `sources.md`'s
+  new sections), and validator extension: any `sources: [a, b, c]`
+  frontmatter on E-content pages must reference only declared short
+  codes.
+
+**Decision gate before authoring starts**:
+- AskUserQuestion to confirm the candidate source list (3–5 per pool)
+  before the schema lands. Without this owner input, E.0 cannot proceed.
+- Tripwire: if source-pool selection takes longer than 1 week, scope-cut
+  HF to 2 page types (`hf-action-class` + `operating-experience`) per
+  §24.3.
+
+### 25.6 Sequencing + risk
+
+| Order | Ticket | Wall-clock | Blocking? |
+|---|---|---|---|
+| 1 | F.1 EAL classifier | ~3 d | no |
+| 2 | F.2 four more scenarios | ~2 d | needs F.1 |
+| 3 | F.3 procedure_search | ~3 d | no; deferrable to after E |
+| 4 | F.4 simulator binding | ~1 d | no |
+| 5 | E.0 source pre-pass | ~3 d (+owner gate) | gates all of E |
+
+Total cycle: ~12 days excluding E.0 owner-gated phase.
+
+**Cross-ticket risks**:
+
+- **R1 — predicate language drift.** The F.1 minimal predicate syntax
+  (`«TAG» <op> <value>` with AND/OR) may grow tentacles when authors
+  encounter ICs that need ratios, time-derivatives, or set membership.
+  *Mitigation*: lock the syntax in F.1, refuse to extend mid-cycle. If a
+  rule can't be expressed, fall back to an `ic: "manual"` placeholder
+  + a TODO in the markdown; surface as warning at deploy time so the
+  count doesn't silently grow. Document in `docs/eal-predicates.md`.
+- **R2 — scenarios cite step-ids that are renamed later.** F.0
+  validation catches the dangling ref but only at deploy time. Owner-
+  refactoring of a procedure's step ids breaks every scenario referencing
+  them. *Mitigation*: when renaming a step, grep `wiki/scenarios/` for
+  the old id and fix in the same commit. Add an `update-step-id.ts` CLI
+  in §25.7 if this becomes friction.
+- **R3 — F.3 search relevance is heuristic.** No ground-truth labels;
+  no way to A/B the scoring. *Mitigation*: ship F.3 with the simple
+  scoring, observe samsinn-side telemetry for "called procedure_search,
+  then immediately called procedure_lookup for a DIFFERENT id" as a
+  proxy for low relevance. Defer tuning until 50+ calls in the wild.
+- **R4 — samsinn-side enum opening (E.4) was preemptive.** The wiki
+  now publishes a `scenario` page type that's outside the named
+  WikiPageType union. Manifest-driven validation handles it at runtime.
+  But samsinn-side TypeScript can't yet narrow by type for any new
+  page type. If an agent-side handler needs to special-case scenarios
+  (e.g. a `scenario_summary` tool), add `'scenario'` to the named
+  union at that point — a 1-line change.
+
+### 25.7 Open decisions for this cycle
+
+| # | Decision | Default |
+|---|---|---|
+| OD-12 | F.1 predicate syntax — single-tag only or allow tag-vs-tag (`«A» > «B»`)? | Single-tag only for v1. Tag-vs-tag is a Phase F.5 extension when validation traces show a real IC that needs it. |
+| OD-13 | F.2 scenario-authoring source — Vogtle UFSAR §15 transient analyses (each LOCA / SGTR scenario gets its initial state + transient timing from UFSAR §15.x) or invented timing? | UFSAR-anchored where possible; invented timing only flagged as `synthetic-timing: true` in scenario frontmatter. Validator warns on synthetic-timing scenarios at deploy time. |
+| OD-14 | F.3 search-index location — single JSON sibling to manifest, or sharded per EOP family? | Single JSON (39 procedures × ~50 keywords ≈ 30 KB, fits in one fetch). Shard only if it exceeds 200 KB. |
+| OD-15 | F.4 simulator-binding coverage gate — error or warning on un-bound tags in the catalogue? | Warning. Many tags are real plant instruments not yet wired into the samsinn sim; flagging error-class would block ship. |
+| OD-16 | E.0 owner-time budget — when does the source-pool research happen? | Owner-blocked until §25.5 ticket opens explicitly. Don't pre-empt with LLM-proposed sources. |
+

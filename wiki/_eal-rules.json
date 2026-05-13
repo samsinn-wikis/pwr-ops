@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "wiki": "pwr-ops",
+  "rules": [
+    {
+      "ic": "SU4",
+      "predicate": "«PT-455» < 1815",
+      "class": "UE",
+      "source": "NEI 99-01 SU4 (RCS leakage / inventory loss)"
+    },
+    {
+      "ic": "SU8",
+      "predicate": "«CTMT-PR» > 3",
+      "class": "UE",
+      "source": "NEI 99-01 SU8 (containment pressure indication)"
+    },
+    {
+      "ic": "HU1",
+      "predicate": "«BUS-A-EMERG» == DEAD AND «BUS-B-EMERG» == DEAD for >= 15 min",
+      "class": "UE",
+      "source": "NEI 99-01 HU1 (loss of all offsite AC ≥ 15 min)"
+    },
+    {
+      "ic": "SA5",
+      "predicate": "«PT-455» < 1500",
+      "class": "Alert",
+      "source": "NEI 99-01 SA5 (significant RCS depressurization)"
+    },
+    {
+      "ic": "HA1",
+      "predicate": "«BUS-A-EMERG» == DEAD AND «BUS-B-EMERG» == DEAD for >= 30 min",
+      "class": "Alert",
+      "source": "NEI 99-01 HA1 (extended loss of AC ≥ 30 min)"
+    },
+    {
+      "ic": "SA9",
+      "predicate": "«CTMT-RAD» > 100",
+      "class": "Alert",
+      "source": "NEI 99-01 SA9 (containment radiation rise)"
+    },
+    {
+      "ic": "SS3",
+      "predicate": "«CET-AVG» >= 1200 for >= 15 min",
+      "class": "SAE",
+      "source": "NEI 99-01 SS3 (core exit thermocouples ≥ 1200 °F sustained)"
+    },
+    {
+      "ic": "HS1",
+      "predicate": "«BUS-A-EMERG» == DEAD AND «BUS-B-EMERG» == DEAD for >= 1 h",
+      "class": "SAE",
+      "source": "NEI 99-01 HS1 (loss of all AC ≥ 1 hour)"
+    },
+    {
+      "ic": "SS5",
+      "predicate": "«CTMT-RAD» > 1000",
+      "class": "SAE",
+      "source": "NEI 99-01 SS5 (high containment radiation, fuel-clad damage)"
+    },
+    {
+      "ic": "SG1",
+      "predicate": "«CET-AVG» >= 1200 for >= 30 min AND «CTMT-RAD» > 1000",
+      "class": "GE",
+      "source": "NEI 99-01 SG1 (core damage + containment radiation indicates release path)"
+    },
+    {
+      "ic": "HG1",
+      "predicate": "«BUS-A-EMERG» == DEAD AND «BUS-B-EMERG» == DEAD for >= 4 h",
+      "class": "GE",
+      "source": "NEI 99-01 HG1 (SBO ≥ 4 hours)"
+    }
+  ]
+}

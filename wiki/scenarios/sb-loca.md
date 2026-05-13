@@ -4,6 +4,8 @@ scenario-id: sb-loca
 title: Small-break LOCA (3-inch cold-leg break, Loop 1)
 applies-to: Westinghouse-style 4-loop PWR
 reference-plant: vogtle
+expected-eal-class: UE
+timing-source: Vogtle UFSAR §15.6.5
 ---
 
 Reactor at 100% rated thermal power; a 3-inch break in the Loop 1 cold leg
@@ -68,10 +70,12 @@ variants live in `sb-loca-with-*` sibling scenarios.
 
 ## EAL classification
 
-Initial entry under E-0/SI is at minimum an Unusual Event per NEI 99-01;
-once SI is actuated AND containment radiation rises (not represented in
-this no-fuel-damage variant), the classification escalates to Alert. See
-the future EAL-classification page for the full table.
+This scenario classifies as **Unusual Event (SU4)** per the wiki's EAL
+rule table — pressurizer pressure drops below 1815 psig, triggering the
+RCS-leakage / inventory-loss IC. The scenario does not escalate to
+Alert because SI catches up at PT-455 = 1600 psig before pressure
+crosses the 1500 psig SA5 threshold. A variant scenario with a larger
+break or delayed SI would escalate; see future `sb-loca-with-delayed-si.md`.
 
 ## References
 

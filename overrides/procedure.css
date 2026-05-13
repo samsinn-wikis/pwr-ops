@@ -16,55 +16,36 @@
 
 [class*="kw-"] {
   font-family: var(--md-code-font, ui-monospace, SFMono-Regular, monospace);
-  font-size: 0.92em;
-  font-weight: 700;
+  font-size: 0.9em;
+  font-weight: 600;
   letter-spacing: 0;
-  padding: 0 0.15em;
+  padding: 0 0.2em;
   border-radius: 2px;
-  margin-right: 0.15em;
+  margin-right: 0.2em;
+  /* Light mode keeps a faint tinted background; dark mode drops it (see below). */
 }
 
-/* === Action / Check: the two primary operator instruction types ====
- *    Action is "do something now"; Check is "verify a state". Use
- *    accent (Material primary) for Action, neutral high-contrast for
- *    Check so they stand apart at a glance. ======================= */
+/* === Light mode: faint tinted backgrounds, saturated text ============== */
 
 .kw-action {
-  color: var(--md-accent-fg-color, #5e35b1);
-  background: var(--md-accent-bg-color--light, rgba(94, 53, 177, 0.10));
+  color: #5e35b1;
+  background: rgba(94, 53, 177, 0.08);
 }
 
 .kw-check {
-  color: var(--md-primary-fg-color, #1f618d);
-  background: rgba(31, 97, 141, 0.08);
+  color: #1f618d;
+  background: rgba(31, 97, 141, 0.07);
 }
-
-/* === Caution: amber, never miss. =============================== */
 
 .kw-caution {
-  color: #856404;
-  background: rgba(255, 235, 130, 0.30);
+  color: #b7791f;
+  background: rgba(183, 121, 31, 0.10);
 }
-
-[data-md-color-scheme="slate"] .kw-caution {
-  color: #ffd76e;
-  background: rgba(255, 215, 110, 0.18);
-}
-
-/* === Note: lighter, informational. =============================== */
 
 .kw-note {
   color: #5e6c84;
-  background: rgba(94, 108, 132, 0.10);
+  background: rgba(94, 108, 132, 0.08);
 }
-
-[data-md-color-scheme="slate"] .kw-note {
-  color: #a5b3c2;
-  background: rgba(165, 179, 194, 0.12);
-}
-
-/* === Within / Abort-if / Until / When / By / Concurrent — lifecycle.
- *    Italic + violet to mark "time-constraint or conditional scope". */
 
 .kw-within,
 .kw-abort-if,
@@ -74,8 +55,36 @@
 .kw-concurrent {
   color: #6c3483;
   font-style: italic;
-  background: rgba(108, 52, 131, 0.10);
+  background: rgba(108, 52, 131, 0.07);
 }
+
+.kw-because {
+  color: #1e7d32;
+  background: rgba(30, 125, 50, 0.07);
+}
+
+.kw-against {
+  color: #c0392b;
+  background: rgba(192, 57, 43, 0.07);
+}
+
+/* === Dark mode: drop the background tints entirely, lean on muted
+ *    foreground colour + uppercase letter-spacing so the keywords still
+ *    scan as distinct without the highlighter look. =================== */
+
+[data-md-color-scheme="slate"] [class*="kw-"] {
+  background: transparent;
+  padding: 0;
+  font-weight: 600;
+}
+
+[data-md-color-scheme="slate"] .kw-action { color: #b39ddb; }
+[data-md-color-scheme="slate"] .kw-check { color: #90caf9; }
+[data-md-color-scheme="slate"] .kw-caution {
+  color: #e6c466;
+  font-weight: 700; /* caution still needs slight emphasis */
+}
+[data-md-color-scheme="slate"] .kw-note { color: #9aa6b3; }
 
 [data-md-color-scheme="slate"] .kw-within,
 [data-md-color-scheme="slate"] .kw-abort-if,
@@ -83,40 +92,20 @@
 [data-md-color-scheme="slate"] .kw-when,
 [data-md-color-scheme="slate"] .kw-by,
 [data-md-color-scheme="slate"] .kw-concurrent {
-  color: #d4a8e8;
-  background: rgba(212, 168, 232, 0.14);
+  color: #c8a9d6;
+  font-style: italic;
 }
 
-/* === Because / Against: rationale continuations under a branch.
- *    Already wrapped by render-procmd in span.procmd-rationale, which
- *    we tone down (smaller, italic) — the kw-because / kw-against
- *    label stays distinct inside. =================================== */
+[data-md-color-scheme="slate"] .kw-because { color: #81c784; }
+[data-md-color-scheme="slate"] .kw-against { color: #e57373; }
+
+/* === Because / Against rationale continuation block. =============== */
 
 .procmd-rationale {
   font-size: 0.92em;
   font-style: italic;
-  opacity: 0.85;
+  opacity: 0.82;
   margin-left: 0.5em;
-}
-
-.kw-because {
-  color: #1e7d32;
-  background: rgba(30, 125, 50, 0.08);
-}
-
-.kw-against {
-  color: #c0392b;
-  background: rgba(192, 57, 43, 0.08);
-}
-
-[data-md-color-scheme="slate"] .kw-because {
-  color: #66bb6a;
-  background: rgba(102, 187, 106, 0.12);
-}
-
-[data-md-color-scheme="slate"] .kw-against {
-  color: #e57373;
-  background: rgba(229, 115, 115, 0.12);
 }
 
 /* === CSF / RNO: cross-cutting page-structure markers. ============= */
