@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * pwr-eops procedure validator — single-file structural checker for procmd v0.6.
+ * pwr-ops procedure validator — single-file structural checker for procmd v0.6.
  *
  * Walks wiki/procedures/*.md and wiki/profiles/*.md, parses each, and reports:
  *   - frontmatter shape errors

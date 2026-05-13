@@ -24,13 +24,13 @@ const REPO_ROOT = new URL("../", import.meta.url).pathname;
 const PROCEDURES_DIR = join(REPO_ROOT, "wiki/procedures");
 const OUT_PATH = join(REPO_ROOT, "_build/kg.jsonld");
 
-const ONTOLOGY = "https://samsinn-wikis.github.io/pwr-eops/ontology/v1#";
-const PROC_URI = "https://samsinn-wikis.github.io/pwr-eops/procedures/";
-const CSF_URI = "https://samsinn-wikis.github.io/pwr-eops/csf/";
-const TRIG_URI = "https://samsinn-wikis.github.io/pwr-eops/trigger/";
-const CAT_URI = "https://samsinn-wikis.github.io/pwr-eops/category/";
-const TAG_URI = "https://samsinn-wikis.github.io/pwr-eops/tag/";
-const EQ_URI = "https://samsinn-wikis.github.io/pwr-eops/equipment/";
+const ONTOLOGY = "https://samsinn-wikis.github.io/pwr-ops/ontology/v1#";
+const PROC_URI = "https://samsinn-wikis.github.io/pwr-ops/procedures/";
+const CSF_URI = "https://samsinn-wikis.github.io/pwr-ops/csf/";
+const TRIG_URI = "https://samsinn-wikis.github.io/pwr-ops/trigger/";
+const CAT_URI = "https://samsinn-wikis.github.io/pwr-ops/category/";
+const TAG_URI = "https://samsinn-wikis.github.io/pwr-ops/tag/";
+const EQ_URI = "https://samsinn-wikis.github.io/pwr-ops/equipment/";
 
 const TAG_REF_RE = /«([A-Z][A-Z0-9-]*)»/g;
 

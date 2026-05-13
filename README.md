@@ -1,13 +1,15 @@
-# pwr-eops — Westinghouse PWR Emergency Operating Procedures (LLM-reconstructed)
+# pwr-ops — Westinghouse PWR Operations Knowledge Base (LLM-reconstructed)
 
-A demonstration wiki holding a complete set of Westinghouse Pressurized
-Water Reactor Emergency Operating Procedures (EOPs) in
-[Procedure Markdown (procmd) v0.1](https://github.com/michaelhil/talkingAgents/blob/master/docs/procedure-md.md)
-format.
+A wiki holding Westinghouse Pressurized Water Reactor operating
+knowledge — emergency operating procedures, plant reference, conduct of
+operations, human factors, and scenario libraries — authored in
+[Procedure Markdown (procmd) v0.6](https://github.com/michaelhil/samsinn/blob/master/docs/procedure-md.md)
+format and consumed both by human readers and by samsinn agents via the
+`procedure_lookup` tool.
 
-This repo is a **design artifact** for the procmd format and a **demo** of
-storing structured procedural knowledge in a samsinn-compatible LLM-wiki.
-It is NOT an authoritative source of nuclear plant operating procedures.
+This repo is the **canonical knowledge base** for samsinn's PWR
+simulation work. It is NOT an authoritative source of nuclear plant
+operating procedures (see disclaimers below).
 
 ## ⚠️ Disclaimers — read first
 
@@ -62,11 +64,11 @@ bun scripts/export-kg.ts                  # → _build/kg.jsonld
 ### Knowledge graph
 
 After deploy, the corpus is also published as JSON-LD at
-`https://samsinn-wikis.github.io/pwr-eops/kg.jsonld`. Predicates
+`https://samsinn-wikis.github.io/pwr-ops/kg.jsonld`. Predicates
 (`escalatesTo`, `delegatesTo`, `recoversVia`, `fallbacksTo`,
 `continuesTo`, `monitorsCsf`, `triggeredBy`, `belongsToCategory`, …) are
 defined in the `@context` against the placeholder ontology URI
-`https://samsinn-wikis.github.io/pwr-eops/ontology/v1#`. Load into
+`https://samsinn-wikis.github.io/pwr-ops/ontology/v1#`. Load into
 Neo4j with `apoc.load.jsonld(...)` or into GraphDB via its JSON-LD
 loader.
 
@@ -82,7 +84,7 @@ optional content categories:
 | Step IDs | Code-span suffix on step headings (e.g. `verify-reactor-trip`) | Visible |
 
 Preferences persist per browser at `localStorage` key
-`pwr-eops:visibility-prefs`. A "Reset defaults" button restores all
+`pwr-ops:visibility-prefs`. A "Reset defaults" button restores all
 categories to spec defaults. CSF declarations, Cautions, and Notes are
 always visible (operationally important; not togglable).
 

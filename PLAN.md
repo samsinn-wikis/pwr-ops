@@ -1,6 +1,6 @@
-# pwr-eops — Audit, Rewrites, Completion Plan, and Roadmap (2026-05)
+# pwr-ops — Audit, Rewrites, Completion Plan, and Roadmap (2026-05)
 
-This document is the working brief for taking the pwr-eops wiki from
+This document is the working brief for taking the pwr-ops wiki from
 "procmd-format demo with one developed EOP" to "authentic-style
 Westinghouse PWR EOP reference set with surrounding operational
 context, suitable for samsinn agents to reason against in nuclear-plant
@@ -492,7 +492,7 @@ wiki becomes *useful* to samsinn agents in a closed-loop sense.
    reference for agent simulations." Sections 4.3, 4.7, and 5 are in
    scope.
 2. **One wiki.** Conduct of Operations, ConOps, human-factors, plant
-   reference, simulation/agent layer all live in `pwr-eops`. Schema
+   reference, simulation/agent layer all live in `pwr-ops`. Schema
    in `CLAUDE.md` grows accordingly. No sibling-wiki split.
 3. **procmd spec lands in talkingAgents first**, then the wiki repo
    adopts. Validator in the wiki repo and parser in `talkingAgents`
@@ -511,14 +511,14 @@ existing implementation surface:
 - `src/wikis/wiki-fetcher.ts` — raw.githubusercontent fetch + 5 min
   in-memory buffer + `extractProcedureIds` (regex on `[[X]]` in
   `index.md`).
-- `src/packs/pwr-eops/procmd/parser.ts` — **partial** procmd v0.6
+- `src/packs/pwr-ops/procmd/parser.ts` — **partial** procmd v0.6
   parser. Comment header lists what it *defers*: `When:`, `Until:`,
   `Abort-if:`, `Because:`, `Against:`, sub-steps (`### Step`),
   `Concurrent:`, `CSF:`, `[primitive]` override, `## Tags` appendix
   metadata, profile-vocabulary validation.
-- `src/packs/pwr-eops/procmd/renderer.ts` — markdown + mermaid
+- `src/packs/pwr-ops/procmd/renderer.ts` — markdown + mermaid
   flowchart; `freeText` branches dropped from diagram by design.
-- `src/packs/pwr-eops/tools/procedure-lookup.ts` — fuzzy id match,
+- `src/packs/pwr-ops/tools/procedure-lookup.ts` — fuzzy id match,
   graceful fallback to raw on parse failure, no JSON mode, no
   symptom search.
 - The wiki repo's own `validate.ts` is a **separate** procmd
@@ -543,7 +543,7 @@ existing implementation surface:
 | F11 | **Medium** | No structured exposure of decision-step topology. Agents that want to render the CSF status tree, or build a graph DB of branch reachability, must re-parse. (Related to F6.) | **Folded into F6** — JSON mode exposes the full branch graph. |
 | F12 | **Medium** | Tool description says "paste verbatim, do not summarize." For large procedures this forces the entire page into the chat context every time. Agents have no way to ask for "just step `verify-si-pumps`" or "just the entry conditions." | **Adopt** — `step: '<step-id>'` parameter that returns only the named step + adjacent branch targets. `mode: 'summary'` returns frontmatter + entry-conditions + step count. |
 | F13 | **Medium** | No `procedure-md` version handshake. Parser doesn't read the frontmatter `procedure-md:` field; if wiki ships v0.7 with breaking changes, the tool silently produces wrong output. | **Adopt** — parser asserts compatible `procedure-md:` version; on mismatch, return raw md with a banner "tool version X, procedure version Y — showing raw source." |
-| F14 | **Medium** | No fallback fetch path. If raw.githubusercontent.com is rate-limited or down, tool fails. The rendered HTML at samsinn-wikis.github.io is the same content. | **Adopt** — fallback to `https://samsinn-wikis.github.io/pwr-eops/procedures/<id>/raw.md` *if* the wiki builds a sidecar raw.md per page (Phase A wiki-side change). Otherwise fall back to scraping the rendered HTML — uglier but always available. |
+| F14 | **Medium** | No fallback fetch path. If raw.githubusercontent.com is rate-limited or down, tool fails. The rendered HTML at samsinn-wikis.github.io is the same content. | **Adopt** — fallback to `https://samsinn-wikis.github.io/pwr-ops/procedures/<id>/raw.md` *if* the wiki builds a sidecar raw.md per page (Phase A wiki-side change). Otherwise fall back to scraping the rendered HTML — uglier but always available. |
 | F15 | **Medium** | Authentic Westinghouse "two-column" ERG visual style (instruction column / Response Not Obtained column) is the single most distinctive feature of real WOG procedures. Neither the wiki render nor the agent render reproduces it. CLAUDE.md notes this is "flattened to procmd" — the flattening is correct semantically but loses operational feel for the web reader. | **Adopt selectively** — add a `two-column` render mode to the wiki build (CSS only; the procmd source stays flat). Procedure mds get a "View two-column" toggle alongside the existing visibility popover. Agent render unchanged. |
 | F16 | **Medium** | Renderer marks any branch-bearing step as a diamond. Many `Check:` steps in E-0 have one "OK → next, fault → escalate" pair — they're conditional jumps, not decisions. Visually noisy. | **Adopt low-priority** — heuristic: diamond only if ≥2 *substantive* branches (excluding "OK → next" continuation). Cosmetic. |
 | F17 | **Medium** | Centralized tag catalogue (§4.5) — neither parser nor renderer currently knows about cross-file tag definitions. Naively adopting it makes every procedure require a second wiki fetch on parse, or makes the wiki render time pre-inline the catalogue. | **Adopt with explicit design** — wiki render pipeline inlines the catalogue at build time (so each procedure's deployed `.md` is self-contained) AND keeps the canonical catalogue page for human readers. Parser unchanged. Trade: deployed md gets larger; wins simplicity. |
@@ -601,11 +601,11 @@ validator, no drift, manifest-driven tool, instrumented.
 
 | Workstream | Where | Outcome |
 |---|---|---|
-| Promote deferred procmd keywords in parser | `talkingAgents/src/packs/pwr-eops/procmd/parser.ts` | Parses `Because:` / `Against:` / `Within:` / `Caution:` / `Note:` / `CSF:` / `Concurrent:` / `## Tags` appendix into `ParsedProcedure`. F1, F2, F3, F4. |
+| Promote deferred procmd keywords in parser | `talkingAgents/src/packs/pwr-ops/procmd/parser.ts` | Parses `Because:` / `Against:` / `Within:` / `Caution:` / `Note:` / `CSF:` / `Concurrent:` / `## Tags` appendix into `ParsedProcedure`. F1, F2, F3, F4. |
 | Extract `procmd-core` shared lib | new `talkingAgents/src/procmd-core/` consumed by `wiki-fetcher` ingest *and* by wiki-repo `validate.ts` (vendored or published) | One implementation. F5. |
 | Frontmatter passthrough | parser | `fm.extra: Record<string,unknown>` so additive frontmatter doesn't need parser churn. F18. |
 | Version handshake | parser | Read `procedure-md:` field, assert compatible. Raw fallback with banner on mismatch. F13, F24. |
-| Wiki manifest | `pwr-eops/wiki/_manifest.json` built by `scripts/build-manifest.ts` at deploy time | Lists `{ id, type, path, title }` for every page. Tool reads this instead of regexing `index.md`. F7. |
+| Wiki manifest | `pwr-ops/wiki/_manifest.json` built by `scripts/build-manifest.ts` at deploy time | Lists `{ id, type, path, title }` for every page. Tool reads this instead of regexing `index.md`. F7. |
 | `format: 'markdown' \| 'json'` param on `procedure_lookup` | tool | Agents can request the parsed shape. F6, F11. |
 | `step: '<id>'` and `mode: 'summary'` params | tool | Smaller payloads. F12. |
 | Telemetry hook | tool + samsinn logging | Per-call JSONL log: tool/id/success/warnings/duration. F19. |
@@ -720,7 +720,7 @@ A (spec + tooling)
 - `PLAN.md` (this document; done)
 
 **Immediate next branch (Phase A, ~1.5 weeks of focused work):**
-- procmd parser extensions in `talkingAgents/src/packs/pwr-eops/procmd/parser.ts`.
+- procmd parser extensions in `talkingAgents/src/packs/pwr-ops/procmd/parser.ts`.
 - Shared `procmd-core` extraction.
 - `wiki/_manifest.json` build script + deploy workflow integration.
 - `procedure_lookup` parameter surface: `format`, `step`, `mode`.
@@ -736,7 +736,7 @@ each phase shippable independently once Phase A lands.
   promoted in parser comments but never blessed in
   `docs/procedure-md.md`, the spec doc is lagging. Recommend: one
   CHANGELOG-bump per parser feature change, never a silent promotion.
-- **Wiki repo as the wagging tail.** If `pwr-eops/validate.ts` keeps
+- **Wiki repo as the wagging tail.** If `pwr-ops/validate.ts` keeps
   evolving independently of `procmd-core`, F5 returns. The shared
   lib has to be the *only* implementation, even if the wiki repo
   vendors it.
@@ -776,9 +776,9 @@ each phase shippable independently once Phase A lands.
 
 | Workstream | Repo | Commit |
 |---|---|---|
-| Paragraph-level feedback bubbles + worker-URL placeholder + icon de-overlap | pwr-eops | `60da8fd` |
-| Sources page (tiered NUREG/WTSM/UFSAR refs) + audit/rewrite PLAN + coverage badges on index | pwr-eops | `7f448e2` |
-| `scripts/build-manifest.ts` + workflow integration + initial `wiki/_manifest.json` | pwr-eops | `2564d40` |
+| Paragraph-level feedback bubbles + worker-URL placeholder + icon de-overlap | pwr-ops | `60da8fd` |
+| Sources page (tiered NUREG/WTSM/UFSAR refs) + audit/rewrite PLAN + coverage badges on index | pwr-ops | `7f448e2` |
+| `scripts/build-manifest.ts` + workflow integration + initial `wiki/_manifest.json` | pwr-ops | `2564d40` |
 | procmd v0.6 parser promotion (Because/Within/CSF/Concurrent/Tags appendix) + frontmatter passthrough + version handshake | talkingAgents | `581d33f` |
 | Renderer wiring (rationale, ⏱️ Within, CSF channels, structured Tags table) | talkingAgents | `581d33f` |
 | Tool surface: `format` / `step` / `mode` parameters | talkingAgents | `581d33f` |
@@ -826,7 +826,7 @@ validator, mkdocs.yml, every procedure frontmatter) declares procmd
 
 **A′.1 — Package layout (`talkingAgents/src/procmd-core/`).** Minimal scope
 per F-NEW-7:
-- `parser.ts` — moved from `src/packs/pwr-eops/procmd/parser.ts`
+- `parser.ts` — moved from `src/packs/pwr-ops/procmd/parser.ts`
 - `types.ts` — `ParsedProcedure`, `TagDefinition`, `Branch`, `ParsedStep`,
   `BranchTarget`, frontmatter shape
 - `fixtures/` — shared test corpus (E-0.md, FR-S.1.md, plus synthetic
@@ -839,12 +839,12 @@ per F-NEW-7:
 **Validator and renderers stay where they are** (per F-NEW-7, F-NEW-13):
 - Wiki repo: `validate.ts` (corpus-wide checks) imports `procmd-core` for parsing
 - Wiki repo: `scripts/render-procmd.ts` (322 lines; procmd → MkDocs-flavored md) imports `procmd-core` for parsing
-- samsinn repo: `src/packs/pwr-eops/procmd/renderer.ts` (procmd → agent markdown + mermaid) imports `procmd-core` for parsing
-- samsinn repo: `src/packs/pwr-eops/procmd/parser.ts` becomes a thin re-export of `procmd-core` (kept as the pack-relative import path)
+- samsinn repo: `src/packs/pwr-ops/procmd/renderer.ts` (procmd → agent markdown + mermaid) imports `procmd-core` for parsing
+- samsinn repo: `src/packs/pwr-ops/procmd/parser.ts` becomes a thin re-export of `procmd-core` (kept as the pack-relative import path)
 
 **A′.2 — Vendor mechanism (committed copy + SHA pin, per F-NEW-3).**
-- `pwr-eops/procmd-core/` is a vendored copy of `talkingAgents/src/procmd-core/`
-- `pwr-eops/procmd-core.sha` pins the source commit
+- `pwr-ops/procmd-core/` is a vendored copy of `talkingAgents/src/procmd-core/`
+- `pwr-ops/procmd-core.sha` pins the source commit
 - Wiki CI verifies the vendored copy's `git hash-object` chain matches the SHA pin
 - Local dev has no network requirement at validate time
 - Updating procmd: PR to talkingAgents → record SHA → wiki repo bumps pin in a follow-up
@@ -1379,7 +1379,7 @@ Applies to the §11–§21 revision above. Findings from the
 |---|---|---|
 | F-NEW-1 (version model mess) | **accepted** | Bumped everything to v0.6 atomically in Phase A′ per user choice ("update everything to latest, no back-compat"). |
 | F-NEW-2 (`generatedAt` timestamp churn) | **accepted** | Dropped entirely; git commit time is the timestamp. |
-| F-NEW-3 (vendor mechanism brittleness) | **accepted** | Committed copy + SHA pin file (`pwr-eops/procmd-core.sha`); CI verifies. No network at validate time. |
+| F-NEW-3 (vendor mechanism brittleness) | **accepted** | Committed copy + SHA pin file (`pwr-ops/procmd-core.sha`); CI verifies. No network at validate time. |
 | F-NEW-4 (no reference plant) | **accepted** | Vogtle UFSAR pinned as reference plant. README + scope.md gain a declaring paragraph. |
 | F-NEW-5 (step ID atomicity) | **accepted** | A′.7 rule added: step IDs are contracts, locked at stub time, preserved on re-authoring. |
 | F-NEW-6 (invariant is aspirational) | **accepted, strengthened** | Phase G recast as a *gate* per phase, not a parallel polish step. §19 renamed "renderer-parity rule." |
@@ -1431,8 +1431,8 @@ parser/tool surface and the wiki repo's `validate.ts`. Eliminates F5 drift
 ### 11.1 Workstreams
 
 **A′.1 — Package layout.** Create `talkingAgents/src/procmd-core/` containing:
-- `parser.ts` — the v0.6 parser, moved from `src/packs/pwr-eops/procmd/parser.ts`
-- `validator.ts` — port from `pwr-eops/validate.ts` (corpus checks: tag-id charset, sim-path consistency, cross-page links, orphan steps, profile vocab)
+- `parser.ts` — the v0.6 parser, moved from `src/packs/pwr-ops/procmd/parser.ts`
+- `validator.ts` — port from `pwr-ops/validate.ts` (corpus checks: tag-id charset, sim-path consistency, cross-page links, orphan steps, profile vocab)
 - `types.ts` — `ParsedProcedure`, `TagDefinition`, `Branch`, etc.
 - `fixtures/` — shared test corpus (E-0.md, FR-S.1.md, plus synthetic edge cases)
 - `index.ts` — public API barrel
@@ -1440,20 +1440,20 @@ parser/tool surface and the wiki repo's `validate.ts`. Eliminates F5 drift
 - `package.json` — declares the module so the wiki repo can vendor or import
 
 **A′.2 — talkingAgents consumer migration.** Rewrite
-`src/packs/pwr-eops/procmd/parser.ts` and `renderer.ts` as thin shims that
+`src/packs/pwr-ops/procmd/parser.ts` and `renderer.ts` as thin shims that
 re-export from `src/procmd-core/`. Pack-level tests stay in place; they
 import from the shim, behaviour unchanged. Renderer stays in the pack
 (renderer is samsinn-output-specific; only parser/types/validator are shared).
 
-**A′.3 — Wiki-repo migration.** Replace `pwr-eops/validate.ts` body with a
+**A′.3 — Wiki-repo migration.** Replace `pwr-ops/validate.ts` body with a
 thin script that imports `procmd-core` and runs the same checks. Two
 options:
-- **Option A (vendor):** `cp -r talkingAgents/src/procmd-core/* pwr-eops/procmd-core/` at workflow time. Pin to a git SHA. Simplest. Recommended.
+- **Option A (vendor):** `cp -r talkingAgents/src/procmd-core/* pwr-ops/procmd-core/` at workflow time. Pin to a git SHA. Simplest. Recommended.
 - **Option B (npm-link):** Publish `@samsinn/procmd-core` to GitHub Packages. More ceremony, no immediate benefit.
 
 Recommend **Option A**: a make-target or workflow step that fetches the
 file set from a pinned talkingAgents commit. The pin lives in
-`pwr-eops/procmd-core.sha`.
+`pwr-ops/procmd-core.sha`.
 
 **A′.4 — Shared fixture corpus.** One `procmd-core/fixtures/` set covering:
 - A full developed procedure (E-0 clone, frozen)

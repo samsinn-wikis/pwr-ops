@@ -1,4 +1,4 @@
-# Agent schema for pwr-eops
+# Agent schema for pwr-ops
 
 This file orients an LLM agent (Claude Code or a samsinn agent) authoring
 or maintaining this wiki. Read [`wiki.config.md`](wiki.config.md) first

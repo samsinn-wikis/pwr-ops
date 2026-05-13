@@ -89,7 +89,7 @@ const buildManifest = (): Manifest => {
 
   return {
     version: 1,
-    wiki: 'pwr-eops',
+    wiki: 'pwr-ops',
     procmdVersion,
     procedures,
   }

@@ -1,9 +1,9 @@
-site_name: "PWR Emergency Operating Procedures"
-site_description: "Westinghouse PWR EOPs in Procedure Markdown (procmd) format — demo and design artifact"
-site_url: "https://samsinn-wikis.github.io/pwr-eops/"
+site_name: "PWR Operations"
+site_description: "Westinghouse PWR operating knowledge — procedures, plant reference, human factors, scenarios — authored in Procedure Markdown (procmd) v0.6"
+site_url: "https://samsinn-wikis.github.io/pwr-ops/"
 docs_dir: _build/wiki
-repo_url: "https://github.com/samsinn-wikis/pwr-eops"
-repo_name: "samsinn-wikis/pwr-eops"
+repo_url: "https://github.com/samsinn-wikis/pwr-ops"
+repo_name: "samsinn-wikis/pwr-ops"
 # Edit links point at the canonical source under wiki/, not the gitignored
 # transformed output under _build/wiki/.
 edit_uri: edit/main/wiki/
@@ -80,6 +80,7 @@ nav:
   - Home: index.md
   - Scope and disclaimers: scope.md
   - Reference sources: sources.md
+  - Procedure Markdown (procmd): procmd.md
   - E-series (Initial Diagnostic):
     - procedures/E-0.md
     - procedures/E-1.md

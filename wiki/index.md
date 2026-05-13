@@ -1,12 +1,14 @@
 ---
-title: Westinghouse PWR EOPs — Index
+title: Westinghouse PWR Operations — Index
 ---
 
-# Westinghouse PWR Emergency Operating Procedures
+# Westinghouse PWR Operations Knowledge Base
 
-A complete set of Westinghouse PWR Emergency Operating Procedures (EOPs)
-authored in
-[Procedure Markdown (procmd) v0.1](https://github.com/michaelhil/talkingAgents/blob/master/docs/procedure-md.md).
+Westinghouse PWR operating knowledge — emergency operating procedures
+(complete set of E, ES, ECA, FR families) plus the plant reference,
+conduct of operations, human factors, and scenario layers — authored in
+[Procedure Markdown (procmd) v0.6](procmd.md) and consumed both by human
+readers and by samsinn agents via the `procedure_lookup` tool.
 
 > ⚠️ **LLM-reconstructed content — not licensed plant procedures.**
 > See [Scope and disclaimers](scope.md) before reading further.
@@ -19,7 +21,7 @@ status trees (FR-x family) run continuously alongside the main EOP from
 event entry through recovery.
 
 **Coverage legend:** ✅ developed · 🟡 partial · ⬜ stub (frontmatter + branch
-targets only, no operator-readable body). See [PLAN.md](https://github.com/samsinn-wikis/pwr-eops/blob/main/PLAN.md)
+targets only, no operator-readable body). See [PLAN.md](https://github.com/samsinn-wikis/pwr-ops/blob/main/PLAN.md)
 for the authoring roadmap.
 
 ## E-series — Initial Diagnostic and Mitigation
