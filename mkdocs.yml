@@ -1,5 +1,5 @@
 site_name: "PWR Operations"
-site_description: "Westinghouse PWR operating knowledge — procedures, plant reference, human factors, scenarios — authored in Procedure Markdown (procmd) v0.6"
+site_description: "Westinghouse-style PWR operating knowledge — procedures, plant reference, human factors, scenarios — authored in Procedure Markdown (procmd) v0.6"
 site_url: "https://samsinn-wikis.github.io/pwr-ops/"
 docs_dir: _build/wiki
 repo_url: "https://github.com/samsinn-wikis/pwr-ops"
