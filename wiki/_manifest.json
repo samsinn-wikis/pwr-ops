@@ -794,10 +794,42 @@
       "referencePlant": "vogtle"
     },
     {
+      "id": "atws",
+      "type": "scenario",
+      "title": "ATWS (anticipated transient without scram, loss of main feedwater)",
+      "file": "wiki/scenarios/atws.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR",
+      "referencePlant": "vogtle"
+    },
+    {
+      "id": "lb-loca",
+      "type": "scenario",
+      "title": "Large-break LOCA (double-ended guillotine, cold leg Loop 1)",
+      "file": "wiki/scenarios/lb-loca.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR",
+      "referencePlant": "vogtle"
+    },
+    {
       "id": "sb-loca",
       "type": "scenario",
       "title": "Small-break LOCA (3-inch cold-leg break, Loop 1)",
       "file": "wiki/scenarios/sb-loca.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR",
+      "referencePlant": "vogtle"
+    },
+    {
+      "id": "sbo",
+      "type": "scenario",
+      "title": "Station blackout (loss of offsite power + both EDGs fail to start)",
+      "file": "wiki/scenarios/sbo.md",
+      "appliesTo": "Westinghouse-style 4-loop PWR",
+      "referencePlant": "vogtle"
+    },
+    {
+      "id": "sgtr",
+      "type": "scenario",
+      "title": "Steam Generator Tube Rupture (single-tube, SG-A)",
+      "file": "wiki/scenarios/sgtr.md",
       "appliesTo": "Westinghouse-style 4-loop PWR",
       "referencePlant": "vogtle"
     },

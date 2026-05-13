@@ -21,6 +21,12 @@
       "source": "NEI 99-01 HU1 (loss of all offsite AC ≥ 15 min)"
     },
     {
+      "ic": "SA1",
+      "predicate": "«NIS-PR-AVG» > 50 AND «TRIP-BKR-A» == CLOSED AND «TRIP-BKR-B» == CLOSED",
+      "class": "Alert",
+      "source": "NEI 99-01 SA1 (RPS failure to scram — ATWS surrogate predicate: power > 50% with trip breakers still closed)"
+    },
+    {
       "ic": "SA5",
       "predicate": "«PT-455» < 1500",
       "class": "Alert",

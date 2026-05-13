@@ -151,6 +151,10 @@ nav:
       - Setpoint catalogue: setpoints/index.md
   - Scenarios:
     - Small-break LOCA: scenarios/sb-loca.md
+    - Large-break LOCA: scenarios/lb-loca.md
+    - Steam Generator Tube Rupture: scenarios/sgtr.md
+    - Station blackout: scenarios/sbo.md
+    - ATWS: scenarios/atws.md
   - EAL classification:
     - Rule table: eal/classification-rules.md
   - Profiles:

@@ -41,6 +41,7 @@ evaluated by an operator, not by the classifier.
 
 | ic | predicate | source |
 |---|---|---|
+| SA1 | `«NIS-PR-AVG» > 50 AND «TRIP-BKR-A» == CLOSED AND «TRIP-BKR-B» == CLOSED` | NEI 99-01 SA1 (RPS failure to scram — ATWS surrogate predicate: power > 50% with trip breakers still closed) |
 | SA5 | `«PT-455» < 1500` | NEI 99-01 SA5 (significant RCS depressurization) |
 | HA1 | `«BUS-A-EMERG» == DEAD AND «BUS-B-EMERG» == DEAD for >= 30 min` | NEI 99-01 HA1 (extended loss of AC ≥ 30 min) |
 | SA9 | `«CTMT-RAD» > 100` | NEI 99-01 SA9 (containment radiation rise) |
