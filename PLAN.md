@@ -768,3 +768,715 @@ each phase shippable independently once Phase A lands.
 4. **Telemetry sink.** Reuse existing samsinn JSONL logs, or a
    separate procedure-tool log file? Recommend reuse.
 
+---
+
+## 10. Phase A — what landed, what's still owed
+
+### 10.1 Landed (Phase A.1–A.7)
+
+| Workstream | Repo | Commit |
+|---|---|---|
+| Paragraph-level feedback bubbles + worker-URL placeholder + icon de-overlap | pwr-eops | `60da8fd` |
+| Sources page (tiered NUREG/WTSM/UFSAR refs) + audit/rewrite PLAN + coverage badges on index | pwr-eops | `7f448e2` |
+| `scripts/build-manifest.ts` + workflow integration + initial `wiki/_manifest.json` | pwr-eops | `2564d40` |
+| procmd v0.6 parser promotion (Because/Within/CSF/Concurrent/Tags appendix) + frontmatter passthrough + version handshake | talkingAgents | `581d33f` |
+| Renderer wiring (rationale, ⏱️ Within, CSF channels, structured Tags table) | talkingAgents | `581d33f` |
+| Tool surface: `format` / `step` / `mode` parameters | talkingAgents | `581d33f` |
+| Wiki manifest binding (`manifestFile` opt-in, regex fallback) | talkingAgents | `a5a1411` |
+| Telemetry hook (per-call JSONL on stderr) | talkingAgents | `a5a1411` |
+| GitHub Pages fallback for manifest | talkingAgents | `a5a1411` |
+
+Tests: 1397 pass / 0 fail. Typecheck clean. Findings closed: F1, F2, F3, F4, F6, F7, F8, F11, F12, F13, F14, F18, F19, F24.
+
+### 10.2 Phase A residuals (owed)
+
+| Finding | What's left | Recommended slice |
+|---|---|---|
+| **F5** | Two procmd implementations (`talkingAgents` parser + wiki `validate.ts`). Promoted to **Phase A′** below — must land before Phase B authoring. | Phase A′ |
+| **F9** | Symptom-driven `procedure_search` tool. Needs `wiki/_search-index.json` built at deploy time. | Phase F |
+| **F10** | Mermaid renders `freeText` branches as dropped edges. Cosmetic. | Phase G |
+| **F15** | Two-column ERG visual render mode. Web-side polish. | Phase G |
+| **F16** | Diamond-only-when-≥2-substantive-branches heuristic. Cosmetic. | Phase G |
+| **F17** | Build-time inlining of central tag catalogue. Needed once Phase D ships the catalogue. | Phase D |
+| **F19 (proper)** | Telemetry currently emits to stderr. Real LogSink integration needs `ToolContext.logEvent`. Cross-cutting. | Phase H (continuous) |
+| **F20** | "Paste verbatim" mandate vs paraphrasing agents. Documented; nothing to fix. | — |
+| **F21** | Dead `<>` heuristic branch in mermaid validator. Cleanup. | Phase G |
+| **F22** | No CDN cache for wiki. GitHub Pages caches; no-op. | — |
+| **F23** | Schemas for non-procedure page types. | Phases D / E / F |
+| **F25** | Cross-corpus reference validation (scenarios → procedure steps). | Phase F + Phase H |
+
+---
+
+<!--
+  §11–§21 below were stress-tested on 2026-05-13 (see §22 disposition table
+  and §23 changelog). This version supersedes the prior draft. Owner
+  directives applied: bump everything to v0.6 atomically; Vogtle as
+  reference plant; per-family commits; no backward compatibility.
+-->
+
+## 11. Phase A′ — `procmd-core` extraction + atomic v0.6 bump (~2 days)
+
+Goal: one normative procmd implementation consumed by both the samsinn
+parser/tool surface and the wiki repo's `validate.ts` + `render-procmd.ts`.
+At the same time, rationalize the version model: every artifact (parser,
+validator, mkdocs.yml, every procedure frontmatter) declares procmd
+**v0.6**. No backward-compat reads of v0.5.
+
+### 11.1 Workstreams
+
+**A′.1 — Package layout (`talkingAgents/src/procmd-core/`).** Minimal scope
+per F-NEW-7:
+- `parser.ts` — moved from `src/packs/pwr-eops/procmd/parser.ts`
+- `types.ts` — `ParsedProcedure`, `TagDefinition`, `Branch`, `ParsedStep`,
+  `BranchTarget`, frontmatter shape
+- `fixtures/` — shared test corpus (E-0.md, FR-S.1.md, plus synthetic
+  edge cases: missing Tags appendix; unknown frontmatter keys; branch
+  with both Because and Against; multi-line Within; `## Tags` followed
+  by `## Step`; intra-id with hyphens)
+- `index.ts` — public API barrel
+- `README.md` — spec pointer + supported version
+
+**Validator and renderers stay where they are** (per F-NEW-7, F-NEW-13):
+- Wiki repo: `validate.ts` (corpus-wide checks) imports `procmd-core` for parsing
+- Wiki repo: `scripts/render-procmd.ts` (322 lines; procmd → MkDocs-flavored md) imports `procmd-core` for parsing
+- samsinn repo: `src/packs/pwr-eops/procmd/renderer.ts` (procmd → agent markdown + mermaid) imports `procmd-core` for parsing
+- samsinn repo: `src/packs/pwr-eops/procmd/parser.ts` becomes a thin re-export of `procmd-core` (kept as the pack-relative import path)
+
+**A′.2 — Vendor mechanism (committed copy + SHA pin, per F-NEW-3).**
+- `pwr-eops/procmd-core/` is a vendored copy of `talkingAgents/src/procmd-core/`
+- `pwr-eops/procmd-core.sha` pins the source commit
+- Wiki CI verifies the vendored copy's `git hash-object` chain matches the SHA pin
+- Local dev has no network requirement at validate time
+- Updating procmd: PR to talkingAgents → record SHA → wiki repo bumps pin in a follow-up
+
+**A′.3 — Atomic v0.6 bump (per F-NEW-1, F-NEW-17).** One commit each side.
+
+Wiki repo (single commit `chore(procmd): bump to v0.6`):
+- Bump every `wiki/procedures/*.md` frontmatter from `procedure-md: 0.5` → `0.6` (39 files)
+- Bump every `wiki/profiles/*.md` similarly (1 file)
+- Bump `mkdocs.yml` `extra.procmd_version: "0.6"`
+- Bump `validate.ts` `SUPPORTED_SPEC_VERSION = "0.6"` (also reject "0.5" — no back-compat)
+- Bump `scripts/build-manifest.ts` default `procmdVersion = '0.6'`
+
+samsinn repo (single commit `feat(procmd-core): v0.6 baseline + extract shared lib`):
+- Move parser.ts into `src/procmd-core/`
+- Update `PARSER_PROCMD_VERSION = '0.6'`; remove the `ACCEPTED_PROCMD_VERSIONS` Set (only 0.6 accepted; unknown → warning, as today)
+- Pack parser becomes re-export shim
+- All 1397 tests still pass
+
+**A′.4 — Frontmatter `procmd-core` v0.6 = "complete v0.5"**. No new keywords
+in this version. The bump is purely a relabel: the parser, the validator,
+and the wiki content all agree on a single number. **First real spec
+increment becomes v0.7 in Phase B with `Decision:`.**
+
+**A′.5 — Drop `manifest.generatedAt` (per F-NEW-2).** Git commit time is
+the timestamp. Remove the field from the manifest schema and from the
+build script. Commit the regenerated `_manifest.json`.
+
+**A′.6 — Spec doc.** Update `talkingAgents/docs/procedure-md.md` to v0.6
+normatively. Document every keyword, every frontmatter field, the `extra`
+passthrough rule, the version-handshake behaviour, the `## Tags` appendix
+shape, the `Because:` / `Against:` rationale rules, the `Within:` rule.
+**Versioning protocol section:** v0.X bumps may add keywords but never
+break parsing of prior content; the wiki's atomic bump pattern stays the
+convention.
+
+**A′.7 — Step ID atomicity rule (per F-NEW-5).** Add to CLAUDE.md (wiki):
+"Step IDs are contracts. Once a stub is authored with a step ID, the ID
+is frozen — even if the step body is later replaced. Re-authoring a stub
+preserves all existing step IDs and adds new ones; never renames." This
+unblocks per-family commits in Phase C without having to keep all cross-pages
+in lockstep.
+
+### 11.2 Exit criteria
+
+- One implementation of procmd parsing; three consumers (samsinn parser
+  shim, wiki validate.ts, wiki render-procmd.ts) import it.
+- Wiki `bun validate.ts` produces identical findings to pre-extraction
+  (validated against current corpus output).
+- Vendored copy verified against `procmd-core.sha` in CI.
+- `docs/procedure-md.md` describes v0.6 normatively.
+- 1397+ test count maintained.
+- Manifest no longer churns on `generatedAt`.
+
+### 11.3 Risk register
+
+| Risk | Mitigation |
+|---|---|
+| Vendored copy drifts from source | SHA-pin file + CI verification; drift → CI red. |
+| Renderer-specific quirks (mermaid escaping) leak into core | Renderer stays per-consumer. Core exposes parser + types only. |
+| Two-PR round-trip for procmd changes | Documented in `docs/procedure-md.md`. Estimated 30-min cycle. Acceptable given the once-per-version-bump frequency. |
+| Existing pack-test imports break during shim transition | Shim preserves the same export surface. Run `bun test` after every file move. |
+
+---
+
+## 12. Phase B — Harden the 4 developed EOPs (~1 week)
+
+Goal: each of E-0 / E-1 / E-2 / E-3 carries full operator-readable content
+— complete `## Tags` appendix, Cautions inline, branch rationales, numeric
+setpoint thresholds from the **Vogtle UFSAR**, time constraints. Both
+consumers (web reader + agent) see the improvement. The build-manifest
+classifier promotes E-2 from `partial` to `developed`. Phase B introduces
+procmd v0.7's first real new keyword: `Decision:`.
+
+### 12.1 Reference plant decision (per F-NEW-4)
+
+**Vogtle Units 1 & 2 UFSAR** is the reference plant for all numeric
+setpoints, alarm thresholds, and operating limits. Cite as `per Vogtle
+UFSAR Rev. X §15.6` in tag `source:` fields. The wiki's `applies-to:`
+frontmatter remains `Westinghouse 4-loop PWR` for generality, but the
+*numbers* are Vogtle-specific. README + scope.md gain a paragraph
+declaring Vogtle as the numeric reference.
+
+### 12.2 procmd v0.7 — `Decision:` step keyword
+
+First real spec increment. Authoring shape:
+
+```
+## Step 16 [id: identify-ruptured-sg]
+Decision: identify the ruptured SG using the following paths in order
+1. N-16 monitor reading «SG-x-N16» elevated → SG-x is ruptured
+2. SG narrow-range level rising uncontrollably → SG-x is ruptured
+3. Steam-line activity sample → SG-x is ruptured
+4. Blowdown radiation → SG-x is ruptured
+- Ruptured SG identified → #isolate-ruptured-sg
+- No SG identified after exhausting paths → [[ECA-3.3]]
+```
+
+Parser: new `decision: { paths: ReadonlyArray<string>; prologue: string }` field on `ParsedStep`. Renderer: numbered list with each path; mermaid shows the step as a diamond regardless of branch count. Validator: warns if `Decision:` step has only one branch (degenerate).
+
+### 12.3 Per-procedure punch list
+
+**E-0 — Reactor Trip or Safety Injection.**
+- Convert step 7's "MSIV will not close" buried `Because:` to a top-level `Caution:` (per audit §1.1).
+- Add `SUB-MARGIN` tag (subcooling margin) with sim-path; reference in step 11 RCP-trip criterion.
+- Add `Within:` constraints on time-critical steps (RCP trip after voiding; Phase B isolation).
+- Add `source:` field to every existing tag-appendix entry citing Vogtle UFSAR section.
+
+**E-1 — Loss of Reactor or Secondary Coolant.**
+- Author full `## Tags` appendix (currently absent).
+- Step 3 RCP-trip criterion: numeric subcooling-margin threshold from Vogtle UFSAR 15.6 (specific value cited in commit).
+- Add explicit RWST-low-level branch step pointing to `[[ES-1.3]]`.
+- Step 7 pressure-trend diagnostic: convert to `Decision:` (v0.7 first user).
+
+**E-2 — Faulted Steam Generator Isolation.**
+- Author full `## Tags` appendix.
+- Verify AFW-isolation-before-MSIV ordering against WTSM §10 (water-hammer / level-swell risk).
+- Add steam-dump-from-intact-SGs branch with `Within:`.
+- **Target: re-classify as `developed` in next manifest build.**
+
+**E-3 — Steam Generator Tube Rupture.**
+- SGTR-identification step → `Decision:` with four enumerated detection paths.
+- Author full `## Tags` appendix including all N-16 and rad-monitor tags.
+- Branches to ES-3.1/3.2/3.3 currently land in stubs; flag with `Note: target procedure is a Phase C stub` until Phase C lands them.
+
+### 12.4 Renderer-parity gate (per F-NEW-6)
+
+`Decision:` is rendered in **both** consumers before Phase B exits:
+- samsinn renderer: numbered prologue list followed by branch list
+- wiki render-procmd.ts: same prologue presentation
+- mermaid: diamond shape for any `Decision:` step
+
+No Phase B procedure ships authoring a field that hasn't got a render path.
+
+### 12.5 Exit criteria
+
+- All 4 E-series classified `developed` in build-manifest.
+- Validator green; tests green.
+- Every numeric value in commits cites Vogtle UFSAR section.
+- `Decision:` keyword has parser + renderer + validator support in both
+  consumers.
+- `procedure_lookup E-0 --format=json` exposes every Because/Within/Caution
+  to an agent.
+
+---
+
+## 13. Phase C — Complete 35 stubs, depth-first by family (~8–10 weeks)
+
+Goal: every procedure in the corpus reaches `developed` (or documents its
+residual gap). All numbers cite Vogtle UFSAR. Author order is
+dependency-driven: FR-x (self-contained CSF responses) → ES (post-trip
+recovery, depends on FR-x) → ECA (extreme conditions, depends on both).
+
+### 13.1 Author order, ~9 commits (per F-NEW-16)
+
+| Commit | Family | Procedures | Why this order |
+|---|---|---|---|
+| C.1 | FR-S | FR-S.1, FR-S.2 (ATWS, loss of shutdown) | Smallest family; well-bounded physics |
+| C.2 | FR-C | FR-C.1, FR-C.2, FR-C.3 (core cooling) | Physics-heavy but isolated; vocabulary for FR-H |
+| C.3 | FR-H | FR-H.1–H.5 (heat sink, 5 procs) | Biggest family; reuses FR-C vocabulary |
+| C.4 | FR-P | FR-P.1, FR-P.2 (PTS) | Bounded by RCS T/P window; few branches |
+| C.5 | FR-Z | FR-Z.1–Z.3 (containment) | Post-Fukushima H₂ guidance in Z.1 |
+| C.6 | FR-I | FR-I.1–I.3 (inventory) | Depends on FR-C concepts |
+| C.7 | ES (clean-path) | ES-0.1, ES-1.1 | Most common E-0 destination; SI termination |
+| C.8 | ES (cooldown + recirc) | ES-1.2, ES-1.3, ES-1.4, ES-0.2 | Recirculation is operationally tightest |
+| C.9 | ES (rediag + SGTR cooldown) | ES-0.0, ES-3.1, ES-3.2, ES-3.3 | Cross-references ES-0.x and E-3 |
+| C.10 | ECA (SBO) | ECA-0.0 | Largest single procedure; allow split if needed |
+| C.11 | ECA (other) | ECA-1.1, ECA-1.2, ECA-2.1, ECA-3.1, ECA-3.2, ECA-3.3 | Depends on E-/ES- already authored |
+
+Total: 11 family-level commits (slightly more than 9 because ES- splits naturally into 3 sub-batches and ECA-0.0 may warrant its own commit). Each commit is reviewable as a coherent batch.
+
+### 13.2 Per-procedure authoring template
+
+For every page:
+1. **Read sources first.** Tier-1 (NUREG-0899, NUREG-0737 Suppl 1, EPRI guide) for *form*; Tier-2 (WTSM) for *systems*; **Vogtle UFSAR** for *setpoints*. Cite each in tag `source:` field.
+2. **Author frontmatter** with `category`, `csfs-monitored`, `entry-triggers`, and (for FR-x) `entry-condition:` structured field (v0.7 addition).
+3. **Author preamble**: one-paragraph purpose; CSF declarations for E-/ECA-.
+4. **Author steps** with `Check:` / `Action:` / `Within:` / `Caution:` / `Note:` / `Because:` on every non-trivial branch.
+5. **Preserve all existing step IDs** (per A′.7 contract). Add new steps with new IDs.
+6. **Author `## Tags` appendix** — every referenced tag fully defined: description, sim-path, units, equipment, setpoint where applicable, `source:` citing Vogtle UFSAR.
+7. **Run `bun validate.ts`** locally; commit only when green.
+8. **Run `bun scripts/build-manifest.ts`** locally; verify classification flips to `developed`.
+
+### 13.3 procmd v0.7 extensions used in Phase C
+
+- **`Decision:`** (already introduced in Phase B). Used in FR-H, ECA-0.0 multi-path diagnostics.
+- **`entry-condition:` structured frontmatter** for FR-x:
+  ```yaml
+  entry-condition:
+    csf: core-cooling
+    level: red
+    triggers:
+      - core-exit-tc > 1200F
+      - rvls < 30%
+  ```
+  Frontmatter passthrough already supports unknown keys; parser dedicated handling adds typing.
+- **Tag `setpoint:` nested field**:
+  ```yaml
+  - id: SG-A-LVL-NR
+    setpoint:
+      lo-lo: 17
+      lo: 25
+      hi: 75
+    source: Vogtle UFSAR §10.4
+  ```
+- **`hf:` step-level human-factors tags** (vocabulary): `time-critical`, `two-operator`, `error-likely`, `verification-required`, `peer-check`, `independent-verification`. Each gets a renderer badge (per F-NEW-6 parity gate). Used heavily in ECA-0.0 and FR-S.1.
+
+### 13.4 Anti-hallucination discipline (per F-NEW-4)
+
+The single highest-risk failure mode of Phase C is an LLM-authored
+setpoint that doesn't match any real plant. Mitigations:
+
+- **Every numeric setpoint MUST cite Vogtle UFSAR section in the tag `source:` field.** No `source:` → validator fails.
+- **Vogtle UFSAR Rev. X is pinned in scope.md** so reviewers know which revision drives the numbers.
+- **Every Caution:, Note:, and Because: that asserts a physical fact MUST be traceable to Tier 1–5.** Per-commit, the commit message lists citations: `cites: Vogtle UFSAR §15.6.5; WTSM §10.4; NUREG-0737 Suppl 1`.
+- **Per-commit reviewer obligation**: spot-check 2 numbers per commit against the cited source. Document review in the commit reply.
+- **Pages flagged `validation-needed: true` in `fm.extra`** for any value that I (LLM author) am not high-confidence on. Validator surfaces these as warnings.
+
+### 13.5 Risks
+
+| Risk | Mitigation |
+|---|---|
+| LLM-hallucinated setpoints | §13.4 anti-hallucination discipline. |
+| FR-x physics depth | Cite Todreas & Kazimi for thermal-hydraulics; flag low-confidence with `validation-needed: true`. |
+| ECA-0.0 (SBO) too large for one commit | Allow split at natural section boundaries (entry diagnostics → TDAFW management → AC restoration). |
+| Cross-page step ID drift during authoring | A′.7 rule: step IDs are contracts. |
+
+### 13.6 Exit criteria
+
+- All 39 procedures classified `developed` (target) or documented residual.
+- Validator green across corpus.
+- Tag catalogue (Phase D) covers every `«TAG»` reference.
+- Every numeric setpoint cites Vogtle UFSAR.
+- `procedure_lookup --format=json` returns structurally rich JSON for every procedure.
+- Page coverage badges on `wiki/index.md` reflect manifest classification.
+
+---
+
+## 14. Phase D — Plant reference layer (~3–4 weeks)
+
+Goal: the wiki gains the documents needed to *close* on `«TAG»` references
+and follow setpoint reasoning. Sibling dirs under `wiki/`; citation URLs
+unchanged.
+
+### 14.1 New page types
+
+| Page type | Dir | Schema |
+|---|---|---|
+| `system-description` | `wiki/systems/` | frontmatter `type: system-description`; mandatory body sections: Function, Components, Instrumentation, Setpoints, Normal alignment, Failure modes |
+| `tag-catalogue` | `wiki/tags/` | one canonical `pwr-4loop.md`; per-procedure appendices override (warn) but defaults come from here |
+| `setpoint-catalogue` | `wiki/setpoints/` | structured tables of all numeric setpoints with Vogtle UFSAR citations; cross-linked from tag defs and procedure steps |
+| `tech-spec` | `wiki/tech-specs/` | LCO + SR + AOT excerpts from Vogtle Tech Spec Section 3/4 |
+| `lineup` | `wiki/lineups/` | valve / breaker tables for normal, post-trip, recirc, mid-loop |
+
+### 14.2 Systems to document
+
+Twelve `system-description` pages: RCS, ECCS, AFW, MSS, RPS, ESF, electrical (4 kV emergency + DC + EDG), RHR, CVCS, containment + spray, NIS, BOP. Each cites WTSM section in addition to Vogtle UFSAR.
+
+### 14.3 Build-time tag-catalogue inlining (F17)
+
+The wiki's `scripts/render-procmd.ts` gains a step: expand external tag
+references. Each deployed `_build/wiki/*.md` gets an inlined `## Tags`
+appendix from the central catalogue PLUS any per-procedure overrides. Source files unchanged.
+
+**Sidecar publishing decision** (deferred from §21 prior draft): defer
+until 6+ system pages are written. Tag duplication isn't painful yet.
+
+### 14.4 Manifest v2 schema (additive, non-breaking)
+
+Per F-NEW-9, the speculative top-level `pageTypes` summary is DROPPED.
+Manifest v2 adds:
+- Per-entry `type: 'procedure' | 'system' | 'setpoint-catalogue' | 'tech-spec' | 'lineup' | 'tag-catalogue'`
+- `build-manifest.ts` scans all sibling dirs, not just `wiki/procedures/`
+
+That's it. No top-level summary.
+
+### 14.5 New tool: `wiki_lookup` (per F-NEW-11)
+
+Generalised dispatcher: `wiki_lookup(type, id)`. Returns parsed JSON for any
+non-procedure page type. Existing `procedure_lookup` retains specialized
+behavior (mermaid rendering, step-level fetch).
+
+### 14.6 Exit criteria
+
+- 12 system-description pages live.
+- Tag catalogue covers every `«TAG»` in every procedure.
+- Setpoint catalogue covers every numeric setpoint referenced.
+- `wiki_lookup` deployed.
+- Manifest v2 in production.
+
+---
+
+## 15. Phase E — Operations + Human Factors (~3–4 weeks)
+
+Goal: operational *culture* layer (ConOps, CRM, place-keeping) + agent
+reasoning substrate (human factors, error modes, operating experience).
+
+Per F-NEW-8, the wiki's "demonstration of procmd format" disclaimer
+becomes less accurate when Phase E lands. Decision deferred until Phase D
+exit: rename the wiki to "PWR Operator Knowledge Base," accept scope
+drift, or split into a sibling wiki. Flagged in §21 below.
+
+### 15.1 Operations content (`wiki/operations/`)
+
+Each `type: operations-doc`:
+- `control-room-conops.md` — roles (RO, SRO, STA, SS), watch-stand, turnover, log-keeping
+- `communication.md` — three-way / peer-check / concurrent-verification / independent-verification
+- `pre-job-brief.md` — what goes into a brief before procedure entry
+- `conservative-decision-making.md` — "if you don't know, stop"
+- `procedure-usage.md` — deviation rules, SRO override, place-keeping
+- `sta-role.md` — STA reasoning independent of EOP team
+- `configuration-control.md` — tag-out, hold orders, independent verification
+- `safety-culture.md` — derived from OECD-NEA + IAEA NS-G-2.14 (not INPO)
+
+### 15.2 Human-factors content (`wiki/human-factors/`)
+
+Per F-NEW-10, collapsed from 6 page types to **4**:
+
+| Page type | Coverage |
+|---|---|
+| `hf-action-class` | One page per common operator-action class (trip RCP under voiding, manually actuate SI, isolate faulted SG). Includes typical execution time, error modes, prerequisites, applicable PSFs (PSFs absorbed in here, not their own page type). |
+| `hf-failure-mode` | Slip / lapse / mistake / violation taxonomy with examples from public LER summaries. |
+| `hf-time-pressure-profile` | Per-EOP family: "minutes 0–5 / 5–30 / 30–120" demands. |
+| `operating-experience` | Public LER / OECD-NEA OE summaries cross-linked to relevant EOPs. CRM commentary absorbed into the `communication.md` and `sta-role.md` operations docs, not its own page type. |
+
+### 15.3 procmd-core schema additions
+
+Each new page type gets:
+- Frontmatter schema in `procmd-core/types.ts`
+- Type-specific parser in `procmd-core/parser-by-type.ts`
+- Tool dispatch entry on `wiki_lookup`
+
+Pattern:
+```typescript
+export type ParsedPage =
+  | { kind: 'procedure'; data: ParsedProcedure }
+  | { kind: 'system-description'; data: ParsedSystemDescription }
+  | { kind: 'operations-doc'; data: ParsedOperationsDoc }
+  | { kind: 'hf-action-class'; data: ParsedHfActionClass }
+  | { kind: 'hf-failure-mode'; data: ParsedHfFailureMode }
+  | { kind: 'hf-time-pressure-profile'; data: ParsedHfTimePressureProfile }
+  | { kind: 'operating-experience'; data: ParsedOperatingExperience }
+  // ...
+```
+
+### 15.4 Exit criteria
+
+- 8 operations docs + 4 HF page types (at least 2 representative pages each — 8 HF pages minimum).
+- `procmd-core/parser-by-type.ts` dispatches on `type:` frontmatter.
+- Every EOP family has at least one `hf-time-pressure-profile` + one cross-linked `operating-experience` entry.
+
+---
+
+## 16. Phase F — Simulation + agent integration (~6–8 weeks for v1)
+
+Goal: scenarios cross-link to procedure step IDs; agents traverse the
+procedure graph with known starting state and expected outcomes; the wiki
+becomes the *substrate* for samsinn-side plant simulations.
+
+### 16.1 New page types
+
+| Type | Dir | Purpose |
+|---|---|---|
+| `scenario` | `wiki/scenarios/` | Starting plant state + injected faults + expected EOP traversal. Cross-links to procedure step IDs. |
+| `simulator-binding` | `wiki/simulator-bindings/` | Maps `«TAG»` set to a specific simulator (samsinn sim, BNL Generic PWR, IAEA basic PWR). |
+| `validation-trace` | `wiki/validation-traces/` | Recorded transit with timestamps and decisions. |
+| `eal-classification` | `wiki/eal/` | EAL cross-walk: EOP entry conditions → NEI 99-01 EAL (UE / Alert / SAE / GE). |
+
+### 16.2 New tools (per F-NEW-11, only 2 new — others use `wiki_lookup`)
+
+- **`procedure_search`** (F9) — symptom-driven. Backed by `wiki/_search-index.json` built at deploy time. Searches frontmatter `entry-triggers`, tag refs, step `Check:` lines.
+- **`eal_classify(scenario)`** — given a scenario or symptom set, returns EAL class.
+
+Everything else (`scenario_lookup`, `simulator_binding_lookup`, `validation_trace_lookup`) is `wiki_lookup(type, id)` — no new tools.
+
+### 16.3 Cross-corpus reference validation (F25)
+
+`procmd-core/validator.ts` scans all page types for `[[P-id#step-id]]`
+refs and verifies against resolved procedure step IDs. Scenarios →
+procedure-step references are compile-time checks.
+
+### 16.4 Initial scenario catalogue
+
+Author 10 reference scenarios:
+- Small-break LOCA (E-0 → E-1 → ES-1.1 → ES-1.2 → ES-1.3)
+- Large-break LOCA (E-0 → E-1 → ECA-1.1 → ES-1.4)
+- SGTR (E-0 → E-3 → ES-3.1)
+- Station blackout (E-0 → ECA-0.0)
+- ATWS (E-0 → FR-S.1)
+- Steam line break (E-0 → E-2 → ES-0.2)
+- Loss of feedwater (E-0 → FR-H.1)
+- Excessive cooldown / PTS (FR-P.1)
+- Multiple faults (LOCA + station blackout)
+- Beyond-design-basis (transition to SAMG)
+
+Scenarios embed initial state (tag values at t=0) — per the recommend in
+prior §21, and given user's "do what's needed to work reliably." This
+crosses into simulator-input territory; that's intentional.
+
+### 16.5 Exit criteria
+
+- 10 scenarios authored, each validating clean.
+- `procedure_search` deployed and used.
+- One simulator binding (samsinn sim) published with full tag mapping.
+- One end-to-end validation trace per scenario family.
+
+---
+
+## 17. Phase G — Visual + renderer parity gate (continuous from Phase B)
+
+Per F-NEW-6, this is **not optional and not parallel to D** — it's a
+*gate* on every phase that adds a new authored field. The plan now says:
+
+> **Renderer-parity rule**: every new procmd keyword or frontmatter
+> field gets its render path in BOTH consumers (samsinn renderer +
+> wiki render-procmd.ts + Material theme override if needed) before
+> the introducing phase exits. No agent-only fields, no web-only
+> fields.
+
+Per-phase gate checks:
+- Phase B: `Decision:` keyword renders identically in both consumers.
+- Phase C: `hf:` step tags render as Material-styled badges in the web view; tag `setpoint:` renders in the appendix table.
+- Phase D: `system-description` pages render with their mandatory section structure; new tags render in the inlined appendix.
+- Phase E: each new page type has a render path.
+- Phase F: scenarios render as a numbered sequence; embed-state shows as a collapsed details block.
+
+### 17.1 One-off cleanups (still Phase G, ~1 week)
+
+- F-NEW-21: drop `<>` heuristic in mermaid validator (dead code).
+- F10: mermaid renders `freeText` branches as ⊞ leaf nodes.
+- F16: diamond-only-when-≥2-substantive-branches heuristic.
+- F15: two-column ERG render toggle (Instruction / RNO columns) via CSS in `overrides/` — defer to Phase G end, time-boxed to 1 week, drop if it bloats.
+
+---
+
+## 18. Phase H — Drift guards (continuous, ~0.5 day setup + ongoing)
+
+### 18.1 Now (Phase A′ landing)
+
+- `procmd-core` shared fixture corpus runs in both repos' CI.
+- `build-manifest.ts` runs in wiki CI on every PR; classification deltas surface in PR comment.
+- Wiki-repo CI verifies vendored procmd-core matches `procmd-core.sha`.
+
+### 18.2 By end of Phase B (per F-NEW-15 pinned date)
+
+- Implement `ToolContext.logEvent` in samsinn. Wire `procedure_lookup` telemetry through it.
+- Retire `defaultTelemetry` stderr writes.
+- Telemetry dashboard: per-procedure call counts, fuzzy-match-fallback rate, fetch failures.
+
+### 18.3 By end of Phase C
+
+- Spec change protocol enforced: any procmd keyword change requires CHANGELOG in `docs/procedure-md.md` + parser + validator + fixture in the same commit.
+- Vogtle UFSAR revision pin documented and updated.
+
+### 18.4 Continuous
+
+- `extractProcedureIds` regex fallback (per F-NEW-12): mark deprecated once 100% of accessed wikis declare `manifestFile`. Removal target: end of Phase D.
+- validate.ts edge-label fossil vocabulary (per F-NEW-14): cleanup queued for any time.
+
+---
+
+## 19. Cross-phase integration: the renderer-parity rule
+
+(Per F-NEW-6 tightening): the load-bearing invariant is
+
+> **Every procmd keyword or frontmatter field that an agent can act on
+> MUST have a render path in BOTH the wiki Material theme AND the
+> samsinn renderer BEFORE the introducing phase's exit.**
+
+This is enforced by Phase G being a *gate* per phase (§17), not a
+parallel polish step. The dual-consumer contract is the design constraint
+that organises every other phase.
+
+| Phase | Web reader gains | Agent gains | Spec version |
+|---|---|---|---|
+| A (done) | Coverage badges, feedback bubbles | Rationale, time, CSF channels, JSON, step/summary | parser: v0.6 internal |
+| A′ | Unified validator+parser | Same parsed shape | v0.6 normative (all artifacts) |
+| B | 4 hardened EOPs with rich tags, Vogtle citations | Same procedures, structurally richer JSON | v0.7 (Decision:) |
+| C | 35 completed procedures | `procedure_lookup` returns rich JSON for every page; hf: tags surface in JSON | v0.7 (hf:, entry-condition:, setpoint:) |
+| D | System pages cross-linked from tag defs | `wiki_lookup` resolves `«TAG»` to its system page | manifest v2 |
+| E | ConOps + HF reading material | Agents fetch HF action-classes and PSFs | per-type schemas in procmd-core |
+| F | Scenario library readable as tutorial | Agents reason over scenarios with full traversal + embedded state | scenario schema + cross-ref validator |
+
+---
+
+## 20. Sequencing summary (revised)
+
+```
+A   [done]               UI + sources + PLAN + parser v0.6 + tool + manifest
+A′  [next, ~2d]          procmd-core extraction (parser+types only) + atomic v0.6 bump + drop generatedAt + vendor + SHA pin
+B   [1w]                 Harden E-0/E-1/E-2/E-3 + v0.7 with Decision: + Vogtle UFSAR citations
+C   [8–10w]              Author 35 procedures, 11 family-level commits, v0.7 (hf:, entry-condition:, setpoint:)
+D   [3–4w]               Plant reference: 12 systems + tag/setpoint catalogues + manifest v2 + wiki_lookup tool
+E   [3–4w]               ConOps (8 pages) + Human factors (4 page types, 8+ pages) + per-type parsers
+F   [6–8w]               Scenarios (10) + simulator-binding + EAL + procedure_search + eal_classify + cross-corpus validator
+G   [continuous, gating]  Renderer parity rule + one-off polish (~1w)
+H   [continuous]         Drift guards, ToolContext.logEvent by Phase B exit, spec change protocol
+```
+
+Total wall-clock to "complete first authentic release" (end of Phase F):
+~22–28 weeks. Phase A′ is the unlock. Phase C is the long pole. Phase D–F
+build the agent-reasoning substrate.
+
+---
+
+## 21. Open questions (residual, non-blocking)
+
+1. **Wiki scope at Phase D exit** (per F-NEW-8). When Phase D ships 12
+   system descriptions plus 5 catalogues, the README's "demonstration of
+   procmd format" framing is no longer accurate. Three options at Phase D
+   exit: (a) rename `pwr-eops` → `pwr-operator-knowledge-base`; (b)
+   accept the scope drift; (c) split Phase E content into a sibling
+   wiki. Defer the decision; flag now.
+2. **HF taxonomy authority.** Plan uses OECD-NEA + IAEA NS-G-2.14
+   (public). INPO content is proprietary and not used. If owner wants
+   INPO-aligned content, source authority changes.
+3. **Sidecar raw.md publishing** to GitHub Pages (per §14.3). Defer
+   until tag duplication actually becomes painful.
+
+---
+
+## 22. Stress-test finding-disposition table (2026-05-13)
+
+Applies to the §11–§21 revision above. Findings from the
+`claude-toolbox:stress-test` skill invocation.
+
+| # | Disposition | Reason |
+|---|---|---|
+| F-NEW-1 (version model mess) | **accepted** | Bumped everything to v0.6 atomically in Phase A′ per user choice ("update everything to latest, no back-compat"). |
+| F-NEW-2 (`generatedAt` timestamp churn) | **accepted** | Dropped entirely; git commit time is the timestamp. |
+| F-NEW-3 (vendor mechanism brittleness) | **accepted** | Committed copy + SHA pin file (`pwr-eops/procmd-core.sha`); CI verifies. No network at validate time. |
+| F-NEW-4 (no reference plant) | **accepted** | Vogtle UFSAR pinned as reference plant. README + scope.md gain a declaring paragraph. |
+| F-NEW-5 (step ID atomicity) | **accepted** | A′.7 rule added: step IDs are contracts, locked at stub time, preserved on re-authoring. |
+| F-NEW-6 (invariant is aspirational) | **accepted, strengthened** | Phase G recast as a *gate* per phase, not a parallel polish step. §19 renamed "renderer-parity rule." |
+| F-NEW-7 (procmd-core is rejected-refactor shape) | **accepted, mitigated** | Scope narrowed: parser + types only. Validator stays in wiki repo, renderers stay per-consumer. Honest disclosure in §11. |
+| F-NEW-8 (Phase E scope drift) | **mitigated** | Flagged as deferred decision at Phase D exit. Three options documented in §21. |
+| F-NEW-9 (manifest v2 `pageTypes` speculative) | **accepted** | Dropped. Only per-entry `type` field. |
+| F-NEW-10 (6 HF page types over-factored) | **accepted** | Collapsed to 4; PSFs absorbed into action-class, CRM into operations-doc. |
+| F-NEW-11 (4 lookup tools in Phase F redundant) | **accepted** | Only `procedure_search` and `eal_classify` retained. Everything else routes through `wiki_lookup`. |
+| F-NEW-12 (`extractProcedureIds` fallback path) | **mitigated** | Flagged in Phase H §18.4; deprecation target end of Phase D. |
+| F-NEW-13 (wiki render-procmd.ts has own parser) | **accepted** | Phase A′ exit criteria now require render-procmd.ts to consume procmd-core. |
+| F-NEW-14 (validate.ts edge-label fossil) | **deferred** | Out-of-scope; Phase H continuous-cleanup queue. |
+| F-NEW-15 (telemetry stderr permanent) | **accepted** | `ToolContext.logEvent` integration pinned: end of Phase B (§18.2). |
+| F-NEW-16 (35 commits in Phase C) | **accepted** | Per-family batching, ~11 commits total per §13.1 table. |
+| F-NEW-17 (frontmatter migration scattered) | **accepted** | Atomic v0.6 bump in Phase A′ (A′.3): one commit per repo. |
+
+No findings rejected; no findings silently dropped.
+
+---
+
+## 23. Changelog vs prior plan draft (§§10–21 prior version)
+
+| What | Why | How |
+|------|-----|-----|
+| Phase A′ scope narrowed to parser+types only | F-NEW-7: procmd-core was edging into rejected-refactor territory | Validator stays in wiki repo; renderers stay per-consumer; core exports only parser + types |
+| Atomic v0.6 frontmatter bump added as Phase A′ step | F-NEW-1, F-NEW-17: parser/validator/content version mismatch was a bug; the bump is the cleanup | One-commit-per-repo bump; no back-compat code in parser; validator rejects 0.5 |
+| Vendor mechanism specified | F-NEW-3: original "fetch from pinned commit" was undefined for local dev | Committed copy + SHA pin file + CI verification |
+| `generatedAt` dropped from manifest | F-NEW-2: ISO timestamp churned the repo on every CI | Removed from schema + build script; git commit is the timestamp |
+| Vogtle UFSAR pinned as reference plant | F-NEW-4: no reference plant meant setpoints became guesswork | Cited in scope.md + README; every numeric value in Phase B+ cites Vogtle UFSAR section |
+| Step ID atomicity rule (A′.7) | F-NEW-5: cross-page atomicity wasn't addressed | Stub IDs are contracts; preserved on re-authoring |
+| Phase G recast as a gate, not parallel polish | F-NEW-6: "single load-bearing invariant" was aspirational | Renderer-parity rule per-phase; Phase G drives the gate checks |
+| Phase C commit batching | F-NEW-16: 35 commits = 35 CI cycles | ~11 family-level commits per §13.1 |
+| HF page types collapsed 6 → 4 | F-NEW-10: PSFs and CRM were over-factored | Action-class absorbs PSFs; operations-doc absorbs CRM |
+| Phase F tools cut 4 → 2 | F-NEW-11: lookup-flavored tools duplicate `wiki_lookup` | Only `procedure_search` and `eal_classify` retained |
+| Manifest v2 `pageTypes` dropped | F-NEW-9: speculative; no consumer | Per-entry `type` field only |
+| Wiki render-procmd.ts must consume procmd-core | F-NEW-13: it has its own parser, would drift | Added to Phase A′ exit criteria |
+| `ToolContext.logEvent` pinned by Phase B exit | F-NEW-15: "continuous" had no deadline | §18.2 hard date |
+| Phase E scope flagged for Phase-D-exit decision | F-NEW-8: ConOps content stretches "procmd demo" framing | §21 residual question |
+| `extractProcedureIds` deprecation timeline | F-NEW-12: single-caller fallback once manifest universal | §18.4 deprecation target end of Phase D |
+| Phase F scenarios embed initial state | "do what's needed to work reliably" + scenario layer cusp question | §16.4 confirmed embed |
+
+---
+
+
+
+Goal: one normative procmd implementation consumed by both the talkingAgents
+parser/tool surface and the wiki repo's `validate.ts`. Eliminates F5 drift
+*before* Phase B authoring stresses the spec.
+
+### 11.1 Workstreams
+
+**A′.1 — Package layout.** Create `talkingAgents/src/procmd-core/` containing:
+- `parser.ts` — the v0.6 parser, moved from `src/packs/pwr-eops/procmd/parser.ts`
+- `validator.ts` — port from `pwr-eops/validate.ts` (corpus checks: tag-id charset, sim-path consistency, cross-page links, orphan steps, profile vocab)
+- `types.ts` — `ParsedProcedure`, `TagDefinition`, `Branch`, etc.
+- `fixtures/` — shared test corpus (E-0.md, FR-S.1.md, plus synthetic edge cases)
+- `index.ts` — public API barrel
+- `README.md` — spec pointer, version compat matrix
+- `package.json` — declares the module so the wiki repo can vendor or import
+
+**A′.2 — talkingAgents consumer migration.** Rewrite
+`src/packs/pwr-eops/procmd/parser.ts` and `renderer.ts` as thin shims that
+re-export from `src/procmd-core/`. Pack-level tests stay in place; they
+import from the shim, behaviour unchanged. Renderer stays in the pack
+(renderer is samsinn-output-specific; only parser/types/validator are shared).
+
+**A′.3 — Wiki-repo migration.** Replace `pwr-eops/validate.ts` body with a
+thin script that imports `procmd-core` and runs the same checks. Two
+options:
+- **Option A (vendor):** `cp -r talkingAgents/src/procmd-core/* pwr-eops/procmd-core/` at workflow time. Pin to a git SHA. Simplest. Recommended.
+- **Option B (npm-link):** Publish `@samsinn/procmd-core` to GitHub Packages. More ceremony, no immediate benefit.
+
+Recommend **Option A**: a make-target or workflow step that fetches the
+file set from a pinned talkingAgents commit. The pin lives in
+`pwr-eops/procmd-core.sha`.
+
+**A′.4 — Shared fixture corpus.** One `procmd-core/fixtures/` set covering:
+- A full developed procedure (E-0 clone, frozen)
+- A v0.5-frontmatter procedure (back-compat smoke test)
+- Edge cases: missing Tags appendix; unknown frontmatter keys; branch with both Because and Against; multi-line Within; `## Tags` followed by `## Step` (atypical); intra-id with hyphens.
+
+Both consumers run their respective test against this corpus in CI.
+
+**A′.5 — Spec doc.** Update `talkingAgents/docs/procedure-md.md` to v0.6
+normatively: document every keyword, every frontmatter field, the `extra`
+passthrough rule, the version-handshake behaviour, the `## Tags` appendix
+shape, the `Because:` / `Against:` rationale rules.
+
+### 11.2 Exit criteria
+
+- One implementation of procmd; both consumers import from `procmd-core`.
+- Wiki repo's `bun validate.ts` produces identical findings to pre-extraction.
+- Shared fixture corpus runs in both repos' CI.
+- `docs/procedure-md.md` describes v0.6 normatively.
+- No regressions in the 1397-test samsinn suite.
+
+### 11.3 Risk register
+
+| Risk | Mitigation |
+|---|---|
+| Vendored copy in wiki repo drifts from source | `procmd-core.sha` in wiki repo pins the source commit; workflow fetches that sha; CI fails if sha doesn't match. Drift becomes a CI red. |
+| Renderer-specific quirks (mermaid escaping) leak into core | Keep renderer in the pack. Core exposes parser + validator + types only. |
+| Wiki author wants a procmd change but doesn't want to round-trip through talkingAgents | Document the policy: spec changes land in talkingAgents first, get a commit, wiki bumps `procmd-core.sha`. Two-PR pattern, ~30 min round-trip. |
+
+---
