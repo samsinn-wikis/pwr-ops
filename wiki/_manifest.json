@@ -319,16 +319,32 @@
       "title": "Response to Nuclear Power Generation / ATWS",
       "file": "wiki/procedures/FR-S.1.md",
       "stepCount": 4,
-      "tagDefinitionCount": 0,
-      "coverage": "stub"
+      "tagDefinitionCount": 14,
+      "coverage": "partial",
+      "category": "function-restoration",
+      "csfsMonitored": [
+        "subcriticality"
+      ],
+      "entryTriggers": [
+        "atws-red-path",
+        "power-after-trip"
+      ]
     },
     {
       "id": "FR-S.2",
       "title": "Response to Loss of Core Shutdown",
       "file": "wiki/procedures/FR-S.2.md",
       "stepCount": 3,
-      "tagDefinitionCount": 0,
-      "coverage": "stub"
+      "tagDefinitionCount": 10,
+      "coverage": "partial",
+      "category": "function-restoration",
+      "csfsMonitored": [
+        "subcriticality"
+      ],
+      "entryTriggers": [
+        "shutdown-margin-orange-path",
+        "boron-dilution"
+      ]
     },
     {
       "id": "FR-Z.1",
