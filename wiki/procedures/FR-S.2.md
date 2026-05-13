@@ -8,7 +8,7 @@ applies-to: Westinghouse 4-loop PWR
 reference-plant: vogtle
 category: function-restoration
 csfs-monitored: [subcriticality]
-entry-triggers: [shutdown-margin-orange-path, boron-dilution]
+entry-triggers: [csf-orange-path]
 validation-needed: true
 ---
 
