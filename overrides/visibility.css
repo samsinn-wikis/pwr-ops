@@ -92,8 +92,11 @@ html.hide-rationale .procmd-rationale + br { display: none; }
 
 .procmd-source-icon {
   position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
+  /* Sit immediately to the left of Material's edit-pencil (.md-content__button),
+     which is floated top-right at ~0.4rem from the edge with ~1.8rem footprint.
+     Stacking them side-by-side avoids the click overlap. */
+  top: 0.4rem;
+  right: 2.4rem;
   background: transparent;
   border: 0;
   padding: 0.3rem;
