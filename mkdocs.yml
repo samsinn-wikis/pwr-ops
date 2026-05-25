@@ -1,5 +1,5 @@
-site_name: "PWR Operations"
-site_description: "Westinghouse-style PWR operating knowledge — procedures, plant reference, human factors, scenarios — authored in Procedure Markdown (procmd) v0.6"
+site_name: "Leitbild PWR"
+site_description: "Reference handbook for the PWR plant simulated in Leitbild: process model, component graph, physics, I&C, alarms, procedures, scenarios, and AI-agent operation"
 site_url: "https://samsinn-wikis.github.io/pwr-ops/"
 docs_dir: _build/wiki
 repo_url: "https://github.com/samsinn-wikis/pwr-ops"
@@ -79,6 +79,23 @@ extra:
 
 nav:
   - Home: index.md
+  - Start here: start-here.md
+  - Leitbild PWR model:
+    - PWR reference overview: pwr-reference/index.md
+    - Systems modeled: pwr-reference/systems-modeled.md
+    - Components modeled: pwr-reference/components-modeled.md
+    - Physics model: pwr-reference/physics-model.md
+    - I&C, protection, and alarms: pwr-reference/ic-protection-alarms.md
+  - How the PWR is built in Leitbild:
+    - Process-plant overview: process-plant/index.md
+    - Runtime architecture: process-plant/architecture.md
+    - Scenario and graph spec: process-plant/scenario-and-graph-spec.md
+    - Component model: process-plant/component-model.md
+    - Link model: process-plant/link-model.md
+    - Runtime and solver: process-plant/runtime-solver.md
+    - Variables, tags, and API: process-plant/variables-tags-api.md
+  - Agent guides:
+    - Process-plant agents: agent-guides/process-plant-agents.md
   - About:
     - Scope and disclaimers: scope.md
     - Reference sources: sources.md
@@ -160,6 +177,32 @@ nav:
     - Rule table: eal/classification-rules.md
   - Simulator bindings:
     - samsinn: simulator-bindings/samsinn.md
+  - Leitbild source mirror:
+    - Source mirror guide: reference/leitbild-source-docs.md
+    - ADRs:
+      - TypeScript, Bun, Single Server: leitbild-source/adrs/0001-typescript-bun-single-server.md
+      - Core Domain Object Model: leitbild-source/adrs/0002-core-domain-object-model.md
+      - Simulation Adapter Boundary: leitbild-source/adrs/0003-simulation-adapter-boundary.md
+      - Map Rendering Strategy: leitbild-source/adrs/0004-map-rendering-strategy.md
+      - No Mock Production Functionality: leitbild-source/adrs/0005-no-mock-or-dummy-production-functionality.md
+      - Static Pack Architecture: leitbild-source/adrs/0006-static-leitbild-pack-architecture.md
+      - Object Context Scenario Mission Model: leitbild-source/adrs/0007-object-context-scenario-mission-model.md
+      - Interaction Signals And Handlers: leitbild-source/adrs/0008-interaction-signals-and-handlers.md
+      - Composite Providers And Traffic: leitbild-source/adrs/0009-composite-simulation-providers-and-traffic.md
+      - Control Instance Memory: leitbild-source/adrs/0010-control-instance-memory-and-persistence.md
+      - Vector Tile Base Map: leitbild-source/adrs/0011-self-hosted-vector-tile-base-map.md
+      - Svelte 5 UI Architecture: leitbild-source/adrs/0012-svelte-5-ui-architecture.md
+      - Scenario Script Runtime: leitbild-source/adrs/0013-scenario-script-runtime.md
+      - Scenario Surface Definitions: leitbild-source/adrs/0014-scenario-surface-definitions.md
+      - H3 Spatial Field Index: leitbild-source/adrs/0015-h3-spatial-field-index.md
+      - Generic Pack Query Surface: leitbild-source/adrs/0016-generic-pack-query-surface.md
+      - Process Plant Component Graph: leitbild-source/adrs/0017-process-plant-component-graph.md
+      - Process Plant Signal Bindings And Control Protection: leitbild-source/adrs/0018-process-plant-signal-bindings-and-control-protection.md
+    - Source docs:
+      - Process Plant Simulation V1: leitbild-source/docs/process-plant-simulation-v1.md
+      - Packs: leitbild-source/docs/packs.md
+      - Object Context Scenarios Missions: leitbild-source/docs/object-context-scenarios-missions.md
+      - Map Capability Manifest: leitbild-source/docs/map-capability-manifest.md
   - Operations:
     - Control-room ConOps: operations/control-room-conops.md
     - Three-way communication: operations/communication.md

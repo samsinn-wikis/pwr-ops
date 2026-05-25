@@ -1,117 +1,79 @@
 ---
-title: Westinghouse-style PWR Operations — Index
+title: Leitbild PWR Reference Handbook
 ---
 
-# Westinghouse-style PWR Operations Knowledge Base
+# Leitbild PWR Reference Handbook
 
-Westinghouse-style PWR operating knowledge — emergency operating procedures
-(complete set of E, ES, ECA, FR families) plus the plant reference,
-conduct of operations, human factors, and scenario layers — authored in
-[Procedure Markdown (procmd) v0.6](procmd.md) and consumed both by human
-readers and by samsinn agents via the `procedure_lookup` tool.
+This wiki is the operating, modeling, and AI-agent reference for the PWR plant simulated inside Leitbild. It keeps the emergency procedure corpus, but the center of gravity is now the **Leitbild PWR**: a configurable process-plant simulation with a component graph, medium-fidelity physics, I&C/protection behavior, alarm logic, canonical variables, procedure tag bindings, scenarios, validation traces, and API-facing guidance for human and AI operators.
 
-> ⚠️ **LLM-reconstructed content — not licensed plant procedures.**
-> See [Scope and disclaimers](scope.md) before reading further.
+> ⚠️ **Research and simulation reference, not licensed plant guidance.**
+> The procedures and plant descriptions are reconstructed for simulation and AI-research use. They are not plant-specific licensed operating procedures.
 
-The procedures here are interlinked: branches in one EOP refer directly
-to steps in another via `[[wikilinks]]`. Start at [[E-0]] for any
-post-trip / post-SI scenario; the diagnostic flow there transitions to
-the appropriate event-specific procedure. The Critical Safety Function
-status trees (FR-x family) run continuously alongside the main EOP from
-event entry through recovery.
+## What This Wiki Is For
 
-**Coverage legend:** ✅ developed · 🟡 partial · ⬜ stub. Classification is
-**content-based** ([`scripts/build-manifest.ts`](https://github.com/samsinn-wikis/pwr-ops/blob/main/scripts/build-manifest.ts)
-`classifyByContent`): counts steps with substantive body content and
-appendix tags with `source:` citations rather than raw step count.
-**After Phase C all 39 procedures classify as ✅ developed.** See
-[PLAN.md](https://github.com/samsinn-wikis/pwr-ops/blob/main/PLAN.md)
-for the roadmap (Phase D plant reference is next).
+The wiki should answer four practical questions:
 
-## E-series — Initial Diagnostic and Mitigation
+1. **What plant is Leitbild simulating?**
+   The PWR reference model, its systems, components, links, variables, physics depth, I&C, alarms, and known limitations.
 
-| ID | Title | Coverage |
-|---|---|---|
-| [[E-0]] | Reactor Trip or Safety Injection | ✅ |
-| [[E-1]] | Loss of Reactor or Secondary Coolant | ✅ |
-| [[E-2]] | Faulted Steam Generator Isolation | ✅ |
-| [[E-3]] | Steam Generator Tube Rupture | ✅ |
+2. **How is the plant built?**
+   The scenario-defined component graph, graphRef pattern, link model, variable registry, tag resolver, runtime loop, telemetry, and validation harness.
 
-## ECA-series — Extreme Conditions
+3. **How should humans and AI agents operate it?**
+   Procedure lookup, tag resolution, variable querying, alarm interpretation, command discipline, uncertainty handling, and procedure-vs-automation boundaries.
 
-| ID | Title | Coverage |
-|---|---|---|
-| [[ECA-0.0]] | Loss of All AC Power | ✅ |
-| [[ECA-1.1]] | Loss of Emergency Coolant Recirculation | ✅ |
-| [[ECA-1.2]] | LOCA Outside Containment | ✅ |
-| [[ECA-2.1]] | Uncontrolled Depressurization of All Steam Generators | ✅ |
-| [[ECA-3.1]] | SGTR with Loss of Reactor Coolant — Subcooled Recovery | ✅ |
-| [[ECA-3.2]] | SGTR with Loss of Reactor Coolant — Saturated Recovery | ✅ |
-| [[ECA-3.3]] | SGTR Without Pressurizer Pressure Control | ✅ |
+4. **How can the model be extended?**
+   Component-library rules, graph authoring, physics maturity expectations, validation patterns, and mirrored Leitbild ADR/source material.
 
-## ES-series — Post-Trip Recovery
+## The Leitbild PWR In One Diagram
 
-| ID | Title | Coverage |
-|---|---|---|
-| [[ES-0.0]] | Rediagnosis | ✅ |
-| [[ES-0.1]] | Reactor Trip Response | ✅ |
-| [[ES-0.2]] | Natural Circulation Cooldown | ✅ |
-| [[ES-1.1]] | SI Termination | ✅ |
-| [[ES-1.2]] | Post-LOCA Cooldown and Depressurization | ✅ |
-| [[ES-1.3]] | Transfer to Cold Leg Recirculation | ✅ |
-| [[ES-1.4]] | Transfer to Hot Leg Recirculation | ✅ |
-| [[ES-3.1]] | Post-SGTR Cooldown Using Backfill | ✅ |
-| [[ES-3.2]] | Post-SGTR Cooldown Using Blowdown | ✅ |
-| [[ES-3.3]] | Post-SGTR Cooldown Using Steam Dump | ✅ |
+```mermaid
+flowchart TD
+  Scenario["Leitbild scenario"] --> PWR["PWR unit graphRef / component graph"]
+  PWR --> Compiler["Graph compiler and validation"]
+  Compiler --> Runtime["Per-unit process runtime"]
+  Runtime --> Physics["Physics solver"]
+  Runtime --> Vars["Canonical variable registry"]
+  Vars --> IC["I&C / protection rules"]
+  Vars --> Alarms["Alarm substrate"]
+  Vars --> Tags["Procedure tag resolver"]
+  Tags --> Procedures["procmd emergency procedures"]
+  Vars --> API["Leitbild query / command API"]
+  API --> Agents["Human and AI agents"]
+  API --> Surface["Leitbild map / rail / future control-room UI"]
+  IC --> Commands["Automatic plant commands"]
+  Agents --> Commands
+  Commands --> Runtime
+```
 
-## FR-series — Critical Safety Function Status Trees
+The plant is not hardcoded as one monolithic simulator. Leitbild instantiates process units from scenario definitions or graph references. Each unit owns its own component state, variable registry, alarm state, I&C state, telemetry, and command surface. Multi-unit scenarios are composed from multiple independent unit instances.
 
-These run as `Concurrent: ... [independent]` from event entry; they monitor
-their respective Critical Safety Function and override the active EOP if
-the CSF degrades to RED or ORANGE.
+## Read This First
 
-### FR-S — Subcriticality
-| ID | Title | Coverage |
-|---|---|---|
-| [[FR-S.1]] | Response to Nuclear Power Generation / ATWS | ✅ |
-| [[FR-S.2]] | Response to Loss of Core Shutdown | ✅ |
+- [[start-here]] explains how humans, AI agents, and coding agents should navigate the wiki.
+- [[pwr-reference/index]] describes the PWR reference plant and what it can currently simulate.
+- [[pwr-reference/systems-modeled]] explains the major modeled plant systems.
+- [[pwr-reference/physics-model]] explains the fidelity target and physical approximations.
+- [[pwr-reference/ic-protection-alarms]] explains automatic protection and alarms.
+- [[process-plant/scenario-and-graph-spec]] explains how the PWR is defined through Leitbild scenarios and graphRefs.
+- [[process-plant/variables-tags-api]] explains canonical variable paths, tags, and AI-agent queries.
+- [[agent-guides/process-plant-agents]] explains how an AI agent should interact with the plant.
+- [[procmd]] explains the procedure markdown format used by the emergency procedure corpus.
 
-### FR-C — Core Cooling
-| ID | Title | Coverage |
-|---|---|---|
-| [[FR-C.1]] | Response to Inadequate Core Cooling | ✅ |
-| [[FR-C.2]] | Response to Degraded Core Cooling | ✅ |
-| [[FR-C.3]] | Response to Saturated Core Cooling Conditions | ✅ |
+## Procedure Corpus
 
-### FR-H — Heat Sink
-| ID | Title | Coverage |
-|---|---|---|
-| [[FR-H.1]] | Response to Loss of Secondary Heat Sink | ✅ |
-| [[FR-H.2]] | Response to Steam Generator Overpressure | ✅ |
-| [[FR-H.3]] | Response to Steam Generator High Level | ✅ |
-| [[FR-H.4]] | Response to Loss of Normal Steam Release Capabilities | ✅ |
-| [[FR-H.5]] | Response to Steam Generator Low Level | ✅ |
+The procedure pages remain an important part of the wiki. They encode emergency operating procedure structure in Procedure Markdown (`procmd`), including step graphs, branches, conditions, tag appendices, and cross-procedure transitions.
 
-### FR-P — RCS Integrity (Pressurized Thermal Shock)
-| ID | Title | Coverage |
-|---|---|---|
-| [[FR-P.1]] | Response to Imminent Pressurized Thermal Shock Condition | ✅ |
-| [[FR-P.2]] | Response to Anticipated Pressurized Thermal Shock Condition | ✅ |
+The procedures are not the simulator. They are operational guidance that an operator or AI agent can traverse while querying the simulated plant. Automatic reactor trip, safety injection, alarms, and other plant behavior belong to the I&C/protection and alarm substrates, not to the procedure markdown itself.
 
-### FR-Z — Containment
-| ID | Title | Coverage |
-|---|---|---|
-| [[FR-Z.1]] | Response to High Containment Pressure | ✅ |
-| [[FR-Z.2]] | Response to Containment Flooding | ✅ |
-| [[FR-Z.3]] | Response to High Containment Radiation | ✅ |
+## Coverage Snapshot
 
-### FR-I — RCS Inventory
-| ID | Title | Coverage |
-|---|---|---|
-| [[FR-I.1]] | Response to High Pressurizer Level | ✅ |
-| [[FR-I.2]] | Response to Low Pressurizer Level | ✅ |
-| [[FR-I.3]] | Response to Voids in Reactor Vessel | ✅ |
+The procedure corpus includes the E, ECA, ES, and FR families. The model reference covers the PWR systems currently represented in Leitbild, including RCS, core/vessel, pressurizer, steam generators, main steam, turbine/condenser, feedwater, auxiliary feedwater, CVCS, ECCS/accumulators, electrical systems, containment, I&C/protection, and alarms.
 
-## Profiles
+The current simulation target is **medium-fidelity operational behavior**: strong enough for scenario reasoning, AI-agent procedure support, and control-room-style research; intentionally simpler than plant safety-analysis tools.
 
-- [[nuclear-erg]] — domain synonyms (`RNO:`, `CSF:`)
+## Source Truth And Mirroring
+
+The Leitbild application repository remains canonical for executable code, ADRs, validation artifacts, and scenario definitions. This wiki mirrors selected Leitbild source docs under [[reference/leitbild-source-docs]] so agents can use the wiki as a current reference without relying on hand-copied architecture notes.
+
+When mirrored content is stale, update the Leitbild source first and rerun the sync script in this wiki repository.

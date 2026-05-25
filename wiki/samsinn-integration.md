@@ -71,17 +71,17 @@ a samsinn release.
 
 - *"What is the reactor coolant system?"*
   → `wiki_lookup({ type: "system-description", id: "rcs" })` returns
-  the [RCS system page](../systems/rcs.md) including the mermaid
+  the [RCS system page](systems/rcs.md) including the mermaid
   topology diagram (vessel ↔ hot legs ↔ steam generators ↔ cold legs
   ↔ RCPs ↔ pressurizer) and the pressurizer-pressure feedback control
   diagram.
 - *"What does «PT-455» mean?"*
   → `wiki_lookup({ type: "tag-catalogue", id: "index" })` returns the
-  [canonical tag catalogue](../tags/index.md). Agent narrows to the
+  [canonical tag catalogue](tags/index.md). Agent narrows to the
   relevant row.
 - *"What's the Vogtle pressurizer SI setpoint?"*
   → `wiki_lookup({ type: "setpoint-catalogue", id: "index" })` returns
-  the [setpoint catalogue](../setpoints/index.md). 66 entries auto-
+  the [setpoint catalogue](setpoints/index.md). 66 entries auto-
   aggregated from system pages.
 
 ### `procedure_search`
@@ -96,13 +96,13 @@ ranked procedures with score and matched-term explanation.
 
 - *"Boron dilution alarm rising on shutdown."*
   → `procedure_search({ query: "boron dilution shutdown source-range" })`
-  ranks [FR-S.2](../procedures/FR-S.2.md) (Response to Loss of Core
+  ranks [FR-S.2](procedures/FR-S.2.md) (Response to Loss of Core
   Shutdown) first.
 - *"Subcooling margin dropping toward zero."*
-  → ranks [E-1](../procedures/E-1.md) and [FR-C.1](../procedures/FR-C.1.md)
+  → ranks [E-1](procedures/E-1.md) and [FR-C.1](procedures/FR-C.1.md)
   near the top.
 - *"Steam generator tube rupture symptoms."*
-  → ranks [E-3](../procedures/E-3.md) first.
+  → ranks [E-3](procedures/E-3.md) first.
 
 #### What is BM25, and why?
 

@@ -20,7 +20,7 @@
  *   bun scripts/render-procmd.ts --watch    # rebuild on source change
  */
 
-import { readdir, readFile, writeFile, mkdir, stat, watch } from "node:fs/promises";
+import { copyFile, readdir, readFile, writeFile, mkdir, stat, watch } from "node:fs/promises";
 import { join, dirname, relative } from "node:path";
 
 const REPO_ROOT = new URL("../", import.meta.url).pathname;
@@ -276,6 +276,17 @@ async function walkMarkdown(dir: string): Promise<string[]> {
   return out;
 }
 
+async function walkNonMarkdown(dir: string): Promise<string[]> {
+  const out: string[] = [];
+  const entries = await readdir(dir, { withFileTypes: true });
+  for (const e of entries) {
+    const p = join(dir, e.name);
+    if (e.isDirectory()) out.push(...(await walkNonMarkdown(p)));
+    else if (e.isFile() && !e.name.endsWith(".md")) out.push(p);
+  }
+  return out;
+}
+
 // Static assets to copy into _build/wiki/ alongside the rendered markdown.
 // These need to live under docs_dir so MkDocs `extra_css` / `extra_javascript`
 // can reference them by relative path.
@@ -296,6 +307,15 @@ async function copyStaticAssets(): Promise<void> {
   }
 }
 
+async function copyWikiAssets(): Promise<void> {
+  const files = await walkNonMarkdown(SRC_DIR);
+  for (const src of files) {
+    const dst = join(OUT_DIR, relative(SRC_DIR, src));
+    await mkdir(dirname(dst), { recursive: true });
+    await copyFile(src, dst);
+  }
+}
+
 async function buildAll(): Promise<number> {
   const files = await walkMarkdown(SRC_DIR);
   let changed = 0;
@@ -303,6 +323,7 @@ async function buildAll(): Promise<number> {
     const r = await processFile(f);
     if (r.changed) changed++;
   }
+  await copyWikiAssets();
   await copyStaticAssets();
   return changed;
 }

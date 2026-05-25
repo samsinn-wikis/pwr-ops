@@ -1,0 +1,786 @@
+{
+  "schemaVersion": 1,
+  "durationMs": 240000,
+  "stepMs": 1000,
+  "sampleIntervalMs": 1000,
+  "caseCount": 11,
+  "systemCount": 11,
+  "componentCount": 737,
+  "linkCount": 1034,
+  "variableCount": 9328,
+  "checkCount": 126,
+  "failedCheckCount": 0,
+  "wallMs": 5035.383708,
+  "realtimeFactor": 47.66270336433316,
+  "minRealtimeFactor": 20,
+  "checks": [
+    {
+      "caseId": "baseline",
+      "description": "baseline power stays bounded",
+      "passed": true,
+      "details": "endPower=2706.9MW"
+    },
+    {
+      "caseId": "baseline",
+      "description": "baseline pressure stays plausible",
+      "passed": true,
+      "details": "endPressure=15.21MPa"
+    },
+    {
+      "caseId": "baseline",
+      "description": "baseline does not drift violently",
+      "passed": true,
+      "details": "start=2784.3 end=2706.9MW"
+    },
+    {
+      "caseId": "baseline",
+      "description": "all acceptance telemetry samples are finite numbers",
+      "passed": true,
+      "details": "all finite"
+    },
+    {
+      "caseId": "baseline",
+      "description": "nonnegative physical telemetry remains nonnegative",
+      "passed": true,
+      "details": "all nonnegative"
+    },
+    {
+      "caseId": "baseline",
+      "description": "reactor fission power alias remains exact",
+      "passed": true,
+      "details": "maxMismatch=0.00e+0MW"
+    },
+    {
+      "caseId": "baseline",
+      "description": "reactor thermal power equals fission plus decay heat",
+      "passed": true,
+      "details": "maxMismatch=0.00e+0MW"
+    },
+    {
+      "caseId": "baseline",
+      "description": "reactor vessel pressure bias equals compressibility plus thermal expansion",
+      "passed": true,
+      "details": "maxMismatch=0.00e+0MPa"
+    },
+    {
+      "caseId": "baseline",
+      "description": "steam generator liquid and steam balances remain conservative",
+      "passed": true,
+      "details": "inventory=1.81e-12kg steam=1.81e-12kg steamMass=2.35e+4kg energy=1.14e-13MW"
+    },
+    {
+      "caseId": "baseline",
+      "description": "pressurizer water and steam balances remain conservative",
+      "passed": true,
+      "details": "water=0.00e+0kg steam=0.00e+0kg"
+    },
+    {
+      "caseId": "baseline",
+      "description": "feedwater and aux feedwater headers conserve reachable flow",
+      "passed": true,
+      "details": "feed=1.14e-13kg/s aux=0.00e+0kg/s"
+    },
+    {
+      "caseId": "sgtr",
+      "description": "SGTR creates primary-to-secondary leak flow",
+      "passed": true,
+      "details": "maxLeak=211.01kg/s"
+    },
+    {
+      "caseId": "sgtr",
+      "description": "SGTR raises secondary radiation indication",
+      "passed": true,
+      "details": "maxRadiation=142.955mSv/h"
+    },
+    {
+      "caseId": "sgtr",
+      "description": "all acceptance telemetry samples are finite numbers",
+      "passed": true,
+      "details": "all finite"
+    },
+    {
+      "caseId": "sgtr",
+      "description": "nonnegative physical telemetry remains nonnegative",
+      "passed": true,
+      "details": "all nonnegative"
+    },
+    {
+      "caseId": "sgtr",
+      "description": "reactor fission power alias remains exact",
+      "passed": true,
+      "details": "maxMismatch=0.00e+0MW"
+    },
+    {
+      "caseId": "sgtr",
+      "description": "reactor thermal power equals fission plus decay heat",
+      "passed": true,
+      "details": "maxMismatch=0.00e+0MW"
+    },
+    {
+      "caseId": "sgtr",
+      "description": "reactor vessel pressure bias equals compressibility plus thermal expansion",
+      "passed": true,
+      "details": "maxMismatch=0.00e+0MPa"
+    },
+    {
+      "caseId": "sgtr",
+      "description": "steam generator liquid and steam balances remain conservative",
+      "passed": true,
+      "details": "inventory=3.62e-12kg steam=1.78e-12kg steamMass=2.64e+4kg energy=1.14e-13MW"
+    },
+    {
+      "caseId": "sgtr",
+      "description": "pressurizer water and steam balances remain conservative",
+      "passed": true,
+      "details": "water=0.00e+0kg steam=0.00e+0kg"
+    },
+    {
+      "caseId": "sgtr",
+      "description": "feedwater and aux feedwater headers conserve reachable flow",
+      "passed": true,
+      "details": "feed=2.27e-13kg/s aux=0.00e+0kg/s"
+    },
+    {
+      "caseId": "loss-feedwater",
+      "description": "loss of feedwater lowers SG level",
+      "passed": true,
+      "details": "before=59.1 after=7.7%"
+    },
+    {
+      "caseId": "loss-feedwater",
+      "description": "loss of feedwater removes main feed contribution",
+      "passed": true,
+      "details": "maxFeedAfter120s=0.0kg/s"
+    },
+    {
+      "caseId": "loss-feedwater",
+      "description": "all acceptance telemetry samples are finite numbers",
+      "passed": true,
+      "details": "all finite"
+    },
+    {
+      "caseId": "loss-feedwater",
+      "description": "nonnegative physical telemetry remains nonnegative",
+      "passed": true,
+      "details": "all nonnegative"
+    },
+    {
+      "caseId": "loss-feedwater",
+      "description": "reactor fission power alias remains exact",
+      "passed": true,
+      "details": "maxMismatch=0.00e+0MW"
+    },
+    {
+      "caseId": "loss-feedwater",
+      "description": "reactor thermal power equals fission plus decay heat",
+      "passed": true,
+      "details": "maxMismatch=0.00e+0MW"
+    },
+    {
+      "caseId": "loss-feedwater",
+      "description": "reactor vessel pressure bias equals compressibility plus thermal expansion",
+      "passed": true,
+      "details": "maxMismatch=0.00e+0MPa"
+    },
+    {
+      "caseId": "loss-feedwater",
+      "description": "steam generator liquid and steam balances remain conservative",
+      "passed": true,
+      "details": "inventory=1.81e-12kg steam=1.82e-12kg steamMass=1.69e+4kg energy=1.14e-13MW"
+    },
+    {
+      "caseId": "loss-feedwater",
+      "description": "pressurizer water and steam balances remain conservative",
+      "passed": true,
+      "details": "water=0.00e+0kg steam=0.00e+0kg"
+    },
+    {
+      "caseId": "loss-feedwater",
+      "description": "feedwater and aux feedwater headers conserve reachable flow",
+      "passed": true,
+      "details": "feed=1.14e-13kg/s aux=0.00e+0kg/s"
+    },
+    {
+      "caseId": "loca-safety-injection",
+      "description": "primary boundary leak releases mass to containment",
+      "passed": true,
+      "details": "maxRelease=1251.9kg/s"
+    },
+    {
+      "caseId": "loca-safety-injection",
+      "description": "LOCA lowers primary inventory despite injection",
+      "passed": true,
+      "details": "start=284982 end=223154kg"
+    },
+    {
+      "caseId": "loca-safety-injection",
+      "description": "containment sump accumulates released coolant",
+      "passed": true,
+      "details": "sump=7325kg"
+    },
+    {
+      "caseId": "loca-safety-injection",
+      "description": "containment pressure rises after release",
+      "passed": true,
+      "details": "initial=0.103 peak=0.298MPa"
+    },
+    {
+      "caseId": "loca-safety-injection",
+      "description": "accumulator injects after depressurization",
+      "passed": true,
+      "details": "maxInjection=53.1kg/s"
+    },
+    {
+      "caseId": "loca-safety-injection",
+      "description": "accumulator inventory depletes during injection",
+      "passed": true,
+      "details": "start=35000 end=32141kg"
+    },
+    {
+      "caseId": "loca-safety-injection",
+      "description": "containment radiation source term rises after primary release",
+      "passed": true,
+      "details": "maxRadiation=0.288mSv/h"
+    },
+    {
+      "caseId": "loca-safety-injection",
+      "description": "all acceptance telemetry samples are finite numbers",
+      "passed": true,
+      "details": "all finite"
+    },
+    {
+      "caseId": "loca-safety-injection",
+      "description": "nonnegative physical telemetry remains nonnegative",
+      "passed": true,
+      "details": "all nonnegative"
+    },
+    {
+      "caseId": "loca-safety-injection",
+      "description": "reactor fission power alias remains exact",
+      "passed": true,
+      "details": "maxMismatch=0.00e+0MW"
+    },
+    {
+      "caseId": "loca-safety-injection",
+      "description": "reactor thermal power equals fission plus decay heat",
+      "passed": true,
+      "details": "maxMismatch=0.00e+0MW"
+    },
+    {
+      "caseId": "loca-safety-injection",
+      "description": "reactor vessel pressure bias equals compressibility plus thermal expansion",
+      "passed": true,
+      "details": "maxMismatch=0.00e+0MPa"
+    },
+    {
+      "caseId": "loca-safety-injection",
+      "description": "steam generator liquid and steam balances remain conservative",
+      "passed": true,
+      "details": "inventory=1.81e-12kg steam=9.07e-13kg steamMass=1.63e+4kg energy=1.14e-13MW"
+    },
+    {
+      "caseId": "loca-safety-injection",
+      "description": "pressurizer water and steam balances remain conservative",
+      "passed": true,
+      "details": "water=0.00e+0kg steam=0.00e+0kg"
+    },
+    {
+      "caseId": "loca-safety-injection",
+      "description": "feedwater and aux feedwater headers conserve reachable flow",
+      "passed": true,
+      "details": "feed=3.41e-13kg/s aux=0.00e+0kg/s"
+    },
+    {
+      "caseId": "aux-feedwater-recovery",
+      "description": "main feedwater remains isolated after trip",
+      "passed": true,
+      "details": "maxMainFeedAfter90s=0.5kg/s"
+    },
+    {
+      "caseId": "aux-feedwater-recovery",
+      "description": "auxiliary feedwater reaches the open SG branch",
+      "passed": true,
+      "details": "maxAuxFeedA=105.0kg/s"
+    },
+    {
+      "caseId": "aux-feedwater-recovery",
+      "description": "auxiliary feedwater keeps SG level bounded above dryout",
+      "passed": true,
+      "details": "endLevel=21.1%"
+    },
+    {
+      "caseId": "aux-feedwater-recovery",
+      "description": "all acceptance telemetry samples are finite numbers",
+      "passed": true,
+      "details": "all finite"
+    },
+    {
+      "caseId": "aux-feedwater-recovery",
+      "description": "nonnegative physical telemetry remains nonnegative",
+      "passed": true,
+      "details": "all nonnegative"
+    },
+    {
+      "caseId": "aux-feedwater-recovery",
+      "description": "reactor fission power alias remains exact",
+      "passed": true,
+      "details": "maxMismatch=0.00e+0MW"
+    },
+    {
+      "caseId": "aux-feedwater-recovery",
+      "description": "reactor thermal power equals fission plus decay heat",
+      "passed": true,
+      "details": "maxMismatch=0.00e+0MW"
+    },
+    {
+      "caseId": "aux-feedwater-recovery",
+      "description": "reactor vessel pressure bias equals compressibility plus thermal expansion",
+      "passed": true,
+      "details": "maxMismatch=0.00e+0MPa"
+    },
+    {
+      "caseId": "aux-feedwater-recovery",
+      "description": "steam generator liquid and steam balances remain conservative",
+      "passed": true,
+      "details": "inventory=1.82e-12kg steam=9.09e-13kg steamMass=1.63e+4kg energy=1.14e-13MW"
+    },
+    {
+      "caseId": "aux-feedwater-recovery",
+      "description": "pressurizer water and steam balances remain conservative",
+      "passed": true,
+      "details": "water=0.00e+0kg steam=0.00e+0kg"
+    },
+    {
+      "caseId": "aux-feedwater-recovery",
+      "description": "feedwater and aux feedwater headers conserve reachable flow",
+      "passed": true,
+      "details": "feed=1.14e-13kg/s aux=0.00e+0kg/s"
+    },
+    {
+      "caseId": "rcp-trip",
+      "description": "RCP trip begins a coastdown, not an instant zero",
+      "passed": true,
+      "details": "before=3946 shortAfter=2825kg/s"
+    },
+    {
+      "caseId": "rcp-trip",
+      "description": "RCP trip materially lowers loop flow",
+      "passed": true,
+      "details": "before=3946 end=0kg/s"
+    },
+    {
+      "caseId": "rcp-trip",
+      "description": "all acceptance telemetry samples are finite numbers",
+      "passed": true,
+      "details": "all finite"
+    },
+    {
+      "caseId": "rcp-trip",
+      "description": "nonnegative physical telemetry remains nonnegative",
+      "passed": true,
+      "details": "all nonnegative"
+    },
+    {
+      "caseId": "rcp-trip",
+      "description": "reactor fission power alias remains exact",
+      "passed": true,
+      "details": "maxMismatch=0.00e+0MW"
+    },
+    {
+      "caseId": "rcp-trip",
+      "description": "reactor thermal power equals fission plus decay heat",
+      "passed": true,
+      "details": "maxMismatch=0.00e+0MW"
+    },
+    {
+      "caseId": "rcp-trip",
+      "description": "reactor vessel pressure bias equals compressibility plus thermal expansion",
+      "passed": true,
+      "details": "maxMismatch=0.00e+0MPa"
+    },
+    {
+      "caseId": "rcp-trip",
+      "description": "steam generator liquid and steam balances remain conservative",
+      "passed": true,
+      "details": "inventory=3.62e-12kg steam=1.80e-12kg steamMass=1.69e+4kg energy=1.14e-13MW"
+    },
+    {
+      "caseId": "rcp-trip",
+      "description": "pressurizer water and steam balances remain conservative",
+      "passed": true,
+      "details": "water=0.00e+0kg steam=0.00e+0kg"
+    },
+    {
+      "caseId": "rcp-trip",
+      "description": "feedwater and aux feedwater headers conserve reachable flow",
+      "passed": true,
+      "details": "feed=2.27e-13kg/s aux=0.00e+0kg/s"
+    },
+    {
+      "caseId": "relief-open",
+      "description": "relief valve produces relief flow",
+      "passed": true,
+      "details": "maxRelief=69.33kg/s"
+    },
+    {
+      "caseId": "relief-open",
+      "description": "relief valve reduces pressurizer steam mass tendency",
+      "passed": true,
+      "details": "before=1800.0 end=90.0kg"
+    },
+    {
+      "caseId": "relief-open",
+      "description": "all acceptance telemetry samples are finite numbers",
+      "passed": true,
+      "details": "all finite"
+    },
+    {
+      "caseId": "relief-open",
+      "description": "nonnegative physical telemetry remains nonnegative",
+      "passed": true,
+      "details": "all nonnegative"
+    },
+    {
+      "caseId": "relief-open",
+      "description": "reactor fission power alias remains exact",
+      "passed": true,
+      "details": "maxMismatch=0.00e+0MW"
+    },
+    {
+      "caseId": "relief-open",
+      "description": "reactor thermal power equals fission plus decay heat",
+      "passed": true,
+      "details": "maxMismatch=0.00e+0MW"
+    },
+    {
+      "caseId": "relief-open",
+      "description": "reactor vessel pressure bias equals compressibility plus thermal expansion",
+      "passed": true,
+      "details": "maxMismatch=0.00e+0MPa"
+    },
+    {
+      "caseId": "relief-open",
+      "description": "steam generator liquid and steam balances remain conservative",
+      "passed": true,
+      "details": "inventory=1.81e-12kg steam=1.81e-12kg steamMass=2.35e+4kg energy=1.14e-13MW"
+    },
+    {
+      "caseId": "relief-open",
+      "description": "pressurizer water and steam balances remain conservative",
+      "passed": true,
+      "details": "water=0.00e+0kg steam=2.84e+0kg"
+    },
+    {
+      "caseId": "relief-open",
+      "description": "feedwater and aux feedwater headers conserve reachable flow",
+      "passed": true,
+      "details": "feed=1.14e-13kg/s aux=0.00e+0kg/s"
+    },
+    {
+      "caseId": "main-steam-safety-release",
+      "description": "main steam safety valve opens on isolated turbine path pressure",
+      "passed": true,
+      "details": "maxPosition=1.00"
+    },
+    {
+      "caseId": "main-steam-safety-release",
+      "description": "main steam safety path carries header flow",
+      "passed": true,
+      "details": "maxHeaderFlow=1105.3kg/s"
+    },
+    {
+      "caseId": "main-steam-safety-release",
+      "description": "main steam safety valve routes steam to containment",
+      "passed": true,
+      "details": "maxContainmentFlow=1105.3kg/s"
+    },
+    {
+      "caseId": "main-steam-safety-release",
+      "description": "containment pressure rises from steam release",
+      "passed": true,
+      "details": "initial=0.103 peak=0.120MPa"
+    },
+    {
+      "caseId": "main-steam-safety-release",
+      "description": "containment inventory increases from steam release",
+      "passed": true,
+      "details": "initial=0 end=645kg"
+    },
+    {
+      "caseId": "main-steam-safety-release",
+      "description": "all acceptance telemetry samples are finite numbers",
+      "passed": true,
+      "details": "all finite"
+    },
+    {
+      "caseId": "main-steam-safety-release",
+      "description": "nonnegative physical telemetry remains nonnegative",
+      "passed": true,
+      "details": "all nonnegative"
+    },
+    {
+      "caseId": "main-steam-safety-release",
+      "description": "reactor fission power alias remains exact",
+      "passed": true,
+      "details": "maxMismatch=0.00e+0MW"
+    },
+    {
+      "caseId": "main-steam-safety-release",
+      "description": "reactor thermal power equals fission plus decay heat",
+      "passed": true,
+      "details": "maxMismatch=0.00e+0MW"
+    },
+    {
+      "caseId": "main-steam-safety-release",
+      "description": "reactor vessel pressure bias equals compressibility plus thermal expansion",
+      "passed": true,
+      "details": "maxMismatch=0.00e+0MPa"
+    },
+    {
+      "caseId": "main-steam-safety-release",
+      "description": "steam generator liquid and steam balances remain conservative",
+      "passed": true,
+      "details": "inventory=3.57e-12kg steam=2.74e+1kg steamMass=3.88e+4kg energy=1.14e-13MW"
+    },
+    {
+      "caseId": "main-steam-safety-release",
+      "description": "pressurizer water and steam balances remain conservative",
+      "passed": true,
+      "details": "water=0.00e+0kg steam=0.00e+0kg"
+    },
+    {
+      "caseId": "main-steam-safety-release",
+      "description": "feedwater and aux feedwater headers conserve reachable flow",
+      "passed": true,
+      "details": "feed=1.14e-13kg/s aux=0.00e+0kg/s"
+    },
+    {
+      "caseId": "load-reduction",
+      "description": "load reduction lowers turbine output",
+      "passed": true,
+      "details": "before=721.6 end=222.8MW"
+    },
+    {
+      "caseId": "load-reduction",
+      "description": "load reduction keeps output nonnegative",
+      "passed": true,
+      "details": "min=222.8MW"
+    },
+    {
+      "caseId": "load-reduction",
+      "description": "load reduction lowers turbine steam demand",
+      "passed": true,
+      "details": "before=1033.6 end=603.0kg/s"
+    },
+    {
+      "caseId": "load-reduction",
+      "description": "load reduction lowers condenser heat rejection",
+      "passed": true,
+      "details": "before=2506.2 end=1576.0MW"
+    },
+    {
+      "caseId": "load-reduction",
+      "description": "turbine steam availability remains a bounded ratio",
+      "passed": true,
+      "details": "min=1.00 max=1.00"
+    },
+    {
+      "caseId": "load-reduction",
+      "description": "all acceptance telemetry samples are finite numbers",
+      "passed": true,
+      "details": "all finite"
+    },
+    {
+      "caseId": "load-reduction",
+      "description": "nonnegative physical telemetry remains nonnegative",
+      "passed": true,
+      "details": "all nonnegative"
+    },
+    {
+      "caseId": "load-reduction",
+      "description": "reactor fission power alias remains exact",
+      "passed": true,
+      "details": "maxMismatch=0.00e+0MW"
+    },
+    {
+      "caseId": "load-reduction",
+      "description": "reactor thermal power equals fission plus decay heat",
+      "passed": true,
+      "details": "maxMismatch=0.00e+0MW"
+    },
+    {
+      "caseId": "load-reduction",
+      "description": "reactor vessel pressure bias equals compressibility plus thermal expansion",
+      "passed": true,
+      "details": "maxMismatch=0.00e+0MPa"
+    },
+    {
+      "caseId": "load-reduction",
+      "description": "steam generator liquid and steam balances remain conservative",
+      "passed": true,
+      "details": "inventory=3.61e-12kg steam=1.47e+1kg steamMass=3.88e+4kg energy=1.14e-13MW"
+    },
+    {
+      "caseId": "load-reduction",
+      "description": "pressurizer water and steam balances remain conservative",
+      "passed": true,
+      "details": "water=0.00e+0kg steam=0.00e+0kg"
+    },
+    {
+      "caseId": "load-reduction",
+      "description": "feedwater and aux feedwater headers conserve reachable flow",
+      "passed": true,
+      "details": "feed=1.14e-13kg/s aux=0.00e+0kg/s"
+    },
+    {
+      "caseId": "condenser-backpressure",
+      "description": "hot condenser raises backpressure",
+      "passed": true,
+      "details": "backPressure=42817Pa"
+    },
+    {
+      "caseId": "condenser-backpressure",
+      "description": "condenser backpressure derates turbine output",
+      "passed": true,
+      "details": "electric=349.4MW"
+    },
+    {
+      "caseId": "condenser-backpressure",
+      "description": "condenser backpressure derates turbine steam demand",
+      "passed": true,
+      "details": "steamDemand=500.8kg/s"
+    },
+    {
+      "caseId": "condenser-backpressure",
+      "description": "condenser reads hot cooling water from the heat-sink path",
+      "passed": true,
+      "details": "coolingWaterInlet=95.0C"
+    },
+    {
+      "caseId": "condenser-backpressure",
+      "description": "all acceptance telemetry samples are finite numbers",
+      "passed": true,
+      "details": "all finite"
+    },
+    {
+      "caseId": "condenser-backpressure",
+      "description": "nonnegative physical telemetry remains nonnegative",
+      "passed": true,
+      "details": "all nonnegative"
+    },
+    {
+      "caseId": "condenser-backpressure",
+      "description": "reactor fission power alias remains exact",
+      "passed": true,
+      "details": "maxMismatch=0.00e+0MW"
+    },
+    {
+      "caseId": "condenser-backpressure",
+      "description": "reactor thermal power equals fission plus decay heat",
+      "passed": true,
+      "details": "maxMismatch=0.00e+0MW"
+    },
+    {
+      "caseId": "condenser-backpressure",
+      "description": "reactor vessel pressure bias equals compressibility plus thermal expansion",
+      "passed": true,
+      "details": "maxMismatch=0.00e+0MPa"
+    },
+    {
+      "caseId": "condenser-backpressure",
+      "description": "steam generator liquid and steam balances remain conservative",
+      "passed": true,
+      "details": "inventory=3.58e-12kg steam=1.68e+1kg steamMass=3.88e+4kg energy=1.14e-13MW"
+    },
+    {
+      "caseId": "condenser-backpressure",
+      "description": "pressurizer water and steam balances remain conservative",
+      "passed": true,
+      "details": "water=0.00e+0kg steam=0.00e+0kg"
+    },
+    {
+      "caseId": "condenser-backpressure",
+      "description": "feedwater and aux feedwater headers conserve reachable flow",
+      "passed": true,
+      "details": "feed=1.14e-13kg/s aux=0.00e+0kg/s"
+    },
+    {
+      "caseId": "mixed-transient",
+      "description": "mixed transient creates tube leak flow",
+      "passed": true,
+      "details": "maxLeak=152.43kg/s"
+    },
+    {
+      "caseId": "mixed-transient",
+      "description": "mixed transient lowers the tripped loop flow",
+      "passed": true,
+      "details": "before=3946 end=0kg/s"
+    },
+    {
+      "caseId": "mixed-transient",
+      "description": "mixed transient lowers turbine output after load reduction",
+      "passed": true,
+      "details": "before=678.8 end=206.3MW"
+    },
+    {
+      "caseId": "mixed-transient",
+      "description": "all acceptance telemetry samples are finite numbers",
+      "passed": true,
+      "details": "all finite"
+    },
+    {
+      "caseId": "mixed-transient",
+      "description": "nonnegative physical telemetry remains nonnegative",
+      "passed": true,
+      "details": "all nonnegative"
+    },
+    {
+      "caseId": "mixed-transient",
+      "description": "reactor fission power alias remains exact",
+      "passed": true,
+      "details": "maxMismatch=0.00e+0MW"
+    },
+    {
+      "caseId": "mixed-transient",
+      "description": "reactor thermal power equals fission plus decay heat",
+      "passed": true,
+      "details": "maxMismatch=0.00e+0MW"
+    },
+    {
+      "caseId": "mixed-transient",
+      "description": "reactor vessel pressure bias equals compressibility plus thermal expansion",
+      "passed": true,
+      "details": "maxMismatch=0.00e+0MPa"
+    },
+    {
+      "caseId": "mixed-transient",
+      "description": "steam generator liquid and steam balances remain conservative",
+      "passed": true,
+      "details": "inventory=9.30e+0kg steam=1.82e-12kg steamMass=1.83e+4kg energy=1.14e-13MW"
+    },
+    {
+      "caseId": "mixed-transient",
+      "description": "pressurizer water and steam balances remain conservative",
+      "passed": true,
+      "details": "water=0.00e+0kg steam=0.00e+0kg"
+    },
+    {
+      "caseId": "mixed-transient",
+      "description": "feedwater and aux feedwater headers conserve reachable flow",
+      "passed": true,
+      "details": "feed=2.27e-13kg/s aux=0.00e+0kg/s"
+    }
+  ],
+  "performanceChecks": [
+    {
+      "caseId": "baseline",
+      "description": "multi-case acceptance run remains comfortably faster than realtime",
+      "passed": true,
+      "details": "realtimeFactor=47.7x min=20.0x"
+    }
+  ],
+  "artifacts": {
+    "traceSvgPath": "docs/assets/process-plant-acceptance-traces.svg",
+    "summaryJsonPath": "docs/assets/process-plant-acceptance-summary.json"
+  }
+}
