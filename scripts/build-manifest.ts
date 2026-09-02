@@ -75,10 +75,29 @@ interface ManifestPageEntry {
 interface Manifest {
   version: 1
   wiki: string
+  /** Git commit containing every file named by this manifest. */
+  revision: string
   procmdVersion: string
   procedures: ManifestEntry[]
   /** Non-procedure pages (Phase D system descriptions, catalogues, etc.). */
   pages: ManifestPageEntry[]
+}
+
+const sourceRevision = (): string => {
+  const ciRevision = process.env.GITHUB_SHA?.trim()
+  if (ciRevision && /^[0-9a-f]{40}$/.test(ciRevision)) return ciRevision
+
+  const result = Bun.spawnSync({
+    cmd: ['git', 'rev-parse', 'HEAD'],
+    cwd: REPO_ROOT,
+    stdout: 'pipe',
+    stderr: 'pipe',
+  })
+  const revision = result.stdout.toString().trim()
+  if (result.exitCode !== 0 || !/^[0-9a-f]{40}$/.test(revision)) {
+    throw new Error('could not determine the source Git revision for the procedure manifest')
+  }
+  return revision
 }
 
 import type { ParsedProcedure } from '../procmd-core/index.ts'
@@ -205,8 +224,7 @@ const buildManifest = (): Manifest => {
     const raw = readFileSync(path, 'utf-8')
     const parsed = parseProcedure(raw)
     if ('error' in parsed) {
-      console.warn(`skip ${f}: ${parsed.error}`)
-      continue
+      throw new Error(`cannot publish invalid procedure ${f}: ${parsed.error}`)
     }
     const stepCount = parsed.steps.length
     const tagDefinitionCount = parsed.tagDefinitions.length
@@ -241,6 +259,7 @@ const buildManifest = (): Manifest => {
   return {
     version: 1,
     wiki: 'pwr-ops',
+    revision: sourceRevision(),
     procmdVersion,
     procedures,
     pages,
