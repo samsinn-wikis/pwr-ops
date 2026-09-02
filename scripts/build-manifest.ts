@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
 /**
  * Build wiki/_manifest.json — machine-readable index of every page in the
- * wiki, partitioned by page type. Consumed by samsinn's wiki-fetcher.ts
- * (talkingAgents src/wikis/wiki-fetcher.ts → WikiManifest v1).
+ * wiki, partitioned by page type. Consumed by Leitbild's World and Agents
+ * modules through the shared WikiManifest v1 contract.
  *
  * Manifest still declares version: 1 because the additions in Phase D are
  * backward-compatible: existing `procedures` array stays unchanged; a new
@@ -54,6 +54,8 @@ interface ManifestEntry {
   id: string
   title: string
   file: string
+  profile?: string
+  appliesTo?: string
   category?: string
   csfsMonitored?: string[]
   entryTriggers?: string[]
@@ -236,6 +238,8 @@ const buildManifest = (): Manifest => {
       tagDefinitionCount,
       coverage: classifyByContent(parsed),
     }
+    if (parsed.frontmatter.profile) entry.profile = parsed.frontmatter.profile
+    if (parsed.frontmatter.appliesTo) entry.appliesTo = parsed.frontmatter.appliesTo
     if (parsed.frontmatter.category) entry.category = parsed.frontmatter.category
     if (parsed.frontmatter.csfsMonitored.length > 0) entry.csfsMonitored = [...parsed.frontmatter.csfsMonitored]
     if (parsed.frontmatter.entryTriggers.length > 0) entry.entryTriggers = [...parsed.frontmatter.entryTriggers]
